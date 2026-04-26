@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Star Blaze — NOVA 777</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:#030510;color:#eef2f8;font-family:'Outfit',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;cursor:none;}
+.cur,.cur-r{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);}
+.cur{width:9px;height:9px;background:#6ec6f5;}
+.cur-r{width:34px;height:34px;border:1px solid rgba(110,198,245,.3);z-index:9998;transition:width .2s,height .2s;}
+
+.topbar{height:54px;background:rgba(3,5,16,.97);border-bottom:1px solid rgba(110,198,245,.1);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;}
+.tb-logo{font-family:'Cinzel',serif;font-size:.95rem;font-weight:900;color:#d4a843;text-decoration:none;letter-spacing:.08em;}
+.tb-logo em{color:#eef2f8;font-style:normal;}
+.tb-back{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(110,198,245,.6);text-decoration:none;transition:color .3s;}
+.tb-back:hover{color:#6ec6f5;}
+.tb-balance{font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;color:#6ec6f5;}
+
+.game-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 30px;}
+.game-container{width:100%;max-width:860px;background:linear-gradient(160deg,#05091c 0%,#030610 60%,#020408 100%);border:1px solid rgba(110,198,245,.15);position:relative;overflow:hidden;}
+
+.game-title-bar{padding:14px 22px;text-align:center;border-bottom:1px solid rgba(110,198,245,.08);background:rgba(110,198,245,.03);}
+.game-title-bar h1{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:900;color:#6ec6f5;letter-spacing:.1em;text-transform:uppercase;}
+.game-title-bar span{font-size:.62rem;color:rgba(110,198,245,.5);letter-spacing:.2em;text-transform:uppercase;}
+
+.jackpot-bar{display:flex;justify-content:center;gap:18px;padding:10px 22px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(110,198,245,.06);}
+.jp-item{text-align:center;}
+.jp-label{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(110,198,245,.45);}
+.jp-val{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:#6ec6f5;}
+
+.reels-area{position:relative;padding:16px 20px;}
+canvas#reelsCanvas{width:100%;display:block;border:1px solid rgba(110,198,245,.08);}
+
+.win-display{height:38px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);border-top:1px solid rgba(110,198,245,.06);border-bottom:1px solid rgba(110,198,245,.06);}
+#winText{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:#6ec6f5;letter-spacing:.08em;}
+
+/* BONUS METER */
+.bonus-bar{padding:8px 20px;display:flex;align-items:center;gap:14px;}
+.bonus-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(110,198,245,.5);flex-shrink:0;}
+.bonus-track{flex:1;height:8px;background:rgba(255,255,255,.06);border:1px solid rgba(110,198,245,.1);position:relative;overflow:hidden;}
+.bonus-fill{height:100%;background:linear-gradient(90deg,#1a6fa8,#6ec6f5);transition:width .5s ease;width:0%;}
+.bonus-pct{font-family:'Cinzel',serif;font-size:.7rem;color:#6ec6f5;flex-shrink:0;}
+
+.paylines-row{display:flex;justify-content:center;gap:6px;padding:8px 20px;flex-wrap:wrap;}
+.pl-btn{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(110,198,245,.4);padding:4px 10px;cursor:none;transition:all .3s;}
+.pl-btn.active{background:rgba(110,198,245,.1);border-color:rgba(110,198,245,.25);color:#6ec6f5;}
+
+.controls{padding:14px 22px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(0,0,0,.2);}
+.ctrl-group{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.ctrl-label{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(110,198,245,.5);}
+.ctrl-val{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:#6ec6f5;}
+.ctrl-btns{display:flex;gap:5px;}
+.ctrl-btn{width:28px;height:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);color:#eef2f8;font-size:1rem;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.ctrl-btn:hover{background:rgba(110,198,245,.1);border-color:rgba(110,198,245,.25);}
+
+.spin-btn{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(135deg,#1a4a8a,#2e7ec4,#1a4a8a);color:#fff;padding:16px 44px;border:none;cursor:none;transition:all .3s;position:relative;overflow:hidden;}
+.spin-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .3s;}
+.spin-btn:hover::before{opacity:1;}
+.spin-btn:hover{transform:scale(1.04);box-shadow:0 6px 24px rgba(110,198,245,.3);}
+.spin-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.aux-btn{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:rgba(110,198,245,.55);padding:9px 16px;cursor:none;transition:all .3s;}
+.aux-btn:hover{border-color:rgba(110,198,245,.25);color:#6ec6f5;}
+.aux-btn.on{background:rgba(110,198,245,.1);border-color:rgba(110,198,245,.3);color:#6ec6f5;}
+
+.paytable{margin-top:16px;background:rgba(3,5,16,.85);border:1px solid rgba(110,198,245,.1);max-width:860px;width:100%;}
+.paytable-head{padding:12px 22px;border-bottom:1px solid rgba(110,198,245,.06);display:flex;justify-content:space-between;align-items:center;}
+.paytable-head h3{font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;color:#6ec6f5;letter-spacing:.1em;text-transform:uppercase;}
+.pt-body{padding:14px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.pt-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);}
+.pt-sym{font-size:1.4rem;}
+.pt-name{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(110,198,245,.55);margin-bottom:2px;}
+.pt-pays{font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;color:#6ec6f5;}
+
+/* BONUS GAME */
+.bonus-overlay{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;backdrop-filter:blur(10px);}
+.bonus-overlay.show{opacity:1;pointer-events:all;}
+.bonus-box{text-align:center;padding:48px 60px;border:1px solid rgba(110,198,245,.25);background:rgba(3,5,20,.98);max-width:520px;width:92vw;}
+.bonus-box h2{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:#6ec6f5;margin-bottom:10px;}
+.bonus-box p{color:rgba(238,242,248,.5);margin-bottom:28px;font-size:.85rem;line-height:1.7;}
+.star-picks{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:20px 0;}
+.star-pick{font-size:2rem;padding:14px;background:rgba(255,255,255,.05);border:1px solid rgba(110,198,245,.15);cursor:none;transition:all .3s;display:flex;align-items:center;justify-content:center;}
+.star-pick:hover:not(:disabled){background:rgba(110,198,245,.1);border-color:rgba(110,198,245,.4);transform:scale(1.08);}
+.star-pick.revealed{background:rgba(110,198,245,.08);border-color:rgba(110,198,245,.3);}
+.star-pick.empty{opacity:.4;cursor:not-allowed;}
+.bonus-total{font-family:'Cinzel',serif;font-size:2.2rem;font-weight:900;color:#6ec6f5;margin:16px 0 6px;}
+.bonus-collect{font-family:'Cinzel',serif;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,#1a4a8a,#2e7ec4);color:#fff;padding:13px 36px;border:none;cursor:none;margin-top:18px;transition:all .3s;display:none;}
+.bonus-collect:hover{filter:brightness(1.12);}
+
+/* BIG WIN */
+.bigwin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:600;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
+.bigwin-overlay.show{opacity:1;pointer-events:all;}
+.bigwin-box{text-align:center;animation:bwa .5s ease;}
+@keyframes bwa{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+.bw-label{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(110,198,245,.7);margin-bottom:8px;}
+.bw-amount{font-family:'Cinzel',serif;font-size:clamp(4rem,10vw,8rem);font-weight:900;background:linear-gradient(135deg,#1a6fa8,#6ec6f5,#b8e4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 40px rgba(110,198,245,.5));line-height:1;}
+.bw-sub{font-size:.8rem;color:rgba(238,242,248,.4);margin-top:10px;}
+.bw-close{font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:rgba(110,198,245,.12);border:1px solid rgba(110,198,245,.25);color:#6ec6f5;padding:11px 32px;cursor:none;margin-top:28px;transition:all .3s;}
+.bw-close:hover{background:rgba(110,198,245,.2);}
+
+@media(max-width:620px){
+  .controls{flex-direction:column;align-items:center;}
+  .pt-body{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<!-- BONUS GAME -->
+<div class="bonus-overlay" id="bonusOverlay">
+  <div class="bonus-box">
+    <h2>✨ BONUS ROUND</h2>
+    <p>Изберете звезди за да открие скритите награди. Намерете 3 еднакви и спечелете JACKPOT!</p>
+    <div class="star-picks" id="starPicks"></div>
+    <div>Събрано: <span class="bonus-total" id="bonusTotal">0</span> кр.</div>
+    <button class="bonus-collect" id="bonusCollect" onclick="collectBonus()">Вземи наградата!</button>
+  </div>
+</div>
+
+<!-- BIG WIN -->
+<div class="bigwin-overlay" id="bigwinOverlay">
+  <div class="bigwin-box">
+    <div class="bw-label" id="bwLabel">BIG WIN</div>
+    <div class="bw-amount" id="bwAmount">0</div>
+    <div class="bw-sub">кредита</div>
+    <button class="bw-close" onclick="closeBigWin()">Продължи</button>
+  </div>
+</div>
+
+<div class="topbar">
+  <a href="index.html" class="tb-back">← Обратно</a>
+  <a href="index.html" class="tb-logo">NOVA <em>777</em></a>
+  <span class="tb-balance" id="balanceDisplay">1 000 кр.</span>
+</div>
+
+<div class="game-wrap">
+  <div class="game-container">
+    <div class="game-title-bar">
+      <h1>⭐ Star Blaze</h1>
+      <span>5 барабана · 10 линии · Scatter · Bonus Round</span>
+    </div>
+    <div class="jackpot-bar">
+      <div class="jp-item"><div class="jp-label">STAR JP</div><div class="jp-val" id="jpStar">7 777</div></div>
+      <div class="jp-item"><div class="jp-label">GALAXY</div><div class="jp-val" id="jpGalaxy">2 500</div></div>
+      <div class="jp-item"><div class="jp-label">COMET</div><div class="jp-val" id="jpComet">500</div></div>
+      <div class="jp-item"><div class="jp-label">NEBULA</div><div class="jp-val" id="jpNebula">100</div></div>
+    </div>
+    <div class="reels-area">
+      <canvas id="reelsCanvas" height="300"></canvas>
+    </div>
+    <div class="win-display"><span id="winText">⭐ Завъртете барабаните на Cosmic Luck!</span></div>
+    <div class="bonus-bar">
+      <span class="bonus-label">Bonus Meter</span>
+      <div class="bonus-track"><div class="bonus-fill" id="bonusFill"></div></div>
+      <span class="bonus-pct" id="bonusPct">0%</span>
+    </div>
+    <div class="paylines-row" id="plRow"></div>
+    <div class="controls">
+      <div class="ctrl-group">
+        <div class="ctrl-label">Залог</div>
+        <div class="ctrl-val" id="betDisplay">1</div>
+        <div class="ctrl-btns">
+          <button class="ctrl-btn" onclick="changeBet(-1)">−</button>
+          <button class="ctrl-btn" onclick="changeBet(1)">+</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Линии</div>
+        <div class="ctrl-val" id="linesDisplay">10</div>
+        <div class="ctrl-btns">
+          <button class="ctrl-btn" onclick="changeLines(-1)">−</button>
+          <button class="ctrl-btn" onclick="changeLines(1)">+</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Общо</div>
+        <div class="ctrl-val" id="totalBetDisplay">10</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
+        <button class="spin-btn" id="spinBtn" onclick="spin()">▶ SPIN</button>
+        <div style="display:flex;gap:8px;">
+          <button class="aux-btn" id="autoBtn" onclick="toggleAuto()">AUTO</button>
+          <button class="aux-btn" onclick="maxBet()">MAX</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Кредити</div>
+        <div class="ctrl-val" id="creditsDisplay">1 000</div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Спечелено</div>
+        <div class="ctrl-val" id="wonDisplay">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="paytable">
+    <div class="paytable-head">
+      <h3>📋 Таблица на изплащанията</h3>
+    </div>
+    <div class="pt-body" id="ptBody"></div>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
+
+// SYMBOLS — cosmic theme
+const SYMBOLS = [
+  {id:'moon',    emoji:'🌙',  name:'Луна',      color:'#c8d4e8', pays:[0,0,4,12,40],   weight:16},
+  {id:'planet',  emoji:'🪐',  name:'Планета',   color:'#e8a050', pays:[0,0,5,15,60],   weight:14},
+  {id:'comet',   emoji:'☄️', name:'Комета',    color:'#6ec6f5', pays:[0,0,8,25,80],   weight:12},
+  {id:'rocket',  emoji:'🚀',  name:'Ракета',    color:'#5ae8c0', pays:[0,0,10,35,120], weight:10},
+  {id:'alien',   emoji:'👽',  name:'Извънземен',color:'#7be87a', pays:[0,0,15,50,200], weight:8 },
+  {id:'gem',     emoji:'💠',  name:'Кристал',   color:'#6ec6f5', pays:[0,0,20,80,300], weight:6 },
+  {id:'nova',    emoji:'🌟',  name:'NOVA',      color:'#f0d060', pays:[0,0,30,120,500],weight:5 },
+  {id:'blackhole',emoji:'🕳️',name:'Черна дупка',color:'#9b59b6',pays:[0,0,50,200,1000],weight:3},
+  {id:'wild',    emoji:'⭐',  name:'WILD',      color:'#f0c866', pays:[0,0,0,0,0],     weight:5 },
+  {id:'scatter', emoji:'💫',  name:'SCATTER',   color:'#6ec6f5', pays:[0,0,3,15,100],  weight:4 },
+  {id:'bonus',   emoji:'✨',  name:'BONUS',     color:'#5ae8c0', pays:[0,0,0,0,0],     weight:3 },
+];
+const WILD=SYMBOLS.find(s=>s.id==='wild');
+const SCATTER=SYMBOLS.find(s=>s.id==='scatter');
+const BONUS=SYMBOLS.find(s=>s.id==='bonus');
+
+function weightedRandom(){
+  const total=SYMBOLS.reduce((a,s)=>a+s.weight,0);
+  let r=Math.random()*total;
+  for(const s of SYMBOLS){r-=s.weight;if(r<=0)return s;}
+  return SYMBOLS[0];
+}
+
+const PAYLINES=[
+  [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],
+  [0,1,2,1,0],[2,1,0,1,2],
+  [0,0,1,0,0],[2,2,1,2,2],
+  [1,0,1,0,1],[1,2,1,2,1],
+  [0,1,0,1,0],
+];
+const ROWS=3,COLS=5;
+
+// STATE
+let credits=1000,bet=1,lines=10,totalWon=0;
+let spinning=false,autoRunning=false;
+let bonusMeter=0;
+let grid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>weightedRandom()));
+let winningCells=new Set(),winningLines=[];
+let flashTimer=0,spinPhase='idle';
+let reelSymbols=Array.from({length:COLS},()=>[...Array(20)].map(()=>weightedRandom()));
+let reelOffsets=[0,0,0,0,0];
+// bonus picks
+let bonusValues=[],bonusRevealed=0,bonusTotalWon=0,bonusPicks=0;
+
+// CANVAS
+const cv=document.getElementById('reelsCanvas');
+const ctx=cv.getContext('2d');
+function resizeCanvas(){cv.width=cv.offsetWidth;cv.height=Math.round(cv.offsetWidth*(3/5));}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+
+// STAR PARTICLES for canvas background
+const stars=Array.from({length:80},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.5+.4,op:Math.random()*.6+.1,tw:Math.random()*200+80}));
+
+function drawFrame(){
+  const cw=cv.width/COLS,ch=cv.height/ROWS;
+  // BG
+  const bg=ctx.createLinearGradient(0,0,0,cv.height);
+  bg.addColorStop(0,'#040818');bg.addColorStop(1,'#020510');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,cv.width,cv.height);
+  // stars bg
+  stars.forEach(s=>{
+    const pulse=.4+.4*Math.sin(Date.now()/s.tw);
+    ctx.beginPath();ctx.arc(s.x*cv.width,s.y*cv.height,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(180,210,255,${s.op*pulse})`;ctx.fill();
+  });
+
+  if(spinPhase==='idle'||spinPhase==='done'){
+    for(let c=0;c<COLS;c++){
+      for(let r=0;r<ROWS;r++){
+        const x=c*cw,y=r*ch;
+        const isWin=winningCells.has(`${c},${r}`);
+        const flash=isWin&&(flashTimer%20<10);
+        ctx.fillStyle=flash?'rgba(110,198,245,.12)':'rgba(0,0,0,.12)';
+        ctx.fillRect(x+2,y+2,cw-4,ch-4);
+        if(flash){ctx.strokeStyle='rgba(110,198,245,.5)';ctx.lineWidth=2;ctx.strokeRect(x+3,y+3,cw-6,ch-6);}
+        const sym=grid[c][r];
+        ctx.font=`${Math.round(ch*.42)}px serif`;
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(sym.emoji,x+cw/2,y+ch/2);
+      }
+    }
+    if(winningCells.size)flashTimer++;
+  } else {
+    for(let c=0;c<COLS;c++){
+      const symCount=reelSymbols[c].length;
+      ctx.save();ctx.beginPath();ctx.rect(c*cw+2,0,cw-4,cv.height);ctx.clip();
+      const bg2=ctx.createLinearGradient(c*cw,0,c*cw+cw,0);
+      bg2.addColorStop(0,'rgba(0,0,0,.2)');bg2.addColorStop(.5,'rgba(255,255,255,.02)');bg2.addColorStop(1,'rgba(0,0,0,.2)');
+      ctx.fillStyle=bg2;ctx.fillRect(c*cw,0,cw,cv.height);
+      for(let row=-2;row<ROWS+2;row++){
+        const sy=row*ch-(reelOffsets[c]%(symCount*ch));
+        if(sy>-ch&&sy<cv.height+ch){
+          const si=((Math.floor(reelOffsets[c]/ch)+row)%symCount+symCount)%symCount;
+          const sym=reelSymbols[c][si];
+          ctx.font=`${Math.round(ch*.42)}px serif`;
+          ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillText(sym.emoji,c*cw+cw/2,sy+ch/2);
+        }
+      }
+      ctx.restore();
+    }
+  }
+
+  // Grid lines
+  ctx.strokeStyle='rgba(110,198,245,.06)';ctx.lineWidth=1;
+  for(let c=1;c<COLS;c++){ctx.beginPath();ctx.moveTo(c*cw,0);ctx.lineTo(c*cw,cv.height);ctx.stroke();}
+  for(let r=1;r<ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*ch);ctx.lineTo(cv.width,r*ch);ctx.stroke();}
+
+  // Win lines
+  if(spinPhase==='done'&&winningLines.length&&flashTimer%20<10){
+    winningLines.forEach(li=>{
+      const line=PAYLINES[li];
+      ctx.beginPath();
+      line.forEach((row,col)=>{const px=col*cw+cw/2,py=row*ch+ch/2;col===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+      ctx.strokeStyle='rgba(110,198,245,.5)';ctx.lineWidth=2.5;ctx.setLineDash([7,4]);ctx.stroke();ctx.setLineDash([]);
+    });
+  }
+
+  // Center line
+  ctx.strokeStyle='rgba(110,198,245,.1)';ctx.lineWidth=1;ctx.setLineDash([5,6]);
+  ctx.beginPath();ctx.moveTo(0,cv.height/2);ctx.lineTo(cv.width,cv.height/2);ctx.stroke();ctx.setLineDash([]);
+
+  // Vignette
+  const vg=ctx.createLinearGradient(0,0,0,cv.height);
+  vg.addColorStop(0,'rgba(3,5,16,.7)');vg.addColorStop(.2,'rgba(3,5,16,0)');
+  vg.addColorStop(.8,'rgba(3,5,16,0)');vg.addColorStop(1,'rgba(3,5,16,.7)');
+  ctx.fillStyle=vg;ctx.fillRect(0,0,cv.width,cv.height);
+
+  requestAnimationFrame(drawFrame);
+}
+drawFrame();
+
+// SPIN
+function spin(){
+  if(spinning)return;
+  const totalBet=bet*lines;
+  if(credits<totalBet){setWinText('Недостатъчно кредити!');return;}
+  credits-=totalBet;
+  spinning=true;spinPhase='spinning';
+  winningCells.clear();winningLines=[];flashTimer=0;
+  document.getElementById('spinBtn').disabled=true;
+  setWinText('Завъртане...');
+  updateUI();
+
+  const newGrid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>weightedRandom()));
+  for(let c=0;c<COLS;c++){
+    reelSymbols[c]=[];
+    for(let i=0;i<15;i++)reelSymbols[c].push(weightedRandom());
+    for(let r=0;r<ROWS;r++)reelSymbols[c].push(newGrid[c][r]);
+  }
+  reelOffsets=[0,0,0,0,0];
+  let elapsed=0;
+  const iv=setInterval(()=>{
+    for(let c=0;c<COLS;c++)reelOffsets[c]+=18+c;
+    elapsed+=16;
+    if(elapsed>700){
+      clearInterval(iv);
+      for(let c=0;c<COLS;c++){
+        setTimeout(()=>{
+          const ch=cv.height/ROWS;
+          reelOffsets[c]=(reelSymbols[c].length-ROWS)*ch;
+          if(c===COLS-1){
+            setTimeout(()=>{
+              grid=newGrid;spinPhase='done';spinning=false;
+              evaluateWin();
+              document.getElementById('spinBtn').disabled=false;
+              if(autoRunning)setTimeout(()=>spin(),1100);
+            },200);
+          }
+        },c*160);
+      }
+    }
+  },16);
+}
+
+function evaluateWin(){
+  let winThisSpin=0;
+  winningCells.clear();winningLines=[];
+  let scatterCount=0,bonusCount=0;
+  for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++){
+    if(grid[c][r].id==='scatter')scatterCount++;
+    if(grid[c][r].id==='bonus')bonusCount++;
+  }
+
+  PAYLINES.slice(0,lines).forEach((line,li)=>{
+    const syms=line.map((row,col)=>grid[col][row]);
+    let matchSym=null,count=0;
+    for(let i=0;i<syms.length;i++){
+      const s=syms[i];
+      if(s.id==='wild'){count++;continue;}
+      if(!matchSym){matchSym=s;count++;continue;}
+      if(s.id===matchSym.id)count++;else break;
+    }
+    if(count>=3&&matchSym&&matchSym.id!=='scatter'&&matchSym.id!=='bonus'){
+      const payout=matchSym.pays[count-1]||matchSym.pays[2];
+      if(payout>0){
+        const won=payout*bet;
+        winThisSpin+=won;
+        winningLines.push(li);
+        line.slice(0,count).forEach((row,col)=>winningCells.add(`${col},${row}`));
+      }
+    }
+  });
+
+  if(scatterCount>=3){
+    const sp=SCATTER.pays[scatterCount-1]||SCATTER.pays[2];
+    winThisSpin+=sp*bet*lines;
+    for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')winningCells.add(`${c},${r}`);
+  }
+
+  // Bonus meter
+  bonusMeter+=bonusCount*12+Math.random()*5;
+  if(bonusMeter>=100){bonusMeter=0;setTimeout(triggerBonus,500);}
+  updateBonusMeter();
+
+  credits+=winThisSpin;totalWon+=winThisSpin;
+  updateUI();
+
+  if(winThisSpin>0){
+    const mult=winThisSpin/(bet*lines);
+    let label='WIN';
+    if(mult>=50)label='🌌 COSMIC WIN';
+    else if(mult>=20)label='🚀 SUPER WIN';
+    else if(mult>=10)label='⭐ BIG WIN';
+    setWinText(`${label}: +${winThisSpin} кредита!`);
+    if(mult>=10)showBigWin(label,winThisSpin);
+  } else {
+    setWinText('Без печалба. Пробвайте пак! ⭐');
+  }
+}
+
+function updateBonusMeter(){
+  const pct=Math.round(bonusMeter);
+  document.getElementById('bonusFill').style.width=pct+'%';
+  document.getElementById('bonusPct').textContent=pct+'%';
+}
+
+// BONUS GAME
+function triggerBonus(){
+  bonusTotalWon=0;bonusRevealed=0;bonusPicks=3;
+  // Generate 10 hidden values (some prizes, some "collect")
+  bonusValues=[];
+  const prizes=[bet*50,bet*100,bet*200,bet*500,bet*1000,bet*20,bet*30,bet*75];
+  for(let i=0;i<10;i++)bonusValues.push(prizes[Math.floor(Math.random()*prizes.length)]);
+  // Shuffle
+  bonusValues.sort(()=>Math.random()-.5);
+  // Render
+  const picks=document.getElementById('starPicks');
+  picks.innerHTML='';
+  bonusValues.forEach((val,i)=>{
+    const b=document.createElement('button');
+    b.className='star-pick';b.textContent='⭐';
+    b.onclick=()=>revealPick(b,val,i);
+    picks.appendChild(b);
+  });
+  document.getElementById('bonusTotal').textContent=0;
+  document.getElementById('bonusCollect').style.display='none';
+  document.getElementById('bonusOverlay').classList.add('show');
+}
+
+function revealPick(btn,val,idx){
+  if(btn.disabled||bonusPicks<=0)return;
+  btn.textContent=val+'кр.';
+  btn.classList.add('revealed');
+  btn.disabled=true;
+  bonusTotalWon+=val;
+  bonusRevealed++;bonusPicks--;
+  document.getElementById('bonusTotal').textContent=bonusTotalWon;
+  if(bonusPicks<=0||bonusRevealed>=5){
+    document.getElementById('bonusCollect').style.display='inline-block';
+    // Reveal remaining
+    document.querySelectorAll('.star-pick:not(.revealed)').forEach((b,i)=>{
+      const remaining=bonusValues.filter((_,ri)=>!b.classList.contains('revealed'));
+      b.textContent='⭐';b.classList.add('empty');b.disabled=true;
+    });
+  }
+}
+
+function collectBonus(){
+  credits+=bonusTotalWon;totalWon+=bonusTotalWon;
+  document.getElementById('bonusOverlay').classList.remove('show');
+  setWinText(`✨ BONUS: +${bonusTotalWon} кредита!`);
+  if(bonusTotalWon>=bet*lines*10)showBigWin('✨ BONUS WIN',bonusTotalWon);
+  updateUI();
+}
+
+function showBigWin(label,amount){
+  document.getElementById('bwLabel').textContent=label;
+  document.getElementById('bwAmount').textContent=amount;
+  document.getElementById('bigwinOverlay').classList.add('show');
+}
+function closeBigWin(){document.getElementById('bigwinOverlay').classList.remove('show');}
+
+// CONTROLS
+const BET_VALUES=[1,2,5,10,20,50];let betIdx=0;
+function changeBet(d){betIdx=Math.max(0,Math.min(BET_VALUES.length-1,betIdx+d));bet=BET_VALUES[betIdx];updateUI();}
+function changeLines(d){lines=Math.max(1,Math.min(10,lines+d));updateUI();}
+function maxBet(){betIdx=BET_VALUES.length-1;bet=BET_VALUES[betIdx];lines=10;updateUI();}
+function toggleAuto(){
+  autoRunning=!autoRunning;
+  document.getElementById('autoBtn').classList.toggle('on',autoRunning);
+  document.getElementById('autoBtn').textContent=autoRunning?'STOP':'AUTO';
+  if(autoRunning&&!spinning)spin();
+}
+function updateUI(){
+  document.getElementById('betDisplay').textContent=BET_VALUES[betIdx];
+  document.getElementById('linesDisplay').textContent=lines;
+  document.getElementById('totalBetDisplay').textContent=bet*lines;
+  document.getElementById('creditsDisplay').textContent=credits.toLocaleString('bg-BG');
+  document.getElementById('wonDisplay').textContent=totalWon.toLocaleString('bg-BG');
+  document.getElementById('balanceDisplay').textContent=credits.toLocaleString('bg-BG')+' кр.';
+  document.querySelectorAll('.pl-btn').forEach((b,i)=>b.classList.toggle('active',i<lines));
+}
+function setWinText(t){document.getElementById('winText').textContent=t;}
+
+// PAYLINES BUTTONS
+const plRow=document.getElementById('plRow');
+for(let i=0;i<10;i++){
+  const b=document.createElement('button');
+  b.className='pl-btn'+(i<lines?' active':'');
+  b.textContent=i+1;b.onclick=()=>{lines=i+1;updateUI();};
+  plRow.appendChild(b);
+}
+
+// PAYTABLE
+const ptBody=document.getElementById('ptBody');
+SYMBOLS.filter(s=>s.id!=='wild'&&s.id!=='scatter'&&s.id!=='bonus').forEach(s=>{
+  const d=document.createElement('div');d.className='pt-row';
+  d.innerHTML=`<div class="pt-sym">${s.emoji}</div><div><div class="pt-name">${s.name}</div><div class="pt-pays">×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}</div></div>`;
+  ptBody.appendChild(d);
+});
+[{...WILD,desc:'Заменя всичко'},{...SCATTER,desc:'3+ = Scatter Pay'},{...BONUS,desc:'Bonus Meter +12%'}].forEach(s=>{
+  const d=document.createElement('div');d.className='pt-row';
+  d.innerHTML=`<div class="pt-sym">${s.emoji}</div><div><div class="pt-name">${s.name}</div><div class="pt-pays">${s.desc}</div></div>`;
+  ptBody.appendChild(d);
+});
+
+updateUI();
+</script>
+</body>
+</html>

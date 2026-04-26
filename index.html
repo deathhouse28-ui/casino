@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA 777 — Безплатни Слот Игри</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080b;
+  --surface:#0e1016;
+  --card:#13151c;
+  --gold:#d4a843;
+  --gold2:#f0c866;
+  --gold3:#fde08a;
+  --red:#c0392b;
+  --teal:#1abc9c;
+  --fog:#6e7a8a;
+  --muted:#3a4250;
+  --light:#c4cfd8;
+  --white:#eef2f6;
+  --border:rgba(212,168,67,.15);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Outfit',sans-serif;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+.cur,.cur-r{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);}
+.cur{width:9px;height:9px;background:var(--gold);z-index:10000;transition:width .25s,height .25s,background .25s;}
+.cur-r{width:36px;height:36px;border:1px solid rgba(212,168,67,.35);transition:width .2s,height .2s;}
+body:has(a:hover) .cur,body:has(button:hover) .cur{width:18px;height:18px;background:var(--gold2);}
+body:has(a:hover) .cur-r,body:has(button:hover) .cur-r{width:54px;height:54px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:600;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 56px;transition:background .4s,border .4s;}
+nav.solid{background:rgba(7,8,11,.96);backdrop-filter:blur(22px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Cinzel Decorative',serif;font-size:1.25rem;font-weight:700;color:var(--gold);text-decoration:none;letter-spacing:.06em;}
+.logo em{color:var(--white);font-style:normal;}
+.nav-links{display:flex;gap:34px;list-style:none;}
+.nav-links a{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--fog);text-decoration:none;transition:color .3s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-pill{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;background:rgba(212,168,67,.1);border:1px solid var(--border);color:var(--gold);padding:7px 16px;font-family:'Outfit',sans-serif;}
+
+/* HERO */
+.hero{height:100vh;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+#bgCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.hero-veil{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(7,8,11,.2) 0%,rgba(7,8,11,.75) 60%,rgba(7,8,11,1) 100%);}
+.hero-inner{position:relative;z-index:2;padding:0 24px;}
+.hero-tag{font-size:.65rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:0;animation:up .7s .3s ease both;}
+.hero-h1{font-family:'Cinzel',serif;font-size:clamp(3.5rem,9vw,9.5rem);font-weight:900;line-height:.85;color:var(--white);opacity:0;animation:up .7s .6s ease both;}
+.hero-h1 .shine{background:linear-gradient(135deg,var(--gold) 0%,var(--gold3) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(212,168,67,.4));}
+.hero-sub{font-size:clamp(.88rem,1.8vw,1.1rem);color:var(--fog);max-width:480px;margin:22px auto 0;line-height:1.9;font-weight:300;opacity:0;animation:up .7s .9s ease both;}
+.hero-ctas{margin-top:42px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;opacity:0;animation:up .7s 1.2s ease both;}
+.cta-main{font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;padding:16px 42px;text-decoration:none;cursor:none;transition:all .3s;border:none;display:inline-block;}
+.cta-main:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,168,67,.28);}
+.cta-sec{font-family:'Cinzel',serif;font-size:.75rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;background:transparent;color:var(--light);padding:16px 36px;border:1px solid rgba(196,207,216,.2);text-decoration:none;cursor:none;display:inline-block;transition:all .3s;}
+.cta-sec:hover{border-color:var(--gold);color:var(--gold);}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;opacity:0;animation:fadeIn 1s 2s ease both;}
+.hero-scroll span{font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--fog);}
+.s-line{width:1px;height:46px;background:linear-gradient(var(--gold),transparent);animation:pulse 2s ease infinite;}
+@keyframes up{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes pulse{0%,100%{opacity:.35;}50%{opacity:1;}}
+
+/* MARQUEE */
+.ticker{padding:13px 0;overflow:hidden;border-top:1px solid rgba(212,168,67,.08);border-bottom:1px solid rgba(212,168,67,.08);background:rgba(212,168,67,.025);}
+.ticker-inner{display:flex;width:max-content;animation:scroll 40s linear infinite;}
+.t-item{padding:0 32px;white-space:nowrap;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,168,67,.35);}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* SECTIONS */
+.section{padding:100px 56px;}
+.s-label{font-size:.62rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);margin-bottom:13px;}
+.s-h{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(2rem,4vw,3.8rem);line-height:.95;color:var(--white);}
+.s-h em{font-style:italic;color:var(--gold);}
+
+/* GAMES LOBBY */
+.lobby{background:var(--surface);}
+.lobby-head{text-align:center;margin-bottom:64px;}
+.games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;}
+.game-tile{position:relative;background:var(--card);border:1px solid rgba(255,255,255,.05);overflow:hidden;cursor:none;transition:border-color .4s;}
+.game-tile:hover{border-color:var(--border);}
+.game-preview{height:240px;position:relative;overflow:hidden;}
+.game-preview canvas{width:100%;height:100%;display:block;}
+.game-hover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(7,8,11,.75);opacity:0;transition:opacity .4s;}
+.game-tile:hover .game-hover{opacity:1;}
+.play-cta{font-family:'Cinzel',serif;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:var(--gold);color:#000;padding:13px 32px;border:none;cursor:none;transition:background .3s;}
+.play-cta:hover{background:var(--gold2);}
+.game-meta{padding:20px 22px 22px;}
+.game-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.game-title{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:8px;}
+.game-info-row{display:flex;gap:8px;flex-wrap:wrap;}
+.game-chip{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(255,255,255,.07);color:var(--fog);padding:3px 10px;}
+.game-badge-wrap{position:absolute;top:12px;right:12px;}
+.gbadge{font-family:'Cinzel',serif;font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;}
+.gbadge-hot{background:var(--red);color:#fff;}
+.gbadge-new{background:var(--teal);color:#000;}
+
+/* FEATURES */
+.features{background:var(--bg);}
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:58px;}
+.feat{padding:36px 28px;border:1px solid rgba(255,255,255,.05);transition:border-color .4s,background .4s;}
+.feat:hover{border-color:var(--border);background:rgba(212,168,67,.03);}
+.feat-ico{font-size:2rem;margin-bottom:16px;}
+.feat h3{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:9px;}
+.feat p{font-size:.8rem;color:var(--fog);line-height:1.8;}
+
+/* DISCLAIMER */
+.disc{background:rgba(192,57,43,.06);border-top:1px solid rgba(192,57,43,.18);border-bottom:1px solid rgba(192,57,43,.18);padding:18px 56px;display:flex;gap:16px;align-items:center;}
+.disc p{font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.6;}
+.disc strong{color:rgba(255,255,255,.7);}
+
+/* FOOTER */
+footer{background:#050607;padding:56px 56px 30px;border-top:1px solid rgba(212,168,67,.07);}
+.foot-row{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;margin-bottom:40px;}
+.foot-logo{font-family:'Cinzel Decorative',serif;font-size:1.2rem;font-weight:700;color:var(--gold);display:block;margin-bottom:12px;text-decoration:none;}
+.foot-logo em{color:var(--white);font-style:normal;}
+.foot-desc{font-size:.78rem;color:var(--fog);line-height:1.8;max-width:260px;}
+.foot-links{display:flex;gap:40px;}
+.foot-col h4{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.foot-col ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.foot-col a{font-size:.78rem;color:var(--fog);text-decoration:none;transition:color .3s;}
+.foot-col a:hover{color:var(--gold);}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:20px;border-top:1px solid rgba(255,255,255,.04);flex-wrap:wrap;gap:10px;}
+.foot-bottom p{font-size:.67rem;color:rgba(110,122,138,.4);}
+.age-badge{font-size:.62rem;letter-spacing:.08em;border:1px solid rgba(212,168,67,.2);color:rgba(212,168,67,.5);padding:4px 10px;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .85s ease,transform .85s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+@media(max-width:960px){
+  nav{padding:0 22px;} .nav-links{display:none;}
+  .section,.lobby,.features,.disc,footer{padding-left:22px;padding-right:22px;}
+  .games-grid{grid-template-columns:1fr;}
+  .feat-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:520px){.feat-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="logo">NOVA <em>777</em></a>
+  <ul class="nav-links">
+    <li><a href="#games">Игри</a></li>
+    <li><a href="#how">Как се играе</a></li>
+    <li><a href="#responsible">Отговорност</a></li>
+  </ul>
+  <div class="nav-pill">🎰 Безплатно · 18+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="bgCanvas"></canvas>
+  <div class="hero-veil"></div>
+  <div class="hero-inner">
+    <p class="hero-tag">★ Оригинални слот игри ★</p>
+    <h1 class="hero-h1"><span class="shine">NOVA</span><br>777</h1>
+    <p class="hero-sub">Оригинални слот игри създадени от нула. Без реални пари, без регистрация — само чисто забавление.</p>
+    <div class="hero-ctas">
+      <a href="#games" class="cta-main">Играй сега</a>
+      <a href="#how" class="cta-sec">Как се играе?</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="s-line"></div></div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="t-item">🍒 Super Fruits</div><div class="t-item">⭐ Star Blaze</div>
+    <div class="t-item">💎 Diamond Rush</div><div class="t-item">🔔 Bell Ringer</div>
+    <div class="t-item">7️⃣ Lucky Seven</div><div class="t-item">👑 Royal Crown</div>
+    <div class="t-item">🍒 Super Fruits</div><div class="t-item">⭐ Star Blaze</div>
+    <div class="t-item">💎 Diamond Rush</div><div class="t-item">🔔 Bell Ringer</div>
+    <div class="t-item">7️⃣ Lucky Seven</div><div class="t-item">👑 Royal Crown</div>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disc">
+  <span style="font-size:1.3rem;flex-shrink:0">⚠️</span>
+  <p><strong>Само за забавление.</strong> Всички игри са оригинални и безплатни. Не се залагат реални пари. Предназначено за лица над 18 години.</p>
+</div>
+
+<!-- GAMES -->
+<section class="lobby section" id="games">
+  <div class="lobby-head reveal">
+    <p class="s-label">Нашите игри</p>
+    <h2 class="s-h">Избери своя <em>слот</em></h2>
+  </div>
+  <div class="games-grid reveal">
+
+    <!-- GAME 1 — Super Fruits -->
+    <div class="game-tile">
+      <div class="game-preview">
+        <canvas id="previewCanvas1"></canvas>
+        <div class="game-hover">
+          <a href="slot-superfruits.html" class="play-cta">▶ Играй безплатно</a>
+        </div>
+      </div>
+      <div class="game-badge-wrap"><span class="gbadge gbadge-hot">ХИТ</span></div>
+      <div class="game-meta">
+        <div class="game-label">Оригинална игра</div>
+        <div class="game-title">Super Fruits Deluxe</div>
+        <div class="game-info-row">
+          <span class="game-chip">5 барабана</span>
+          <span class="game-chip">20 линии</span>
+          <span class="game-chip">Wild символи</span>
+          <span class="game-chip">Free Spins</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME 2 — Star Blaze -->
+    <div class="game-tile">
+      <div class="game-preview">
+        <canvas id="previewCanvas2"></canvas>
+        <div class="game-hover">
+          <a href="slot-starblaze.html" class="play-cta">▶ Играй безплатно</a>
+        </div>
+      </div>
+      <div class="game-badge-wrap"><span class="gbadge gbadge-new">НОВО</span></div>
+      <div class="game-meta">
+        <div class="game-label">Оригинална игра</div>
+        <div class="game-title">Star Blaze</div>
+        <div class="game-info-row">
+          <span class="game-chip">5 барабана</span>
+          <span class="game-chip">10 линии</span>
+          <span class="game-chip">Scatter</span>
+          <span class="game-chip">Bonus Round</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features section" id="how">
+  <div class="reveal" style="text-align:center">
+    <p class="s-label">Предимства</p>
+    <h2 class="s-h">Защо <em>NOVA 777</em></h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat reveal"><div class="feat-ico">🆓</div><h3>Напълно безплатно</h3><p>Без регистрация, без депозит. Играйте безкрайно с виртуални кредити.</p></div>
+    <div class="feat reveal" style="transition-delay:.1s"><div class="feat-ico">🎨</div><h3>Оригинален код</h3><p>Игрите са написани от нула в JavaScript Canvas — уникална графика и механика.</p></div>
+    <div class="feat reveal" style="transition-delay:.2s"><div class="feat-ico">📱</div><h3>На всяко устройство</h3><p>Работи перфектно на телефон, таблет и компютър без инсталация.</p></div>
+    <div class="feat reveal" style="transition-delay:.3s"><div class="feat-ico">🛡️</div><h3>Без риск</h3><p>Само виртуални кредити. Никакви реални пари не са заложени.</p></div>
+  </div>
+</section>
+
+<!-- RESPONSIBLE -->
+<section class="section" id="responsible" style="background:var(--surface);text-align:center;">
+  <div class="reveal" style="max-width:640px;margin:0 auto;border:1px solid rgba(212,168,67,.1);padding:48px 40px;">
+    <p class="s-label">Отговорна игра</p>
+    <h2 class="s-h" style="margin-bottom:18px;">Играйте <em>отговорно</em></h2>
+    <p style="font-size:.85rem;color:var(--fog);line-height:1.9;margin-bottom:16px;">Нашите игри са само за забавление и не включват реални пари. Ако играете в реални казина, задавайте лимити и търсете помощ при нужда.</p>
+    <p style="font-size:.85rem;color:var(--fog);line-height:1.9;"><strong style="color:var(--white)">Само за лица над 18 години.</strong></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-row">
+    <div>
+      <a href="index.html" class="foot-logo">NOVA <em>777</em></a>
+      <p class="foot-desc">Безплатна платформа с оригинални слот игри. Само за забавление. 18+</p>
+    </div>
+    <div class="foot-links">
+      <div class="foot-col">
+        <h4>Игри</h4>
+        <ul>
+          <li><a href="slot-superfruits.html">Super Fruits Deluxe</a></li>
+          <li><a href="slot-starblaze.html">Star Blaze</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Информация</h4>
+        <ul>
+          <li><a href="#how">Как се играе</a></li>
+          <li><a href="#responsible">Отговорна игра</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 NOVA 777 · Само за забавление · Без реални пари · 18+</p>
+    <span class="age-badge">18+</span>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('solid',scrollY>50));
+const ro=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');ro.unobserve(x.target);}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// HERO CANVAS — particle reel
+(function(){
+  const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
+  let W,H,t=0;
+  const resize=()=>{W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;};
+  resize();window.addEventListener('resize',resize);
+  const SYMS=['🍒','7','⭐','💎','🔔','🃏','🍋','🍊','🫐'];
+  const pts=Array.from({length:55},()=>({x:Math.random(),y:Math.random()+.5,vy:.0003+Math.random()*.0004,s:SYMS[Math.floor(Math.random()*SYMS.length)],sz:Math.random()*14+8,op:Math.random()*.1+.03,r:Math.random()*6.28,vr:(Math.random()-.5)*.002}));
+  function draw(){
+    const bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.75);
+    bg.addColorStop(0,'#10080c');bg.addColorStop(.6,'#080608');bg.addColorStop(1,'#050407');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    // grid
+    ctx.strokeStyle='rgba(212,168,67,.03)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=70){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=70){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    // center glow
+    const cg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*.5);
+    cg.addColorStop(0,'rgba(212,168,67,.07)');cg.addColorStop(1,'rgba(212,168,67,0)');
+    ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);
+    // symbols
+    pts.forEach(p=>{
+      p.y-=p.vy;p.r+=p.vr;
+      if(p.y<-.05)p.y=1.05;
+      ctx.save();ctx.globalAlpha=p.op;ctx.translate(p.x*W,p.y*H);ctx.rotate(p.r);
+      ctx.font=`${p.sz}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(p.s,0,0);ctx.restore();
+    });
+    // rings
+    [.25,.5,.75].forEach((rx,i)=>{
+      const ry2=H*.5,rad=Math.min(W,H)*.13;
+      ctx.save();ctx.translate(rx*W,ry2);ctx.rotate(t*.002*(i%2?1:-1));
+      ctx.beginPath();ctx.arc(0,0,rad,0,Math.PI*2);
+      const rg=ctx.createRadialGradient(0,0,0,0,0,rad);
+      rg.addColorStop(0,`rgba(212,168,67,${.03+i*.01})`);rg.addColorStop(1,'rgba(212,168,67,0)');
+      ctx.fillStyle=rg;ctx.fill();
+      ctx.strokeStyle=`rgba(212,168,67,${.04+i*.015})`;ctx.lineWidth=1;ctx.stroke();
+      ctx.restore();
+    });
+    t+=.4;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// PREVIEW CANVASES
+function drawPreview(id,colors,symbols){
+  const cv=document.getElementById(id);if(!cv)return;
+  const ctx=cv.getContext('2d');
+  cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;
+  const W=cv.width,H=cv.height;
+  let t=0,reelPos=[0,0,0,0,0];
+  const COLS=5,SYM_H=H/3;
+  function frame(){
+    // BG
+    const bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,colors[0]);bg.addColorStop(1,colors[1]);
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    // Reels
+    const rW=W/COLS;
+    for(let c=0;c<COLS;c++){
+      reelPos[c]=(reelPos[c]+.8+c*.1)%(symbols.length*SYM_H);
+      ctx.save();ctx.rect(c*rW+2,0,rW-4,H);ctx.clip();
+      for(let s=0;s<symbols.length+2;s++){
+        const sy=s*SYM_H-reelPos[c];
+        if(sy>-SYM_H&&sy<H+SYM_H){
+          // reel bg
+          ctx.fillStyle=`rgba(255,255,255,${s%2===0?.04:.02})`;
+          ctx.fillRect(c*rW+3,sy+2,rW-6,SYM_H-4);
+          // symbol
+          ctx.font=`${SYM_H*.45}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillText(symbols[s%symbols.length],c*rW+rW/2,sy+SYM_H/2);
+        }
+      }
+      ctx.restore();
+      // divider
+      ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(c*rW,0);ctx.lineTo(c*rW,H);ctx.stroke();
+    }
+    // payline
+    const py=H/2;
+    ctx.strokeStyle='rgba(212,168,67,.4)';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(W,py);ctx.stroke();
+    ctx.setLineDash([]);
+    // vignette
+    const vg=ctx.createLinearGradient(0,0,0,H);
+    vg.addColorStop(0,'rgba(7,8,11,.7)');vg.addColorStop(.35,'rgba(7,8,11,0)');
+    vg.addColorStop(.65,'rgba(7,8,11,0)');vg.addColorStop(1,'rgba(7,8,11,.7)');
+    ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+    t++;requestAnimationFrame(frame);
+  }
+  frame();
+}
+drawPreview('previewCanvas1',['#1a0a10','#0d0510'],['🍒','🍋','🍊','🍇','🍉','⭐','💎','🔔']);
+drawPreview('previewCanvas2',['#050d1a','#030810'],['⭐','💫','🌟','✨','🌙','🌠','💠','🔷']);
+</script>
+</body>
+</html>

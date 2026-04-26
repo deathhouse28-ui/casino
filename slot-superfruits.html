@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Fruits Deluxe — NOVA 777</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0305;color:#f0ece4;font-family:'Outfit',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;cursor:none;}
+.cur,.cur-r{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);}
+.cur{width:9px;height:9px;background:#d4a843;}
+.cur-r{width:34px;height:34px;border:1px solid rgba(212,168,67,.3);z-index:9998;transition:width .2s,height .2s;}
+
+/* TOP BAR */
+.topbar{height:54px;background:rgba(5,2,4,.95);border-bottom:1px solid rgba(212,168,67,.12);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;}
+.tb-logo{font-family:'Cinzel',serif;font-size:.95rem;font-weight:900;color:#d4a843;text-decoration:none;letter-spacing:.08em;}
+.tb-logo em{color:#f0ece4;font-style:normal;}
+.tb-back{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,168,67,.6);text-decoration:none;transition:color .3s;}
+.tb-back:hover{color:#d4a843;}
+.tb-balance{font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;color:#f0c866;}
+
+/* GAME WRAPPER */
+.game-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 30px;}
+.game-container{width:100%;max-width:860px;background:linear-gradient(160deg,#1a0810 0%,#100308 60%,#0d050a 100%);border:1px solid rgba(212,168,67,.18);position:relative;overflow:hidden;}
+
+/* GAME TITLE */
+.game-title-bar{padding:14px 22px;text-align:center;border-bottom:1px solid rgba(212,168,67,.1);background:rgba(212,168,67,.03);}
+.game-title-bar h1{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:900;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
+.game-title-bar span{font-size:.62rem;color:rgba(212,168,67,.5);letter-spacing:.2em;text-transform:uppercase;}
+
+/* JACKPOT DISPLAY */
+.jackpot-bar{display:flex;justify-content:center;gap:18px;padding:10px 22px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(212,168,67,.08);}
+.jp-item{text-align:center;}
+.jp-label{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.5);}
+.jp-val{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:#f0c866;}
+
+/* REELS AREA */
+.reels-area{position:relative;padding:16px 20px;}
+canvas#reelsCanvas{width:100%;display:block;border:1px solid rgba(212,168,67,.1);}
+
+/* WIN DISPLAY */
+.win-display{height:38px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);border-top:1px solid rgba(212,168,67,.08);border-bottom:1px solid rgba(212,168,67,.08);}
+#winText{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:#d4a843;letter-spacing:.08em;transition:all .3s;}
+
+/* PAYLINES ROW */
+.paylines-row{display:flex;justify-content:center;gap:6px;padding:8px 20px;flex-wrap:wrap;}
+.pl-btn{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(212,168,67,.5);padding:4px 10px;cursor:none;transition:all .3s;}
+.pl-btn.active{background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.3);color:#d4a843;}
+
+/* CONTROLS */
+.controls{padding:14px 22px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(0,0,0,.2);}
+.ctrl-group{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.ctrl-label{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.5);}
+.ctrl-val{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:#f0c866;}
+.ctrl-btns{display:flex;gap:5px;}
+.ctrl-btn{width:28px;height:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#f0ece4;font-size:1rem;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.ctrl-btn:hover{background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.3);}
+.spin-btn{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(135deg,#c9a030,#e8c050,#c9a030);color:#000;padding:16px 44px;border:none;cursor:none;transition:all .3s;position:relative;overflow:hidden;}
+.spin-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);opacity:0;transition:opacity .3s;}
+.spin-btn:hover::before{opacity:1;}
+.spin-btn:hover{transform:scale(1.04);box-shadow:0 6px 24px rgba(212,168,67,.35);}
+.spin-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.auto-btn{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(212,168,67,.6);padding:9px 16px;cursor:none;transition:all .3s;}
+.auto-btn:hover{border-color:rgba(212,168,67,.3);color:#d4a843;}
+.auto-btn.on{background:rgba(212,168,67,.12);border-color:var(--gold);color:#d4a843;}
+
+/* PAYTABLE */
+.paytable{margin-top:16px;background:rgba(5,2,4,.8);border:1px solid rgba(212,168,67,.1);max-width:860px;width:100%;}
+.paytable-head{padding:12px 22px;border-bottom:1px solid rgba(212,168,67,.08);display:flex;justify-content:space-between;align-items:center;cursor:none;}
+.paytable-head h3{font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
+.paytable-head span{font-size:.8rem;color:rgba(212,168,67,.5);transition:transform .3s;}
+.pt-body{display:none;padding:14px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.pt-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);}
+.pt-sym{font-size:1.4rem;}
+.pt-info{}
+.pt-name{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,168,67,.6);margin-bottom:2px;}
+.pt-pays{font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;color:#f0c866;}
+
+/* FREE SPINS OVERLAY */
+.fs-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
+.fs-overlay.show{opacity:1;pointer-events:all;}
+.fs-box{text-align:center;padding:52px 64px;border:2px solid rgba(212,168,67,.3);background:rgba(10,3,5,.95);}
+.fs-box h2{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:900;color:#d4a843;margin-bottom:12px;}
+.fs-box p{color:rgba(240,236,228,.6);margin-bottom:28px;font-size:.9rem;}
+.fs-count{font-family:'Cinzel',serif;font-size:4rem;font-weight:900;color:#f0c866;line-height:1;}
+.fs-label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.5);margin-top:6px;}
+.fs-start{font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,#c9a030,#e8c050);color:#000;padding:14px 38px;border:none;cursor:none;margin-top:28px;transition:all .3s;}
+.fs-start:hover{filter:brightness(1.1);}
+
+/* BIG WIN */
+.bigwin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
+.bigwin-overlay.show{opacity:1;pointer-events:all;}
+.bigwin-box{text-align:center;animation:bigWinAnim .5s ease;}
+@keyframes bigWinAnim{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+.bw-label{font-family:'Cinzel',serif;font-size:1.2rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(212,168,67,.7);margin-bottom:8px;}
+.bw-amount{font-family:'Cinzel',serif;font-size:clamp(4rem,10vw,8rem);font-weight:900;background:linear-gradient(135deg,#c9a030,#f5e090,#c9a030);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 40px rgba(212,168,67,.6));line-height:1;}
+.bw-sub{font-size:.8rem;color:rgba(240,236,228,.5);margin-top:10px;letter-spacing:.1em;}
+.bw-close{font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:rgba(212,168,67,.15);border:1px solid rgba(212,168,67,.3);color:#d4a843;padding:11px 32px;cursor:none;margin-top:30px;transition:all .3s;}
+.bw-close:hover{background:rgba(212,168,67,.25);}
+
+@media(max-width:620px){
+  .controls{flex-direction:column;align-items:center;}
+  .pt-body{grid-template-columns:1fr 1fr;}
+  .spin-btn{padding:14px 36px;}
+}
+</style>
+</head>
+<body>
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<!-- FREE SPINS OVERLAY -->
+<div class="fs-overlay" id="fsOverlay">
+  <div class="fs-box">
+    <h2>🎉 FREE SPINS!</h2>
+    <p>Спечелихте безплатни завъртания!</p>
+    <div class="fs-count" id="fsCount">10</div>
+    <div class="fs-label">безплатни завъртания</div>
+    <button class="fs-start" onclick="startFreeSpins()">Играй!</button>
+  </div>
+</div>
+
+<!-- BIG WIN OVERLAY -->
+<div class="bigwin-overlay" id="bigwinOverlay">
+  <div class="bigwin-box">
+    <div class="bw-label" id="bwLabel">BIG WIN</div>
+    <div class="bw-amount" id="bwAmount">0</div>
+    <div class="bw-sub">кредита</div>
+    <button class="bw-close" onclick="closeBigWin()">Продължи</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="index.html" class="tb-back">← Обратно</a>
+  <a href="index.html" class="tb-logo">NOVA <em>777</em></a>
+  <span class="tb-balance" id="balanceDisplay">1 000 кр.</span>
+</div>
+
+<!-- GAME -->
+<div class="game-wrap">
+  <div class="game-container">
+    <div class="game-title-bar">
+      <h1>🍒 Super Fruits Deluxe</h1>
+      <span>5 барабана · 20 линии · Wild · Free Spins</span>
+    </div>
+    <div class="jackpot-bar">
+      <div class="jp-item"><div class="jp-label">GRAND</div><div class="jp-val" id="jpGrand">5 000</div></div>
+      <div class="jp-item"><div class="jp-label">MAJOR</div><div class="jp-val" id="jpMajor">1 000</div></div>
+      <div class="jp-item"><div class="jp-label">MINOR</div><div class="jp-val" id="jpMinor">250</div></div>
+      <div class="jp-item"><div class="jp-label">MINI</div><div class="jp-val" id="jpMini">50</div></div>
+    </div>
+    <div class="reels-area">
+      <canvas id="reelsCanvas" height="300"></canvas>
+    </div>
+    <div class="win-display"><span id="winText">Завъртете барабаните — Добра Luck! 🍀</span></div>
+    <div class="paylines-row" id="plRow"></div>
+    <div class="controls">
+      <div class="ctrl-group">
+        <div class="ctrl-label">Залог на линия</div>
+        <div class="ctrl-val" id="betDisplay">1</div>
+        <div class="ctrl-btns">
+          <button class="ctrl-btn" onclick="changeBet(-1)">−</button>
+          <button class="ctrl-btn" onclick="changeBet(1)">+</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Линии</div>
+        <div class="ctrl-val" id="linesDisplay">20</div>
+        <div class="ctrl-btns">
+          <button class="ctrl-btn" onclick="changeLines(-5)">−</button>
+          <button class="ctrl-btn" onclick="changeLines(5)">+</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Общ залог</div>
+        <div class="ctrl-val" id="totalBetDisplay">20</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
+        <button class="spin-btn" id="spinBtn" onclick="spin()">▶ SPIN</button>
+        <div style="display:flex;gap:8px;">
+          <button class="auto-btn" id="autoBtn" onclick="toggleAuto()">AUTO</button>
+          <button class="auto-btn" onclick="maxBet()">MAX BET</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Кредити</div>
+        <div class="ctrl-val" id="creditsDisplay">1 000</div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Спечелено</div>
+        <div class="ctrl-val" id="wonDisplay">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYTABLE -->
+  <div class="paytable">
+    <div class="paytable-head">
+      <h3>📋 Таблица на изплащанията</h3>
+      <span>▼</span>
+    </div>
+    <div class="pt-body" id="ptBody"></div>
+  </div>
+</div>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
+
+// ── SYMBOLS ──
+const SYMBOLS = [
+  { id:'cherry',  emoji:'🍒', name:'Череша',   color:'#e74c3c', pays:[0,0,5,15,50],   weight:18 },
+  { id:'lemon',   emoji:'🍋', name:'Лимон',    color:'#f1c40f', pays:[0,0,5,15,40],   weight:16 },
+  { id:'orange',  emoji:'🍊', name:'Портокал', color:'#e67e22', pays:[0,0,8,20,60],   weight:14 },
+  { id:'grape',   emoji:'🍇', name:'Грозде',   color:'#8e44ad', pays:[0,0,8,25,80],   weight:12 },
+  { id:'melon',   emoji:'🍉', name:'Диня',     color:'#27ae60', pays:[0,0,10,30,100], weight:10 },
+  { id:'bell',    emoji:'🔔', name:'Камбана',  color:'#d4a843', pays:[0,0,15,50,150], weight:8  },
+  { id:'star',    emoji:'⭐', name:'Звезда',   color:'#f0c866', pays:[0,0,20,75,200], weight:6  },
+  { id:'seven',   emoji:'7',  name:'SEVEN',    color:'#c0392b', pays:[0,0,30,100,500],weight:4  },
+  { id:'diamond', emoji:'💎', name:'Диамант',  color:'#3498db', pays:[0,0,50,200,1000],weight:2 },
+  { id:'wild',    emoji:'🃏', name:'WILD',     color:'#d4a843', pays:[0,0,0,0,0],     weight:3  },
+  { id:'scatter', emoji:'⭐⭐',name:'SCATTER',  color:'#f0c866', pays:[0,0,2,10,50],  weight:3  },
+];
+const WILD    = SYMBOLS.find(s=>s.id==='wild');
+const SCATTER = SYMBOLS.find(s=>s.id==='scatter');
+
+function weightedRandom(){
+  const total=SYMBOLS.reduce((a,s)=>a+s.weight,0);
+  let r=Math.random()*total;
+  for(const s of SYMBOLS){r-=s.weight;if(r<=0)return s;}
+  return SYMBOLS[0];
+}
+
+// ── PAYLINES (20 lines on 5x3 grid) ──
+const PAYLINES = [
+  [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2], // horizontal
+  [0,1,2,1,0],[2,1,0,1,2], // V shapes
+  [0,0,1,2,2],[2,2,1,0,0], // diagonal
+  [1,0,0,0,1],[1,2,2,2,1],
+  [0,1,1,1,0],[2,1,1,1,2],
+  [1,0,1,2,1],[1,2,1,0,1],
+  [0,1,0,1,0],[2,1,2,1,2],
+  [1,1,0,1,1],[1,1,2,1,1],
+  [0,0,2,0,0],[2,2,0,2,2],
+  [1,0,2,0,1],
+];
+const ROWS=3, COLS=5;
+
+// ── STATE ──
+let credits=1000, bet=1, lines=20, totalWon=0;
+let spinning=false, autoSpin=false, autoTimer=null;
+let freeSpins=0, inFreeSpins=false;
+let grid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>weightedRandom()));
+let winningCells=new Set(), winningLines=[];
+let animFrame=null, reelOffsets=[0,0,0,0,0], reelSpeeds=[0,0,0,0,0];
+let reelSymbols=Array.from({length:COLS},()=>[...Array(20)].map(()=>weightedRandom()));
+let spinPhase='idle'; // idle | spinning | stopping | done
+let stopTimers=[];
+
+const SYM_H=100, SYM_W=100; // logical size
+let flashTimer=0;
+
+// ── CANVAS SETUP ──
+const cv=document.getElementById('reelsCanvas');
+const ctx=cv.getContext('2d');
+function resizeCanvas(){
+  cv.width=cv.offsetWidth;
+  cv.height=Math.round(cv.offsetWidth*(3/5));
+}
+resizeCanvas();
+window.addEventListener('resize',()=>{resizeCanvas();});
+
+// ── RENDER ──
+function drawReel(col, offset){
+  const cw=cv.width/COLS, ch=cv.height/ROWS;
+  const x=col*cw;
+  ctx.save();
+  ctx.beginPath();ctx.rect(x+2,0,cw-4,cv.height);ctx.clip();
+  // bg
+  const bg=ctx.createLinearGradient(x,0,x+cw,0);
+  bg.addColorStop(0,'rgba(0,0,0,.2)');bg.addColorStop(.5,'rgba(255,255,255,.02)');bg.addColorStop(1,'rgba(0,0,0,.2)');
+  ctx.fillStyle=bg;ctx.fillRect(x,0,cw,cv.height);
+  // symbols
+  const symCount=reelSymbols[col].length;
+  for(let row=-2;row<ROWS+2;row++){
+    const sy=row*ch - (offset % (symCount*ch));
+    if(sy>-ch&&sy<cv.height+ch){
+      const symIdx=((Math.floor(offset/ch)+row)%symCount+symCount)%symCount;
+      const sym=reelSymbols[col][symIdx];
+      drawSymbol(ctx,sym,x,sy,cw,ch,false);
+    }
+  }
+  ctx.restore();
+}
+
+function drawSymbol(ctx,sym,x,y,w,h,highlight){
+  // cell bg
+  ctx.fillStyle=highlight?`rgba(212,168,67,.15)`:'rgba(0,0,0,.1)';
+  ctx.fillRect(x+2,y+2,w-4,h-4);
+  if(highlight){
+    ctx.strokeStyle='rgba(212,168,67,.6)';ctx.lineWidth=2;
+    ctx.strokeRect(x+3,y+3,w-6,h-6);
+  }
+  // symbol
+  const fs=Math.round(h*.44);
+  ctx.font=`${fs}px serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(sym.emoji,x+w/2,y+h/2);
+  // name label for non-emoji
+  if(sym.id==='seven'){
+    ctx.font=`bold ${Math.round(h*.38)}px 'Cinzel',serif`;
+    ctx.fillStyle='#c0392b';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('7',x+w/2,y+h/2);
+  }
+}
+
+function drawFrame(){
+  const cw=cv.width/COLS, ch=cv.height/ROWS;
+  // background
+  const bg=ctx.createLinearGradient(0,0,0,cv.height);
+  bg.addColorStop(0,'#1a0810');bg.addColorStop(1,'#0d0408');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,cv.width,cv.height);
+
+  if(spinPhase==='idle'||spinPhase==='done'){
+    // Draw static grid with highlights
+    for(let c=0;c<COLS;c++){
+      for(let r=0;r<ROWS;r++){
+        const x=c*cw, y=r*ch;
+        const isWin=winningCells.has(`${c},${r}`);
+        const sym=grid[c][r];
+        const flashOn=isWin&&(flashTimer%20<10);
+        ctx.fillStyle=flashOn?'rgba(212,168,67,.12)':'rgba(0,0,0,.1)';
+        ctx.fillRect(x+2,y+2,cw-4,ch-4);
+        if(flashOn){ctx.strokeStyle='rgba(212,168,67,.5)';ctx.lineWidth=2;ctx.strokeRect(x+3,y+3,cw-6,ch-6);}
+        drawSymbol(ctx,sym,x,y,cw,ch,false);
+      }
+    }
+    if(winningCells.size>0)flashTimer++;
+  } else {
+    // Spinning reels
+    for(let c=0;c<COLS;c++){
+      drawReel(c, reelOffsets[c]);
+    }
+  }
+
+  // Grid lines
+  ctx.strokeStyle='rgba(212,168,67,.08)';ctx.lineWidth=1;
+  for(let c=1;c<COLS;c++){ctx.beginPath();ctx.moveTo(c*cw,0);ctx.lineTo(c*cw,cv.height);ctx.stroke();}
+  for(let r=1;r<ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*ch);ctx.lineTo(cv.width,r*ch);ctx.stroke();}
+
+  // Win line flash
+  if(spinPhase==='done'&&winningLines.length&&flashTimer%20<10){
+    winningLines.forEach(lineIdx=>{
+      const line=PAYLINES[lineIdx];
+      ctx.beginPath();
+      line.forEach((row,col)=>{ctx.lineTo(col*cw+cw/2,(col===0?ctx.moveTo:ctx.lineTo).call(ctx,col*cw+cw/2,row*ch+ch/2),row*ch+ch/2);});
+      ctx.beginPath();
+      line.forEach((row,col)=>{
+        const px=col*cw+cw/2, py=row*ch+ch/2;
+        col===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+      });
+      ctx.strokeStyle='rgba(212,168,67,.55)';ctx.lineWidth=3;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([]);
+    });
+  }
+
+  // Center payline indicator
+  ctx.strokeStyle='rgba(212,168,67,.15)';ctx.lineWidth=1;ctx.setLineDash([6,6]);
+  ctx.beginPath();ctx.moveTo(0,cv.height/2);ctx.lineTo(cv.width,cv.height/2);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Top/bottom vignette
+  const vt=ctx.createLinearGradient(0,0,0,cv.height);
+  vt.addColorStop(0,'rgba(10,3,5,.65)');vt.addColorStop(.2,'rgba(10,3,5,0)');
+  vt.addColorStop(.8,'rgba(10,3,5,0)');vt.addColorStop(1,'rgba(10,3,5,.65)');
+  ctx.fillStyle=vt;ctx.fillRect(0,0,cv.width,cv.height);
+
+  animFrame=requestAnimationFrame(drawFrame);
+}
+drawFrame();
+
+// ── SPIN LOGIC ──
+function spin(){
+  if(spinning)return;
+  const totalBet=bet*lines;
+  if(credits<totalBet&&!inFreeSpins){setWinText('Недостатъчно кредити!');return;}
+  if(!inFreeSpins)credits-=totalBet;
+  spinning=true;
+  spinPhase='spinning';
+  winningCells.clear();winningLines=[];flashTimer=0;
+  document.getElementById('spinBtn').disabled=true;
+  setWinText('Въртене...');
+  updateUI();
+
+  // Generate new grid result
+  const newGrid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>weightedRandom()));
+
+  // Update reel symbols to end on the new grid
+  for(let c=0;c<COLS;c++){
+    reelSymbols[c]=[];
+    for(let i=0;i<15;i++)reelSymbols[c].push(weightedRandom());
+    // Last 3 are the result
+    for(let r=0;r<ROWS;r++)reelSymbols[c].push(newGrid[c][r]);
+  }
+
+  const ch=cv.height/ROWS;
+  reelOffsets=[0,0,0,0,0];
+  reelSpeeds=[18,20,22,20,18];
+
+  // Speed up
+  let elapsed=0;
+  const spinInterval=setInterval(()=>{
+    for(let c=0;c<COLS;c++) reelOffsets[c]+=reelSpeeds[c];
+    elapsed+=16;
+    if(elapsed>600){
+      clearInterval(spinInterval);
+      // Stop reels one by one
+      for(let c=0;c<COLS;c++){
+        stopTimers[c]=setTimeout(()=>{
+          snapReel(c,newGrid[c]);
+          if(c===COLS-1){
+            setTimeout(()=>{
+              grid=newGrid;
+              spinPhase='done';
+              spinning=false;
+              evaluateWin();
+              document.getElementById('spinBtn').disabled=false;
+              if(inFreeSpins){
+                freeSpins--;
+                if(freeSpins>0){setTimeout(()=>spin(),800);}
+                else{inFreeSpins=false;setWinText('Free Spins закончиха! Обща печалба: '+totalWon+' кр.');}
+              }
+            },200);
+          }
+        },c*180);
+      }
+    }
+  },16);
+}
+
+function snapReel(col,result){
+  // Just fix the offset so result rows show
+  const ch=cv.height/ROWS;
+  const symCount=reelSymbols[col].length;
+  const targetIdx=symCount-ROWS;
+  reelOffsets[col]=targetIdx*ch;
+}
+
+function evaluateWin(){
+  let totalWinThisSpin=0;
+  winningCells.clear();winningLines=[];
+  let scatterCount=0;
+  for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')scatterCount++;
+
+  PAYLINES.slice(0,lines).forEach((line,li)=>{
+    const syms=line.map((row,col)=>grid[col][row]);
+    // count matches from left (wilds count as any)
+    const first=syms[0].id==='wild'?null:syms[0];
+    let count=0,matchSym=first;
+    for(let i=0;i<syms.length;i++){
+      const s=syms[i];
+      if(s.id==='wild'){count++;continue;}
+      if(matchSym===null){matchSym=s;count++;continue;}
+      if(s.id===matchSym.id)count++;else break;
+    }
+    if(count>=3&&matchSym){
+      const payout=matchSym.pays[count-1]||matchSym.pays[2];
+      if(payout>0){
+        const won=payout*bet;
+        totalWinThisSpin+=won;
+        winningLines.push(li);
+        line.slice(0,count).forEach((row,col)=>winningCells.add(`${col},${row}`));
+      }
+    }
+  });
+
+  // Scatter pays
+  if(scatterCount>=3){
+    const scatPay=SCATTER.pays[scatterCount-1]||SCATTER.pays[2];
+    const scatWon=scatPay*bet*lines;
+    totalWinThisSpin+=scatWon;
+    // Trigger free spins
+    if(!inFreeSpins){
+      setTimeout(()=>{
+        document.getElementById('fsCount').textContent=scatterCount>=5?20:scatterCount>=4?15:10;
+        document.getElementById('fsOverlay').classList.add('show');
+      },400);
+    }
+    for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')winningCells.add(`${c},${r}`);
+  }
+
+  credits+=totalWinThisSpin;
+  totalWon+=totalWinThisSpin;
+  updateUI();
+
+  if(totalWinThisSpin>0){
+    const mult=totalWinThisSpin/(bet*lines);
+    let label='WIN';
+    if(mult>=50)label='🎉 MEGA WIN';
+    else if(mult>=20)label='🏆 SUPER WIN';
+    else if(mult>=10)label='✨ BIG WIN';
+    setWinText(`${label}: +${totalWinThisSpin} кредита!`);
+    if(mult>=10)showBigWin(label,totalWinThisSpin);
+  } else {
+    setWinText('Без печалба. Опитайте отново!');
+  }
+
+  // Check jackpots
+  if(totalWinThisSpin>=1000)showBigWin('🏆 JACKPOT!',totalWinThisSpin);
+}
+
+// ── FREE SPINS ──
+function startFreeSpins(){
+  freeSpins=parseInt(document.getElementById('fsCount').textContent)||10;
+  inFreeSpins=true;
+  document.getElementById('fsOverlay').classList.remove('show');
+  setWinText(`🎰 FREE SPINS! Остават: ${freeSpins}`);
+  setTimeout(()=>spin(),400);
+}
+
+// ── BIG WIN ──
+function showBigWin(label,amount){
+  document.getElementById('bwLabel').textContent=label;
+  document.getElementById('bwAmount').textContent=amount;
+  document.getElementById('bigwinOverlay').classList.add('show');
+}
+function closeBigWin(){document.getElementById('bigwinOverlay').classList.remove('show');}
+
+// ── CONTROLS ──
+const BET_VALUES=[1,2,5,10,20,50];
+let betIdx=0;
+function changeBet(dir){
+  betIdx=Math.max(0,Math.min(BET_VALUES.length-1,betIdx+dir));
+  bet=BET_VALUES[betIdx];updateUI();
+}
+function changeLines(dir){
+  lines=Math.max(1,Math.min(20,lines+dir));updateUI();
+}
+function maxBet(){betIdx=BET_VALUES.length-1;bet=BET_VALUES[betIdx];lines=20;updateUI();}
+let autoRunning=false;
+function toggleAuto(){
+  autoRunning=!autoRunning;
+  document.getElementById('autoBtn').classList.toggle('on',autoRunning);
+  document.getElementById('autoBtn').textContent=autoRunning?'STOP AUTO':'AUTO';
+  if(autoRunning)runAuto();
+}
+function runAuto(){
+  if(!autoRunning)return;
+  if(!spinning)spin();
+  setTimeout(()=>{if(autoRunning)runAuto();},1200);
+}
+
+function updateUI(){
+  document.getElementById('betDisplay').textContent=BET_VALUES[betIdx];
+  document.getElementById('linesDisplay').textContent=lines;
+  document.getElementById('totalBetDisplay').textContent=bet*lines;
+  document.getElementById('creditsDisplay').textContent=credits.toLocaleString('bg-BG');
+  document.getElementById('wonDisplay').textContent=totalWon.toLocaleString('bg-BG');
+  document.getElementById('balanceDisplay').textContent=credits.toLocaleString('bg-BG')+' кр.';
+  // paylines highlight
+  document.querySelectorAll('.pl-btn').forEach((b,i)=>b.classList.toggle('active',i<lines));
+}
+function setWinText(t){document.getElementById('winText').textContent=t;}
+
+// ── PAYLINES BUTTONS ──
+const plRow=document.getElementById('plRow');
+for(let i=0;i<20;i++){
+  const b=document.createElement('button');
+  b.className='pl-btn'+(i<lines?' active':'');
+  b.textContent=i+1;
+  b.onclick=()=>{lines=i+1;updateUI();};
+  plRow.appendChild(b);
+}
+
+// ── PAYTABLE ──
+const ptBody=document.getElementById('ptBody');
+SYMBOLS.filter(s=>s.id!=='wild'&&s.id!=='scatter').forEach(s=>{
+  const d=document.createElement('div');
+  d.className='pt-row';
+  d.innerHTML=`<div class="pt-sym">${s.emoji}</div><div class="pt-info"><div class="pt-name">${s.name}</div><div class="pt-pays">×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}</div></div>`;
+  ptBody.appendChild(d);
+});
+// Wild + Scatter
+[WILD,SCATTER].forEach(s=>{
+  const d=document.createElement('div');
+  d.className='pt-row';
+  d.innerHTML=`<div class="pt-sym">${s.emoji}</div><div class="pt-info"><div class="pt-name">${s.name}</div><div class="pt-pays">${s.id==='wild'?'Заменя всичко':'3+ = Free Spins'}</div></div>`;
+  ptBody.appendChild(d);
+});
+
+updateUI();
+</script>
+</body>
+</html>
