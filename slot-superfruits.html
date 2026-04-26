@@ -9,99 +9,93 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{background:#0a0305;color:#f0ece4;font-family:'Outfit',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;cursor:none;}
 .cur,.cur-r{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);}
-.cur{width:9px;height:9px;background:#d4a843;}
+.cur{width:9px;height:9px;background:#d4a843;z-index:10000;}
 .cur-r{width:34px;height:34px;border:1px solid rgba(212,168,67,.3);z-index:9998;transition:width .2s,height .2s;}
+body:has(button:hover) .cur{width:18px;height:18px;background:#f0c866;}
+body:has(button:hover) .cur-r{width:50px;height:50px;}
 
-/* TOP BAR */
-.topbar{height:54px;background:rgba(5,2,4,.95);border-bottom:1px solid rgba(212,168,67,.12);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;}
+.topbar{height:54px;background:rgba(5,2,4,.97);border-bottom:1px solid rgba(212,168,67,.14);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;}
 .tb-logo{font-family:'Cinzel',serif;font-size:.95rem;font-weight:900;color:#d4a843;text-decoration:none;letter-spacing:.08em;}
 .tb-logo em{color:#f0ece4;font-style:normal;}
-.tb-back{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,168,67,.6);text-decoration:none;transition:color .3s;}
+.tb-back{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,168,67,.55);text-decoration:none;transition:color .3s;}
 .tb-back:hover{color:#d4a843;}
-.tb-balance{font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;color:#f0c866;}
+.tb-balance{font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;color:#f0c866;}
 
-/* GAME WRAPPER */
-.game-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 30px;}
-.game-container{width:100%;max-width:860px;background:linear-gradient(160deg,#1a0810 0%,#100308 60%,#0d050a 100%);border:1px solid rgba(212,168,67,.18);position:relative;overflow:hidden;}
+.game-wrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:18px 16px 32px;}
+.game-container{width:100%;max-width:880px;background:linear-gradient(160deg,#1c0910 0%,#110409 60%,#0e050b 100%);border:1px solid rgba(212,168,67,.2);}
 
-/* GAME TITLE */
-.game-title-bar{padding:14px 22px;text-align:center;border-bottom:1px solid rgba(212,168,67,.1);background:rgba(212,168,67,.03);}
-.game-title-bar h1{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:900;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
-.game-title-bar span{font-size:.62rem;color:rgba(212,168,67,.5);letter-spacing:.2em;text-transform:uppercase;}
+.title-bar{padding:12px 22px;text-align:center;border-bottom:1px solid rgba(212,168,67,.1);background:rgba(212,168,67,.035);}
+.title-bar h1{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:900;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
+.title-bar p{font-size:.58rem;color:rgba(212,168,67,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:2px;}
 
-/* JACKPOT DISPLAY */
-.jackpot-bar{display:flex;justify-content:center;gap:18px;padding:10px 22px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(212,168,67,.08);}
-.jp-item{text-align:center;}
-.jp-label{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.5);}
-.jp-val{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:#f0c866;}
+.jp-bar{display:flex;justify-content:center;gap:14px;padding:8px 22px;background:rgba(0,0,0,.35);border-bottom:1px solid rgba(212,168,67,.07);}
+.jp{text-align:center;}
+.jp-l{font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.45);}
+.jp-v{font-family:'Cinzel',serif;font-size:.9rem;font-weight:700;color:#f0c866;}
 
-/* REELS AREA */
-.reels-area{position:relative;padding:16px 20px;}
-canvas#reelsCanvas{width:100%;display:block;border:1px solid rgba(212,168,67,.1);}
+/* REELS */
+.reels-wrap{position:relative;padding:14px 18px;background:rgba(0,0,0,.2);}
+#canvas{display:block;width:100%;border:1px solid rgba(212,168,67,.12);background:#000;}
 
-/* WIN DISPLAY */
-.win-display{height:38px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);border-top:1px solid rgba(212,168,67,.08);border-bottom:1px solid rgba(212,168,67,.08);}
-#winText{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:#d4a843;letter-spacing:.08em;transition:all .3s;}
+.win-bar{height:36px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);border-top:1px solid rgba(212,168,67,.07);border-bottom:1px solid rgba(212,168,67,.07);}
+#winTxt{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:#d4a843;letter-spacing:.06em;}
 
-/* PAYLINES ROW */
-.paylines-row{display:flex;justify-content:center;gap:6px;padding:8px 20px;flex-wrap:wrap;}
-.pl-btn{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(212,168,67,.5);padding:4px 10px;cursor:none;transition:all .3s;}
-.pl-btn.active{background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.3);color:#d4a843;}
+/* LINES SELECTOR */
+.lines-row{display:flex;justify-content:center;gap:5px;padding:7px 18px;flex-wrap:wrap;}
+.lb{font-size:.52rem;letter-spacing:.08em;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(212,168,67,.4);padding:3px 9px;cursor:none;transition:all .25s;font-family:'Outfit',sans-serif;}
+.lb.on{background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.32);color:#d4a843;}
 
 /* CONTROLS */
-.controls{padding:14px 22px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(0,0,0,.2);}
-.ctrl-group{display:flex;flex-direction:column;align-items:center;gap:6px;}
-.ctrl-label{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.5);}
-.ctrl-val{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:#f0c866;}
-.ctrl-btns{display:flex;gap:5px;}
-.ctrl-btn{width:28px;height:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#f0ece4;font-size:1rem;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;}
-.ctrl-btn:hover{background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.3);}
-.spin-btn{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(135deg,#c9a030,#e8c050,#c9a030);color:#000;padding:16px 44px;border:none;cursor:none;transition:all .3s;position:relative;overflow:hidden;}
-.spin-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);opacity:0;transition:opacity .3s;}
-.spin-btn:hover::before{opacity:1;}
-.spin-btn:hover{transform:scale(1.04);box-shadow:0 6px 24px rgba(212,168,67,.35);}
-.spin-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
-.auto-btn{font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(212,168,67,.6);padding:9px 16px;cursor:none;transition:all .3s;}
-.auto-btn:hover{border-color:rgba(212,168,67,.3);color:#d4a843;}
-.auto-btn.on{background:rgba(212,168,67,.12);border-color:var(--gold);color:#d4a843;}
+.ctrl-row{padding:12px 22px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:rgba(0,0,0,.25);}
+.cg{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.cl{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.45);}
+.cv{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;color:#f0c866;}
+.cbtns{display:flex;gap:4px;}
+.cbtn{width:28px;height:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#f0ece4;font-size:1rem;cursor:none;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.cbtn:hover{background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.3);}
+.spin-wrap{display:flex;flex-direction:column;gap:7px;align-items:center;}
+.spin-btn{font-family:'Cinzel',serif;font-size:.88rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase;background:linear-gradient(135deg,#b8891e,#d4a843,#e8c866,#d4a843,#b8891e);color:#000;padding:15px 48px;border:none;cursor:none;transition:all .3s;position:relative;overflow:hidden;}
+.spin-btn:not(:disabled):hover{filter:brightness(1.15);transform:scale(1.04);box-shadow:0 6px 26px rgba(212,168,67,.38);}
+.spin-btn:disabled{opacity:.38;cursor:not-allowed;transform:none !important;}
+.aux-row{display:flex;gap:7px;}
+.aux{font-family:'Cinzel',serif;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(212,168,67,.55);padding:8px 14px;cursor:none;transition:all .3s;}
+.aux:hover,.aux.on{background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.28);color:#d4a843;}
 
 /* PAYTABLE */
-.paytable{margin-top:16px;background:rgba(5,2,4,.8);border:1px solid rgba(212,168,67,.1);max-width:860px;width:100%;}
-.paytable-head{padding:12px 22px;border-bottom:1px solid rgba(212,168,67,.08);display:flex;justify-content:space-between;align-items:center;cursor:none;}
-.paytable-head h3{font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
-.paytable-head span{font-size:.8rem;color:rgba(212,168,67,.5);transition:transform .3s;}
-.pt-body{display:none;padding:14px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.pt-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);}
-.pt-sym{font-size:1.4rem;}
-.pt-info{}
-.pt-name{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,168,67,.6);margin-bottom:2px;}
-.pt-pays{font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;color:#f0c866;}
+.paytable{margin-top:14px;width:100%;max-width:880px;background:rgba(5,2,4,.85);border:1px solid rgba(212,168,67,.1);}
+.pt-head{padding:10px 20px;border-bottom:1px solid rgba(212,168,67,.08);}
+.pt-head h3{font-family:'Cinzel',serif;font-size:.75rem;font-weight:700;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
+.pt-grid{padding:12px 18px;display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+.pt-cell{display:flex;align-items:center;gap:8px;padding:7px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);}
+.pt-e{font-size:1.3rem;flex-shrink:0;}
+.pt-n{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,168,67,.55);}
+.pt-p{font-family:'Cinzel',serif;font-size:.68rem;font-weight:700;color:#f0c866;}
 
-/* FREE SPINS OVERLAY */
-.fs-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
-.fs-overlay.show{opacity:1;pointer-events:all;}
-.fs-box{text-align:center;padding:52px 64px;border:2px solid rgba(212,168,67,.3);background:rgba(10,3,5,.95);}
-.fs-box h2{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:900;color:#d4a843;margin-bottom:12px;}
-.fs-box p{color:rgba(240,236,228,.6);margin-bottom:28px;font-size:.9rem;}
-.fs-count{font-family:'Cinzel',serif;font-size:4rem;font-weight:900;color:#f0c866;line-height:1;}
-.fs-label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.5);margin-top:6px;}
-.fs-start{font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,#c9a030,#e8c050);color:#000;padding:14px 38px;border:none;cursor:none;margin-top:28px;transition:all .3s;}
-.fs-start:hover{filter:brightness(1.1);}
+/* FREE SPINS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:700;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;backdrop-filter:blur(8px);}
+.overlay.show{opacity:1;pointer-events:all;}
+.ov-box{text-align:center;padding:48px 60px;border:1px solid rgba(212,168,67,.25);background:rgba(10,3,5,.98);}
+.ov-box h2{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:#d4a843;margin-bottom:10px;}
+.ov-box p{color:rgba(240,236,228,.5);margin-bottom:20px;font-size:.85rem;line-height:1.7;}
+.ov-num{font-family:'Cinzel',serif;font-size:4.5rem;font-weight:900;color:#f0c866;line-height:1;}
+.ov-lbl{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(212,168,67,.45);margin-top:5px;}
+.ov-btn{font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,#b8891e,#d4a843,#e8c866);color:#000;padding:13px 38px;border:none;cursor:none;margin-top:26px;transition:all .3s;display:inline-block;}
+.ov-btn:hover{filter:brightness(1.1);}
 
 /* BIG WIN */
-.bigwin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
-.bigwin-overlay.show{opacity:1;pointer-events:all;}
-.bigwin-box{text-align:center;animation:bigWinAnim .5s ease;}
-@keyframes bigWinAnim{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
-.bw-label{font-family:'Cinzel',serif;font-size:1.2rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(212,168,67,.7);margin-bottom:8px;}
-.bw-amount{font-family:'Cinzel',serif;font-size:clamp(4rem,10vw,8rem);font-weight:900;background:linear-gradient(135deg,#c9a030,#f5e090,#c9a030);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 40px rgba(212,168,67,.6));line-height:1;}
-.bw-sub{font-size:.8rem;color:rgba(240,236,228,.5);margin-top:10px;letter-spacing:.1em;}
-.bw-close{font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:rgba(212,168,67,.15);border:1px solid rgba(212,168,67,.3);color:#d4a843;padding:11px 32px;cursor:none;margin-top:30px;transition:all .3s;}
-.bw-close:hover{background:rgba(212,168,67,.25);}
+.bw-ov{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
+.bw-ov.show{opacity:1;pointer-events:all;}
+.bw-box{text-align:center;animation:bwIn .5s cubic-bezier(.17,.67,.32,1.4);}
+@keyframes bwIn{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
+.bw-lbl{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(212,168,67,.65);margin-bottom:6px;}
+.bw-num{font-family:'Cinzel',serif;font-size:clamp(4rem,12vw,9rem);font-weight:900;line-height:1;background:linear-gradient(135deg,#b8891e,#f0c866,#ffe8a0,#f0c866,#b8891e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 50px rgba(212,168,67,.7));}
+.bw-sub{font-size:.75rem;color:rgba(240,236,228,.35);margin-top:8px;letter-spacing:.15em;}
+.bw-close{font-family:'Cinzel',serif;font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.28);color:#d4a843;padding:11px 32px;cursor:none;margin-top:28px;display:inline-block;transition:all .3s;}
+.bw-close:hover{background:rgba(212,168,67,.22);}
 
-@media(max-width:620px){
-  .controls{flex-direction:column;align-items:center;}
-  .pt-body{grid-template-columns:1fr 1fr;}
+@media(max-width:640px){
+  .ctrl-row{flex-direction:column;align-items:center;}
+  .pt-grid{grid-template-columns:repeat(3,1fr);}
   .spin-btn{padding:14px 36px;}
 }
 </style>
@@ -111,486 +105,602 @@ canvas#reelsCanvas{width:100%;display:block;border:1px solid rgba(212,168,67,.1)
 <div class="cur-r" id="curR"></div>
 
 <!-- FREE SPINS OVERLAY -->
-<div class="fs-overlay" id="fsOverlay">
-  <div class="fs-box">
+<div class="overlay" id="fsOv">
+  <div class="ov-box">
     <h2>🎉 FREE SPINS!</h2>
-    <p>Спечелихте безплатни завъртания!</p>
-    <div class="fs-count" id="fsCount">10</div>
-    <div class="fs-label">безплатни завъртания</div>
-    <button class="fs-start" onclick="startFreeSpins()">Играй!</button>
+    <p>Scatter символи отключиха безплатни завъртания!</p>
+    <div class="ov-num" id="fsNum">10</div>
+    <div class="ov-lbl">безплатни завъртания</div>
+    <button class="ov-btn" onclick="startFS()">Играй!</button>
   </div>
 </div>
 
 <!-- BIG WIN OVERLAY -->
-<div class="bigwin-overlay" id="bigwinOverlay">
-  <div class="bigwin-box">
-    <div class="bw-label" id="bwLabel">BIG WIN</div>
-    <div class="bw-amount" id="bwAmount">0</div>
+<div class="bw-ov" id="bwOv">
+  <div class="bw-box">
+    <div class="bw-lbl" id="bwLbl">BIG WIN</div>
+    <div class="bw-num" id="bwNum">0</div>
     <div class="bw-sub">кредита</div>
-    <button class="bw-close" onclick="closeBigWin()">Продължи</button>
+    <button class="bw-close" onclick="document.getElementById('bwOv').classList.remove('show')">Продължи</button>
   </div>
 </div>
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <a href="index.html" class="tb-back">← Обратно</a>
+  <a href="index.html" class="tb-back">← Лоби</a>
   <a href="index.html" class="tb-logo">NOVA <em>777</em></a>
-  <span class="tb-balance" id="balanceDisplay">1 000 кр.</span>
+  <span class="tb-balance" id="balEl">1 000 кр.</span>
 </div>
 
 <!-- GAME -->
 <div class="game-wrap">
-  <div class="game-container">
-    <div class="game-title-bar">
-      <h1>🍒 Super Fruits Deluxe</h1>
-      <span>5 барабана · 20 линии · Wild · Free Spins</span>
-    </div>
-    <div class="jackpot-bar">
-      <div class="jp-item"><div class="jp-label">GRAND</div><div class="jp-val" id="jpGrand">5 000</div></div>
-      <div class="jp-item"><div class="jp-label">MAJOR</div><div class="jp-val" id="jpMajor">1 000</div></div>
-      <div class="jp-item"><div class="jp-label">MINOR</div><div class="jp-val" id="jpMinor">250</div></div>
-      <div class="jp-item"><div class="jp-label">MINI</div><div class="jp-val" id="jpMini">50</div></div>
-    </div>
-    <div class="reels-area">
-      <canvas id="reelsCanvas" height="300"></canvas>
-    </div>
-    <div class="win-display"><span id="winText">Завъртете барабаните — Добра Luck! 🍀</span></div>
-    <div class="paylines-row" id="plRow"></div>
-    <div class="controls">
-      <div class="ctrl-group">
-        <div class="ctrl-label">Залог на линия</div>
-        <div class="ctrl-val" id="betDisplay">1</div>
-        <div class="ctrl-btns">
-          <button class="ctrl-btn" onclick="changeBet(-1)">−</button>
-          <button class="ctrl-btn" onclick="changeBet(1)">+</button>
-        </div>
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-label">Линии</div>
-        <div class="ctrl-val" id="linesDisplay">20</div>
-        <div class="ctrl-btns">
-          <button class="ctrl-btn" onclick="changeLines(-5)">−</button>
-          <button class="ctrl-btn" onclick="changeLines(5)">+</button>
-        </div>
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-label">Общ залог</div>
-        <div class="ctrl-val" id="totalBetDisplay">20</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
-        <button class="spin-btn" id="spinBtn" onclick="spin()">▶ SPIN</button>
-        <div style="display:flex;gap:8px;">
-          <button class="auto-btn" id="autoBtn" onclick="toggleAuto()">AUTO</button>
-          <button class="auto-btn" onclick="maxBet()">MAX BET</button>
-        </div>
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-label">Кредити</div>
-        <div class="ctrl-val" id="creditsDisplay">1 000</div>
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-label">Спечелено</div>
-        <div class="ctrl-val" id="wonDisplay">0</div>
-      </div>
-    </div>
+<div class="game-container">
+  <div class="title-bar">
+    <h1>🍒 Super Fruits Deluxe</h1>
+    <p>5 барабана · 20 линии · Wild · Free Spins</p>
   </div>
-
-  <!-- PAYTABLE -->
-  <div class="paytable">
-    <div class="paytable-head">
-      <h3>📋 Таблица на изплащанията</h3>
-      <span>▼</span>
+  <div class="jp-bar">
+    <div class="jp"><div class="jp-l">GRAND</div><div class="jp-v">5 000</div></div>
+    <div class="jp"><div class="jp-l">MAJOR</div><div class="jp-v">1 000</div></div>
+    <div class="jp"><div class="jp-l">MINOR</div><div class="jp-v">250</div></div>
+    <div class="jp"><div class="jp-l">MINI</div><div class="jp-v">50</div></div>
+  </div>
+  <div class="reels-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
+  <div class="win-bar"><span id="winTxt">Завъртете барабаните — Добра Luck! 🍀</span></div>
+  <div class="lines-row" id="linesRow"></div>
+  <div class="ctrl-row">
+    <div class="cg">
+      <div class="cl">Залог/линия</div>
+      <div class="cv" id="betEl">1</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chBet(-1)">−</button>
+        <button class="cbtn" onclick="chBet(1)">+</button>
+      </div>
     </div>
-    <div class="pt-body" id="ptBody"></div>
+    <div class="cg">
+      <div class="cl">Линии</div>
+      <div class="cv" id="linesEl">20</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chLines(-5)">−</button>
+        <button class="cbtn" onclick="chLines(5)">+</button>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cl">Общо</div>
+      <div class="cv" id="totalEl">20</div>
+    </div>
+    <div class="spin-wrap">
+      <button class="spin-btn" id="spinBtn" onclick="doSpin()">▶ SPIN</button>
+      <div class="aux-row">
+        <button class="aux" id="autoBtn" onclick="toggleAuto()">AUTO</button>
+        <button class="aux" onclick="maxBet()">MAX BET</button>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cl">Кредити</div>
+      <div class="cv" id="credEl">1 000</div>
+    </div>
+    <div class="cg">
+      <div class="cl">Спечелено</div>
+      <div class="cv" id="wonEl">0</div>
+    </div>
   </div>
 </div>
 
+<!-- PAYTABLE -->
+<div class="paytable">
+  <div class="pt-head"><h3>📋 Изплащания (3 / 4 / 5 еднакви)</h3></div>
+  <div class="pt-grid" id="ptGrid"></div>
+</div>
+</div>
+
 <script>
-// ── CURSOR ──
+/* ── CURSOR ── */
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
+(function tick(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(tick);})();
 
-// ── SYMBOLS ──
-const SYMBOLS = [
-  { id:'cherry',  emoji:'🍒', name:'Череша',   color:'#e74c3c', pays:[0,0,5,15,50],   weight:18 },
-  { id:'lemon',   emoji:'🍋', name:'Лимон',    color:'#f1c40f', pays:[0,0,5,15,40],   weight:16 },
-  { id:'orange',  emoji:'🍊', name:'Портокал', color:'#e67e22', pays:[0,0,8,20,60],   weight:14 },
-  { id:'grape',   emoji:'🍇', name:'Грозде',   color:'#8e44ad', pays:[0,0,8,25,80],   weight:12 },
-  { id:'melon',   emoji:'🍉', name:'Диня',     color:'#27ae60', pays:[0,0,10,30,100], weight:10 },
-  { id:'bell',    emoji:'🔔', name:'Камбана',  color:'#d4a843', pays:[0,0,15,50,150], weight:8  },
-  { id:'star',    emoji:'⭐', name:'Звезда',   color:'#f0c866', pays:[0,0,20,75,200], weight:6  },
-  { id:'seven',   emoji:'7',  name:'SEVEN',    color:'#c0392b', pays:[0,0,30,100,500],weight:4  },
-  { id:'diamond', emoji:'💎', name:'Диамант',  color:'#3498db', pays:[0,0,50,200,1000],weight:2 },
-  { id:'wild',    emoji:'🃏', name:'WILD',     color:'#d4a843', pays:[0,0,0,0,0],     weight:3  },
-  { id:'scatter', emoji:'⭐⭐',name:'SCATTER',  color:'#f0c866', pays:[0,0,2,10,50],  weight:3  },
-];
-const WILD    = SYMBOLS.find(s=>s.id==='wild');
-const SCATTER = SYMBOLS.find(s=>s.id==='scatter');
-
-function weightedRandom(){
-  const total=SYMBOLS.reduce((a,s)=>a+s.weight,0);
-  let r=Math.random()*total;
-  for(const s of SYMBOLS){r-=s.weight;if(r<=0)return s;}
-  return SYMBOLS[0];
+/* ── WEB AUDIO ENGINE ── */
+let audioCtx=null;
+function getAudio(){
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
 }
 
-// ── PAYLINES (20 lines on 5x3 grid) ──
-const PAYLINES = [
-  [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2], // horizontal
-  [0,1,2,1,0],[2,1,0,1,2], // V shapes
-  [0,0,1,2,2],[2,2,1,0,0], // diagonal
+function playTone(freq,type,duration,vol=0.18,delay=0){
+  try{
+    const ac=getAudio();
+    const o=ac.createOscillator();
+    const g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type=type;o.frequency.setValueAtTime(freq,ac.currentTime+delay);
+    g.gain.setValueAtTime(0,ac.currentTime+delay);
+    g.gain.linearRampToValueAtTime(vol,ac.currentTime+delay+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+delay+duration);
+    o.start(ac.currentTime+delay);
+    o.stop(ac.currentTime+delay+duration+0.05);
+  }catch(e){}
+}
+
+function soundSpin(){
+  // Clicking/ticking sound — rapid pulses
+  for(let i=0;i<18;i++){
+    playTone(80+Math.random()*40,'square',0.04,0.12,i*0.055);
+  }
+}
+function soundReelStop(col){
+  // Each reel stops with a satisfying thud
+  playTone(180-col*20,'sine',0.12,0.25,0);
+  playTone(90,'sine',0.08,0.15,0.06);
+}
+function soundWin(amount){
+  if(amount<=0)return;
+  // ascending chime
+  const notes=[523,659,784,1047];
+  notes.forEach((f,i)=>playTone(f,'sine',0.18,0.2,i*0.1));
+}
+function soundBigWin(){
+  const notes=[523,659,784,1047,1319,1568];
+  notes.forEach((f,i)=>{
+    playTone(f,'sine',0.3,0.25,i*0.1);
+    playTone(f*1.5,'triangle',0.15,0.12,i*0.1+0.05);
+  });
+}
+function soundClick(){playTone(800,'sine',0.06,0.1);}
+function soundFreeSpins(){
+  [400,500,600,800,1000].forEach((f,i)=>playTone(f,'sine',0.25,0.22,i*0.12));
+}
+
+/* ── SYMBOLS ── */
+const SYMS=[
+  {id:'cherry', e:'🍒',n:'Череша',  pays:[0,0,5,15,50],  w:18},
+  {id:'lemon',  e:'🍋',n:'Лимон',   pays:[0,0,5,15,40],  w:16},
+  {id:'orange', e:'🍊',n:'Портокал',pays:[0,0,8,20,60],  w:14},
+  {id:'grape',  e:'🍇',n:'Грозде',  pays:[0,0,8,25,80],  w:12},
+  {id:'melon',  e:'🍉',n:'Диня',    pays:[0,0,10,30,100],w:10},
+  {id:'bell',   e:'🔔',n:'Камбана', pays:[0,0,15,50,150],w:8},
+  {id:'star',   e:'⭐',n:'Звезда',  pays:[0,0,20,75,200],w:6},
+  {id:'seven',  e:'7', n:'SEVEN',   pays:[0,0,30,100,500],w:4},
+  {id:'diamond',e:'💎',n:'Диамант', pays:[0,0,50,200,1000],w:2},
+  {id:'wild',   e:'🃏',n:'WILD',    pays:[0,0,0,0,0],    w:3},
+  {id:'scatter',e:'💫',n:'SCATTER', pays:[0,0,2,10,50],  w:3},
+];
+const WILD_SYM=SYMS.find(s=>s.id==='wild');
+const SCAT_SYM=SYMS.find(s=>s.id==='scatter');
+const TOTAL_W=SYMS.reduce((a,s)=>a+s.w,0);
+function rndSym(){let r=Math.random()*TOTAL_W;for(const s of SYMS){r-=s.w;if(r<=0)return s;}return SYMS[0];}
+
+const ROWS=3,COLS=5;
+
+/* 20 paylines on 5×3 grid */
+const LINES=[
+  [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],
+  [0,1,2,1,0],[2,1,0,1,2],
+  [0,0,1,2,2],[2,2,1,0,0],
   [1,0,0,0,1],[1,2,2,2,1],
   [0,1,1,1,0],[2,1,1,1,2],
-  [1,0,1,2,1],[1,2,1,0,1],
-  [0,1,0,1,0],[2,1,2,1,2],
-  [1,1,0,1,1],[1,1,2,1,1],
+  [1,0,1,0,1],[1,2,1,2,1],
   [0,0,2,0,0],[2,2,0,2,2],
+  [1,1,2,1,1],[1,1,0,1,1],
+  [0,2,0,2,0],[2,0,2,0,2],
   [1,0,2,0,1],
 ];
-const ROWS=3, COLS=5;
 
-// ── STATE ──
-let credits=1000, bet=1, lines=20, totalWon=0;
-let spinning=false, autoSpin=false, autoTimer=null;
-let freeSpins=0, inFreeSpins=false;
-let grid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>weightedRandom()));
-let winningCells=new Set(), winningLines=[];
-let animFrame=null, reelOffsets=[0,0,0,0,0], reelSpeeds=[0,0,0,0,0];
-let reelSymbols=Array.from({length:COLS},()=>[...Array(20)].map(()=>weightedRandom()));
-let spinPhase='idle'; // idle | spinning | stopping | done
-let stopTimers=[];
+/* ── STATE ── */
+let creds=1000,bet=1,numLines=20,totalWon=0;
+let spinning=false,autoOn=false;
+let freeSpins=0,inFS=false;
+const BET_OPTS=[1,2,5,10,20,50];let betIdx=0;
 
-const SYM_H=100, SYM_W=100; // logical size
-let flashTimer=0;
+/* ── REEL ENGINE ── */
+/*
+  Each reel has a "strip" of symbols (long array).
+  During spin, we scroll through it at speed.
+  When stopping, we snap to show the target 3 symbols.
+*/
+const STRIP_LEN=40;
+// Generate strips — each reel has a long list of random symbols
+let strips=Array.from({length:COLS},()=>Array.from({length:STRIP_LEN},()=>rndSym()));
 
-// ── CANVAS SETUP ──
-const cv=document.getElementById('reelsCanvas');
+// Current visible state: which strip index is at the TOP of each reel
+let reelTop=[0,0,0,0,0]; // index into strip[] for the topmost visible symbol
+// Result grid: what's shown when stopped
+let grid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>rndSym()));
+
+// Spin animation state per reel
+let reels=Array.from({length:COLS},(_,i)=>({
+  spinning:false,
+  // offset in pixels from top of current symbol (0 = aligned, positive = scrolled down)
+  offset:0,
+  speed:0,
+  targetTop:0,   // strip index to land on
+  stopping:false,
+  done:true,
+}));
+
+let winCells=new Set(),winLines=[];
+let flashT=0;
+
+/* ── CANVAS ── */
+const cv=document.getElementById('canvas');
 const ctx=cv.getContext('2d');
-function resizeCanvas(){
-  cv.width=cv.offsetWidth;
-  cv.height=Math.round(cv.offsetWidth*(3/5));
-}
-resizeCanvas();
-window.addEventListener('resize',()=>{resizeCanvas();});
+let CW,CH,CELL_W,CELL_H;
 
-// ── RENDER ──
-function drawReel(col, offset){
-  const cw=cv.width/COLS, ch=cv.height/ROWS;
-  const x=col*cw;
+function resize(){
+  CW=cv.offsetWidth;
+  CH=Math.round(CW*(3/5));
+  cv.width=CW;cv.height=CH;
+  CELL_W=CW/COLS;CELL_H=CH/ROWS;
+}
+resize();
+window.addEventListener('resize',resize);
+
+/* ── DRAW ── */
+function drawSymbol(sym,cx,cy,w,h,highlight,alpha=1){
   ctx.save();
-  ctx.beginPath();ctx.rect(x+2,0,cw-4,cv.height);ctx.clip();
-  // bg
-  const bg=ctx.createLinearGradient(x,0,x+cw,0);
-  bg.addColorStop(0,'rgba(0,0,0,.2)');bg.addColorStop(.5,'rgba(255,255,255,.02)');bg.addColorStop(1,'rgba(0,0,0,.2)');
-  ctx.fillStyle=bg;ctx.fillRect(x,0,cw,cv.height);
-  // symbols
-  const symCount=reelSymbols[col].length;
-  for(let row=-2;row<ROWS+2;row++){
-    const sy=row*ch - (offset % (symCount*ch));
-    if(sy>-ch&&sy<cv.height+ch){
-      const symIdx=((Math.floor(offset/ch)+row)%symCount+symCount)%symCount;
-      const sym=reelSymbols[col][symIdx];
-      drawSymbol(ctx,sym,x,sy,cw,ch,false);
+  ctx.globalAlpha=alpha;
+  if(highlight){
+    const flash=flashT%24<12;
+    if(flash){
+      ctx.fillStyle='rgba(212,168,67,.18)';
+      ctx.fillRect(cx+2,cy+2,w-4,h-4);
+      ctx.strokeStyle='rgba(212,168,67,.7)';
+      ctx.lineWidth=2.5;
+      ctx.strokeRect(cx+3,cy+3,w-6,h-6);
     }
+  } else {
+    ctx.fillStyle='rgba(255,255,255,.02)';
+    ctx.fillRect(cx+1,cy+1,w-2,h-2);
+  }
+
+  // Draw symbol
+  if(sym.id==='seven'){
+    // Bold red 7
+    ctx.font=`bold ${Math.round(h*.55)}px 'Cinzel',serif`;
+    ctx.fillStyle='#e74c3c';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('7',cx+w/2,cy+h/2);
+    // shadow
+    ctx.fillStyle='rgba(0,0,0,.4)';
+    ctx.font=`bold ${Math.round(h*.55)}px 'Cinzel',serif`;
+    ctx.fillText('7',cx+w/2+1,cy+h/2+1);
+    ctx.fillStyle='#e74c3c';
+    ctx.fillText('7',cx+w/2,cy+h/2);
+  } else {
+    const fs=Math.round(h*.48);
+    ctx.font=`${fs}px serif`;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    // slight shadow for depth
+    ctx.fillStyle='rgba(0,0,0,.3)';
+    ctx.fillText(sym.e,cx+w/2+1,cy+h/2+1);
+    ctx.fillStyle='rgba(255,255,255,1)';
+    ctx.fillText(sym.e,cx+w/2,cy+h/2);
   }
   ctx.restore();
 }
 
-function drawSymbol(ctx,sym,x,y,w,h,highlight){
-  // cell bg
-  ctx.fillStyle=highlight?`rgba(212,168,67,.15)`:'rgba(0,0,0,.1)';
-  ctx.fillRect(x+2,y+2,w-4,h-4);
-  if(highlight){
-    ctx.strokeStyle='rgba(212,168,67,.6)';ctx.lineWidth=2;
-    ctx.strokeRect(x+3,y+3,w-6,h-6);
-  }
-  // symbol
-  const fs=Math.round(h*.44);
-  ctx.font=`${fs}px serif`;
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(sym.emoji,x+w/2,y+h/2);
-  // name label for non-emoji
-  if(sym.id==='seven'){
-    ctx.font=`bold ${Math.round(h*.38)}px 'Cinzel',serif`;
-    ctx.fillStyle='#c0392b';
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('7',x+w/2,y+h/2);
-  }
-}
-
 function drawFrame(){
-  const cw=cv.width/COLS, ch=cv.height/ROWS;
-  // background
-  const bg=ctx.createLinearGradient(0,0,0,cv.height);
-  bg.addColorStop(0,'#1a0810');bg.addColorStop(1,'#0d0408');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,cv.width,cv.height);
+  if(!CW||!CELL_H){requestAnimationFrame(drawFrame);return;}
 
-  if(spinPhase==='idle'||spinPhase==='done'){
-    // Draw static grid with highlights
-    for(let c=0;c<COLS;c++){
-      for(let r=0;r<ROWS;r++){
-        const x=c*cw, y=r*ch;
-        const isWin=winningCells.has(`${c},${r}`);
-        const sym=grid[c][r];
-        const flashOn=isWin&&(flashTimer%20<10);
-        ctx.fillStyle=flashOn?'rgba(212,168,67,.12)':'rgba(0,0,0,.1)';
-        ctx.fillRect(x+2,y+2,cw-4,ch-4);
-        if(flashOn){ctx.strokeStyle='rgba(212,168,67,.5)';ctx.lineWidth=2;ctx.strokeRect(x+3,y+3,cw-6,ch-6);}
-        drawSymbol(ctx,sym,x,y,cw,ch,false);
+  // Background
+  const bg=ctx.createLinearGradient(0,0,0,CH);
+  bg.addColorStop(0,'#1c0910');bg.addColorStop(1,'#0e050b');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,CW,CH);
+
+  // Per-reel rendering
+  for(let c=0;c<COLS;c++){
+    const rx=c*CELL_W;
+    const reel=reels[c];
+
+    ctx.save();
+    // Clip to this reel column
+    ctx.beginPath();ctx.rect(rx+1,0,CELL_W-2,CH);ctx.clip();
+
+    if(reel.spinning||reel.speed>0){
+      // ── SPINNING: scroll symbols ──
+      // offset tells us how many px we've scrolled past the current symbol
+      const off=reel.offset % CELL_H;
+      // Which strip index is at the very top (partially visible)
+      const topIdx=((reel.targetTop - Math.floor(reel.offset/CELL_H)) % STRIP_LEN + STRIP_LEN) % STRIP_LEN;
+
+      for(let row=-1;row<ROWS+1;row++){
+        const sy=row*CELL_H - off;
+        if(sy>CH+CELL_H||sy<-CELL_H*1.5)continue;
+        const sIdx=((topIdx+row)%STRIP_LEN+STRIP_LEN)%STRIP_LEN;
+        const sym=strips[c][sIdx];
+        drawSymbol(sym,rx,sy,CELL_W,CELL_H,false);
       }
+    } else {
+      // ── STOPPED: show grid ──
+      for(let r=0;r<ROWS;r++){
+        const sym=grid[c][r];
+        const isWin=winCells.has(`${c},${r}`);
+        drawSymbol(sym,rx,r*CELL_H,CELL_W,CELL_H,isWin);
+      }
+      if(winCells.size)flashT++;
     }
-    if(winningCells.size>0)flashTimer++;
-  } else {
-    // Spinning reels
-    for(let c=0;c<COLS;c++){
-      drawReel(c, reelOffsets[c]);
-    }
+
+    ctx.restore();
+
+    // Reel separator
+    ctx.strokeStyle='rgba(212,168,67,.1)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(rx,0);ctx.lineTo(rx,CH);ctx.stroke();
   }
 
-  // Grid lines
-  ctx.strokeStyle='rgba(212,168,67,.08)';ctx.lineWidth=1;
-  for(let c=1;c<COLS;c++){ctx.beginPath();ctx.moveTo(c*cw,0);ctx.lineTo(c*cw,cv.height);ctx.stroke();}
-  for(let r=1;r<ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*ch);ctx.lineTo(cv.width,r*ch);ctx.stroke();}
+  // Row separators
+  ctx.strokeStyle='rgba(212,168,67,.07)';ctx.lineWidth=1;
+  for(let r=1;r<ROWS;r++){
+    ctx.beginPath();ctx.moveTo(0,r*CELL_H);ctx.lineTo(CW,r*CELL_H);ctx.stroke();
+  }
 
-  // Win line flash
-  if(spinPhase==='done'&&winningLines.length&&flashTimer%20<10){
-    winningLines.forEach(lineIdx=>{
-      const line=PAYLINES[lineIdx];
-      ctx.beginPath();
-      line.forEach((row,col)=>{ctx.lineTo(col*cw+cw/2,(col===0?ctx.moveTo:ctx.lineTo).call(ctx,col*cw+cw/2,row*ch+ch/2),row*ch+ch/2);});
+  // Win line drawing
+  const anySpinning=reels.some(r=>r.spinning||r.speed>0);
+  if(!anySpinning&&winLines.length&&flashT%24<12){
+    winLines.forEach(li=>{
+      const line=LINES[li];
       ctx.beginPath();
       line.forEach((row,col)=>{
-        const px=col*cw+cw/2, py=row*ch+ch/2;
+        const px=col*CELL_W+CELL_W/2;
+        const py=row*CELL_H+CELL_H/2;
         col===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
       });
-      ctx.strokeStyle='rgba(212,168,67,.55)';ctx.lineWidth=3;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([]);
+      ctx.strokeStyle='rgba(212,168,67,.55)';
+      ctx.lineWidth=2.5;ctx.setLineDash([8,5]);ctx.stroke();ctx.setLineDash([]);
     });
   }
 
-  // Center payline indicator
-  ctx.strokeStyle='rgba(212,168,67,.15)';ctx.lineWidth=1;ctx.setLineDash([6,6]);
-  ctx.beginPath();ctx.moveTo(0,cv.height/2);ctx.lineTo(cv.width,cv.height/2);ctx.stroke();
-  ctx.setLineDash([]);
-
   // Top/bottom vignette
-  const vt=ctx.createLinearGradient(0,0,0,cv.height);
-  vt.addColorStop(0,'rgba(10,3,5,.65)');vt.addColorStop(.2,'rgba(10,3,5,0)');
-  vt.addColorStop(.8,'rgba(10,3,5,0)');vt.addColorStop(1,'rgba(10,3,5,.65)');
-  ctx.fillStyle=vt;ctx.fillRect(0,0,cv.width,cv.height);
+  const vTop=ctx.createLinearGradient(0,0,0,CELL_H*.7);
+  vTop.addColorStop(0,'rgba(14,5,11,.8)');vTop.addColorStop(1,'rgba(14,5,11,0)');
+  ctx.fillStyle=vTop;ctx.fillRect(0,0,CW,CELL_H*.7);
+  const vBot=ctx.createLinearGradient(0,CH-CELL_H*.7,0,CH);
+  vBot.addColorStop(0,'rgba(14,5,11,0)');vBot.addColorStop(1,'rgba(14,5,11,.8)');
+  ctx.fillStyle=vBot;ctx.fillRect(0,CH-CELL_H*.7,CW,CELL_H*.7);
 
-  animFrame=requestAnimationFrame(drawFrame);
+  // Center payline marker
+  ctx.strokeStyle='rgba(212,168,67,.18)';ctx.lineWidth=1;ctx.setLineDash([6,7]);
+  ctx.beginPath();ctx.moveTo(0,CH/2);ctx.lineTo(CW,CH/2);ctx.stroke();ctx.setLineDash([]);
+
+  requestAnimationFrame(drawFrame);
 }
 drawFrame();
 
-// ── SPIN LOGIC ──
-function spin(){
+/* ── SPIN PHYSICS ── */
+let lastT=0;
+function physicsLoop(t){
+  const dt=Math.min(t-lastT,50);lastT=t;
+  const anyMoving=reels.some(r=>r.spinning||r.speed>0);
+  if(anyMoving){
+    reels.forEach((r,c)=>{
+      if(!r.spinning&&r.speed<=0)return;
+      // Accelerate or decelerate
+      if(r.spinning&&!r.stopping){
+        r.speed=Math.min(r.speed+dt*0.8,14+c*0.4);
+      }
+      if(r.stopping){
+        // Decelerate towards target
+        const remain=r.targetOffset-r.offset;
+        if(remain<=0||r.speed<0.3){
+          r.speed=0;r.spinning=false;r.stopping=false;
+          r.offset=0;
+          soundReelStop(c);
+          // Set grid from result
+          for(let row=0;row<ROWS;row++){
+            grid[c][row]=strips[c][(r.targetTop+row)%STRIP_LEN];
+          }
+          // Check if all done
+          if(reels.every(r2=>!r2.spinning&&r2.speed<=0)){
+            onAllStopped();
+          }
+        } else {
+          r.speed=Math.max(r.speed-dt*0.15,0.3);
+        }
+      }
+      if(r.speed>0){
+        r.offset+=r.speed*(dt/16);
+      }
+    });
+  }
+  requestAnimationFrame(physicsLoop);
+}
+requestAnimationFrame(physicsLoop);
+
+/* ── DO SPIN ── */
+function doSpin(){
   if(spinning)return;
-  const totalBet=bet*lines;
-  if(credits<totalBet&&!inFreeSpins){setWinText('Недостатъчно кредити!');return;}
-  if(!inFreeSpins)credits-=totalBet;
+  getAudio(); // unlock audio on first interaction
+  const total=bet*numLines;
+  if(creds<total&&!inFS){setWin('Недостатъчно кредити!');return;}
+  if(!inFS)creds-=total;
   spinning=true;
-  spinPhase='spinning';
-  winningCells.clear();winningLines=[];flashTimer=0;
+  soundClick();
+  winCells.clear();winLines=[];flashT=0;
   document.getElementById('spinBtn').disabled=true;
-  setWinText('Въртене...');
+  setWin('Въртене...');
   updateUI();
 
-  // Generate new grid result
-  const newGrid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>weightedRandom()));
+  // Generate result grid BEFORE spinning
+  const result=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>rndSym()));
 
-  // Update reel symbols to end on the new grid
+  // Place result at the end of each strip so reels land on it
   for(let c=0;c<COLS;c++){
-    reelSymbols[c]=[];
-    for(let i=0;i<15;i++)reelSymbols[c].push(weightedRandom());
-    // Last 3 are the result
-    for(let r=0;r<ROWS;r++)reelSymbols[c].push(newGrid[c][r]);
+    // Place result symbols at position STRIP_LEN-ROWS..STRIP_LEN-1
+    const baseIdx=STRIP_LEN-ROWS;
+    for(let r=0;r<ROWS;r++){
+      strips[c][(baseIdx+r)%STRIP_LEN]=result[c][r];
+    }
+    // Fill everything else with random
+    for(let i=0;i<STRIP_LEN-ROWS;i++){
+      strips[c][i]=rndSym();
+    }
   }
 
-  const ch=cv.height/ROWS;
-  reelOffsets=[0,0,0,0,0];
-  reelSpeeds=[18,20,22,20,18];
+  // Play spinning tick sound
+  soundSpin();
 
-  // Speed up
-  let elapsed=0;
-  const spinInterval=setInterval(()=>{
-    for(let c=0;c<COLS;c++) reelOffsets[c]+=reelSpeeds[c];
-    elapsed+=16;
-    if(elapsed>600){
-      clearInterval(spinInterval);
-      // Stop reels one by one
-      for(let c=0;c<COLS;c++){
-        stopTimers[c]=setTimeout(()=>{
-          snapReel(c,newGrid[c]);
-          if(c===COLS-1){
-            setTimeout(()=>{
-              grid=newGrid;
-              spinPhase='done';
-              spinning=false;
-              evaluateWin();
-              document.getElementById('spinBtn').disabled=false;
-              if(inFreeSpins){
-                freeSpins--;
-                if(freeSpins>0){setTimeout(()=>spin(),800);}
-                else{inFreeSpins=false;setWinText('Free Spins закончиха! Обща печалба: '+totalWon+' кр.');}
-              }
-            },200);
-          }
-        },c*180);
-      }
-    }
-  },16);
+  // Start each reel
+  reels.forEach((r,c)=>{
+    r.spinning=true;
+    r.stopping=false;
+    r.speed=0;
+    r.offset=0;
+    r.targetTop=STRIP_LEN-ROWS; // land on result at bottom of strip
+    r.targetOffset=STRIP_LEN*CELL_H; // how far to scroll before snapping
+  });
+
+  // Stop reels one by one with delay
+  const BASE_TIME=700;
+  reels.forEach((r,c)=>{
+    setTimeout(()=>{
+      r.stopping=true;
+      // targetOffset = current offset + some extra to make it feel smooth
+      r.targetOffset=r.offset+(CELL_H*4);
+    },BASE_TIME+c*280);
+  });
+
+  // After last reel stops (physics handles the rest via onAllStopped)
 }
 
-function snapReel(col,result){
-  // Just fix the offset so result rows show
-  const ch=cv.height/ROWS;
-  const symCount=reelSymbols[col].length;
-  const targetIdx=symCount-ROWS;
-  reelOffsets[col]=targetIdx*ch;
+function onAllStopped(){
+  spinning=false;
+  document.getElementById('spinBtn').disabled=false;
+  evaluate();
+  if(inFS){
+    freeSpins--;
+    setWin(freeSpins>0?`FREE SPINS: ${freeSpins} остават`:`✓ Free Spins приключиха!`);
+    if(freeSpins>0)setTimeout(doSpin,900);
+    else inFS=false;
+  }
+  if(autoOn&&!inFS)setTimeout(doSpin,1000);
 }
 
-function evaluateWin(){
-  let totalWinThisSpin=0;
-  winningCells.clear();winningLines=[];
-  let scatterCount=0;
-  for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')scatterCount++;
+/* ── EVALUATE WIN ── */
+function evaluate(){
+  let won=0;
+  winCells.clear();winLines=[];
 
-  PAYLINES.slice(0,lines).forEach((line,li)=>{
+  // Count scatters anywhere
+  let scatCount=0;
+  for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')scatCount++;
+
+  // Check paylines
+  LINES.slice(0,numLines).forEach((line,li)=>{
     const syms=line.map((row,col)=>grid[col][row]);
-    // count matches from left (wilds count as any)
-    const first=syms[0].id==='wild'?null:syms[0];
-    let count=0,matchSym=first;
+    // Find first non-wild
+    let matchSym=null,cnt=0;
     for(let i=0;i<syms.length;i++){
       const s=syms[i];
-      if(s.id==='wild'){count++;continue;}
-      if(matchSym===null){matchSym=s;count++;continue;}
-      if(s.id===matchSym.id)count++;else break;
+      if(s.id==='wild'){cnt++;continue;}
+      if(s.id==='scatter'){break;}
+      if(!matchSym){matchSym=s;cnt++;continue;}
+      if(s.id===matchSym.id)cnt++;else break;
     }
-    if(count>=3&&matchSym){
-      const payout=matchSym.pays[count-1]||matchSym.pays[2];
+    if(cnt>=3&&matchSym){
+      const payout=(matchSym.pays[cnt-1]||0);
       if(payout>0){
-        const won=payout*bet;
-        totalWinThisSpin+=won;
-        winningLines.push(li);
-        line.slice(0,count).forEach((row,col)=>winningCells.add(`${col},${row}`));
+        const lineWon=payout*bet;
+        won+=lineWon;
+        winLines.push(li);
+        line.slice(0,cnt).forEach((row,col)=>winCells.add(`${col},${row}`));
       }
     }
   });
 
   // Scatter pays
-  if(scatterCount>=3){
-    const scatPay=SCATTER.pays[scatterCount-1]||SCATTER.pays[2];
-    const scatWon=scatPay*bet*lines;
-    totalWinThisSpin+=scatWon;
-    // Trigger free spins
-    if(!inFreeSpins){
+  if(scatCount>=3){
+    const sp=SCAT_SYM.pays[Math.min(scatCount,5)-1]||0;
+    won+=sp*bet*numLines;
+    for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')winCells.add(`${c},${r}`);
+    if(!inFS){
+      const fsCount=scatCount>=5?20:scatCount>=4?15:10;
+      document.getElementById('fsNum').textContent=fsCount;
+      freeSpins=fsCount;
       setTimeout(()=>{
-        document.getElementById('fsCount').textContent=scatterCount>=5?20:scatterCount>=4?15:10;
-        document.getElementById('fsOverlay').classList.add('show');
+        soundFreeSpins();
+        document.getElementById('fsOv').classList.add('show');
       },400);
     }
-    for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')winningCells.add(`${c},${r}`);
   }
 
-  credits+=totalWinThisSpin;
-  totalWon+=totalWinThisSpin;
+  creds+=won;totalWon+=won;
   updateUI();
 
-  if(totalWinThisSpin>0){
-    const mult=totalWinThisSpin/(bet*lines);
+  if(won>0){
+    soundWin(won);
+    const mult=won/(bet*numLines);
     let label='WIN';
-    if(mult>=50)label='🎉 MEGA WIN';
+    if(mult>=50){label='🎆 MEGA WIN';soundBigWin();}
     else if(mult>=20)label='🏆 SUPER WIN';
     else if(mult>=10)label='✨ BIG WIN';
-    setWinText(`${label}: +${totalWinThisSpin} кредита!`);
-    if(mult>=10)showBigWin(label,totalWinThisSpin);
+    setWin(`${label}: +${won} кредита!`);
+    if(mult>=10)setTimeout(()=>showBW(label,won),200);
   } else {
-    setWinText('Без печалба. Опитайте отново!');
+    setWin('Без печалба — пробвайте пак! 🍀');
   }
-
-  // Check jackpots
-  if(totalWinThisSpin>=1000)showBigWin('🏆 JACKPOT!',totalWinThisSpin);
 }
 
-// ── FREE SPINS ──
-function startFreeSpins(){
-  freeSpins=parseInt(document.getElementById('fsCount').textContent)||10;
-  inFreeSpins=true;
-  document.getElementById('fsOverlay').classList.remove('show');
-  setWinText(`🎰 FREE SPINS! Остават: ${freeSpins}`);
-  setTimeout(()=>spin(),400);
+function startFS(){
+  document.getElementById('fsOv').classList.remove('show');
+  inFS=true;
+  setTimeout(doSpin,400);
 }
 
-// ── BIG WIN ──
-function showBigWin(label,amount){
-  document.getElementById('bwLabel').textContent=label;
-  document.getElementById('bwAmount').textContent=amount;
-  document.getElementById('bigwinOverlay').classList.add('show');
+function showBW(lbl,num){
+  document.getElementById('bwLbl').textContent=lbl;
+  document.getElementById('bwNum').textContent=num;
+  document.getElementById('bwOv').classList.add('show');
+  soundBigWin();
 }
-function closeBigWin(){document.getElementById('bigwinOverlay').classList.remove('show');}
 
-// ── CONTROLS ──
-const BET_VALUES=[1,2,5,10,20,50];
-let betIdx=0;
-function changeBet(dir){
-  betIdx=Math.max(0,Math.min(BET_VALUES.length-1,betIdx+dir));
-  bet=BET_VALUES[betIdx];updateUI();
+/* ── CONTROLS ── */
+function chBet(d){
+  betIdx=Math.max(0,Math.min(BET_OPTS.length-1,betIdx+d));
+  bet=BET_OPTS[betIdx];soundClick();updateUI();
 }
-function changeLines(dir){
-  lines=Math.max(1,Math.min(20,lines+dir));updateUI();
-}
-function maxBet(){betIdx=BET_VALUES.length-1;bet=BET_VALUES[betIdx];lines=20;updateUI();}
-let autoRunning=false;
+function chLines(d){numLines=Math.max(1,Math.min(20,numLines+d));soundClick();updateUI();}
+function maxBet(){betIdx=BET_OPTS.length-1;bet=BET_OPTS[betIdx];numLines=20;soundClick();updateUI();}
 function toggleAuto(){
-  autoRunning=!autoRunning;
-  document.getElementById('autoBtn').classList.toggle('on',autoRunning);
-  document.getElementById('autoBtn').textContent=autoRunning?'STOP AUTO':'AUTO';
-  if(autoRunning)runAuto();
+  autoOn=!autoOn;
+  document.getElementById('autoBtn').classList.toggle('on',autoOn);
+  document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO';
+  soundClick();
+  if(autoOn&&!spinning)doSpin();
 }
-function runAuto(){
-  if(!autoRunning)return;
-  if(!spinning)spin();
-  setTimeout(()=>{if(autoRunning)runAuto();},1200);
-}
-
+function setWin(t){document.getElementById('winTxt').textContent=t;}
 function updateUI(){
-  document.getElementById('betDisplay').textContent=BET_VALUES[betIdx];
-  document.getElementById('linesDisplay').textContent=lines;
-  document.getElementById('totalBetDisplay').textContent=bet*lines;
-  document.getElementById('creditsDisplay').textContent=credits.toLocaleString('bg-BG');
-  document.getElementById('wonDisplay').textContent=totalWon.toLocaleString('bg-BG');
-  document.getElementById('balanceDisplay').textContent=credits.toLocaleString('bg-BG')+' кр.';
-  // paylines highlight
-  document.querySelectorAll('.pl-btn').forEach((b,i)=>b.classList.toggle('active',i<lines));
+  document.getElementById('betEl').textContent=BET_OPTS[betIdx];
+  document.getElementById('linesEl').textContent=numLines;
+  document.getElementById('totalEl').textContent=bet*numLines;
+  document.getElementById('credEl').textContent=creds.toLocaleString('bg-BG');
+  document.getElementById('wonEl').textContent=totalWon.toLocaleString('bg-BG');
+  document.getElementById('balEl').textContent=creds.toLocaleString('bg-BG')+' кр.';
+  document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',i<numLines));
 }
-function setWinText(t){document.getElementById('winText').textContent=t;}
 
-// ── PAYLINES BUTTONS ──
-const plRow=document.getElementById('plRow');
+/* ── BUILD LINES BUTTONS ── */
+const lr=document.getElementById('linesRow');
 for(let i=0;i<20;i++){
   const b=document.createElement('button');
-  b.className='pl-btn'+(i<lines?' active':'');
+  b.className='lb'+(i<numLines?' on':'');
   b.textContent=i+1;
-  b.onclick=()=>{lines=i+1;updateUI();};
-  plRow.appendChild(b);
+  b.onclick=()=>{numLines=i+1;soundClick();updateUI();};
+  lr.appendChild(b);
 }
 
-// ── PAYTABLE ──
-const ptBody=document.getElementById('ptBody');
-SYMBOLS.filter(s=>s.id!=='wild'&&s.id!=='scatter').forEach(s=>{
-  const d=document.createElement('div');
-  d.className='pt-row';
-  d.innerHTML=`<div class="pt-sym">${s.emoji}</div><div class="pt-info"><div class="pt-name">${s.name}</div><div class="pt-pays">×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}</div></div>`;
-  ptBody.appendChild(d);
-});
-// Wild + Scatter
-[WILD,SCATTER].forEach(s=>{
-  const d=document.createElement('div');
-  d.className='pt-row';
-  d.innerHTML=`<div class="pt-sym">${s.emoji}</div><div class="pt-info"><div class="pt-name">${s.name}</div><div class="pt-pays">${s.id==='wild'?'Заменя всичко':'3+ = Free Spins'}</div></div>`;
-  ptBody.appendChild(d);
+/* ── PAYTABLE ── */
+const ptg=document.getElementById('ptGrid');
+SYMS.forEach(s=>{
+  const d=document.createElement('div');d.className='pt-cell';
+  const pays=s.id==='wild'?'Заменя всичко':s.id==='scatter'?'3+ = Free Spins':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
+  const eDisplay=s.id==='seven'?'<span style="font-family:Cinzel,serif;font-size:1.3rem;color:#e74c3c;font-weight:900">7</span>':
+    `<span class="pt-e">${s.e}</span>`;
+  d.innerHTML=`${eDisplay}<div><div class="pt-n">${s.n}</div><div class="pt-p">${pays}</div></div>`;
+  ptg.appendChild(d);
 });
 
 updateUI();
