@@ -5,136 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Fruits Deluxe — NOVA 777</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-body{background:#0a0305;color:#f0ece4;font-family:'Outfit',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;cursor:none;}
-.cur,.cur-r{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);}
-.cur{width:9px;height:9px;background:#d4a843;z-index:10000;}
-.cur-r{width:34px;height:34px;border:1px solid rgba(212,168,67,.3);z-index:9998;transition:width .2s,height .2s;}
-body:has(button:hover) .cur{width:18px;height:18px;background:#f0c866;}
-body:has(button:hover) .cur-r{width:50px;height:50px;}
-
-.topbar{height:54px;background:rgba(5,2,4,.97);border-bottom:1px solid rgba(212,168,67,.14);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;}
-.tb-logo{font-family:'Cinzel',serif;font-size:.95rem;font-weight:900;color:#d4a843;text-decoration:none;letter-spacing:.08em;}
-.tb-logo em{color:#f0ece4;font-style:normal;}
-.tb-back{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,168,67,.55);text-decoration:none;transition:color .3s;}
-.tb-back:hover{color:#d4a843;}
-.tb-balance{font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;color:#f0c866;}
-
-.game-wrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:18px 16px 32px;}
-.game-container{width:100%;max-width:880px;background:linear-gradient(160deg,#1c0910 0%,#110409 60%,#0e050b 100%);border:1px solid rgba(212,168,67,.2);}
-
-.title-bar{padding:12px 22px;text-align:center;border-bottom:1px solid rgba(212,168,67,.1);background:rgba(212,168,67,.035);}
-.title-bar h1{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:900;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
-.title-bar p{font-size:.58rem;color:rgba(212,168,67,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:2px;}
-
-.jp-bar{display:flex;justify-content:center;gap:14px;padding:8px 22px;background:rgba(0,0,0,.35);border-bottom:1px solid rgba(212,168,67,.07);}
-.jp{text-align:center;}
-.jp-l{font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.45);}
-.jp-v{font-family:'Cinzel',serif;font-size:.9rem;font-weight:700;color:#f0c866;}
-
-/* REELS */
-.reels-wrap{position:relative;padding:14px 18px;background:rgba(0,0,0,.2);}
-#canvas{display:block;width:100%;border:1px solid rgba(212,168,67,.12);background:#000;}
-
-.win-bar{height:36px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);border-top:1px solid rgba(212,168,67,.07);border-bottom:1px solid rgba(212,168,67,.07);}
-#winTxt{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:#d4a843;letter-spacing:.06em;}
-
-/* LINES SELECTOR */
-.lines-row{display:flex;justify-content:center;gap:5px;padding:7px 18px;flex-wrap:wrap;}
-.lb{font-size:.52rem;letter-spacing:.08em;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(212,168,67,.4);padding:3px 9px;cursor:none;transition:all .25s;font-family:'Outfit',sans-serif;}
-.lb.on{background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.32);color:#d4a843;}
-
-/* CONTROLS */
-.ctrl-row{padding:12px 22px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:rgba(0,0,0,.25);}
-.cg{display:flex;flex-direction:column;align-items:center;gap:5px;}
-.cl{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,168,67,.45);}
-.cv{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;color:#f0c866;}
-.cbtns{display:flex;gap:4px;}
-.cbtn{width:28px;height:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#f0ece4;font-size:1rem;cursor:none;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.cbtn:hover{background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.3);}
-.spin-wrap{display:flex;flex-direction:column;gap:7px;align-items:center;}
-.spin-btn{font-family:'Cinzel',serif;font-size:.88rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase;background:linear-gradient(135deg,#b8891e,#d4a843,#e8c866,#d4a843,#b8891e);color:#000;padding:15px 48px;border:none;cursor:none;transition:all .3s;position:relative;overflow:hidden;}
-.spin-btn:not(:disabled):hover{filter:brightness(1.15);transform:scale(1.04);box-shadow:0 6px 26px rgba(212,168,67,.38);}
-.spin-btn:disabled{opacity:.38;cursor:not-allowed;transform:none !important;}
-.aux-row{display:flex;gap:7px;}
-.aux{font-family:'Cinzel',serif;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(212,168,67,.55);padding:8px 14px;cursor:none;transition:all .3s;}
-.aux:hover,.aux.on{background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.28);color:#d4a843;}
-
-/* PAYTABLE */
-.paytable{margin-top:14px;width:100%;max-width:880px;background:rgba(5,2,4,.85);border:1px solid rgba(212,168,67,.1);}
-.pt-head{padding:10px 20px;border-bottom:1px solid rgba(212,168,67,.08);}
-.pt-head h3{font-family:'Cinzel',serif;font-size:.75rem;font-weight:700;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;}
-.pt-grid{padding:12px 18px;display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
-.pt-cell{display:flex;align-items:center;gap:8px;padding:7px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);}
-.pt-e{font-size:1.3rem;flex-shrink:0;}
-.pt-n{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,168,67,.55);}
-.pt-p{font-family:'Cinzel',serif;font-size:.68rem;font-weight:700;color:#f0c866;}
-
-/* FREE SPINS */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:700;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;backdrop-filter:blur(8px);}
-.overlay.show{opacity:1;pointer-events:all;}
-.ov-box{text-align:center;padding:48px 60px;border:1px solid rgba(212,168,67,.25);background:rgba(10,3,5,.98);}
-.ov-box h2{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:#d4a843;margin-bottom:10px;}
-.ov-box p{color:rgba(240,236,228,.5);margin-bottom:20px;font-size:.85rem;line-height:1.7;}
-.ov-num{font-family:'Cinzel',serif;font-size:4.5rem;font-weight:900;color:#f0c866;line-height:1;}
-.ov-lbl{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(212,168,67,.45);margin-top:5px;}
-.ov-btn{font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(135deg,#b8891e,#d4a843,#e8c866);color:#000;padding:13px 38px;border:none;cursor:none;margin-top:26px;transition:all .3s;display:inline-block;}
-.ov-btn:hover{filter:brightness(1.1);}
-
-/* BIG WIN */
-.bw-ov{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
-.bw-ov.show{opacity:1;pointer-events:all;}
-.bw-box{text-align:center;animation:bwIn .5s cubic-bezier(.17,.67,.32,1.4);}
-@keyframes bwIn{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
-.bw-lbl{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(212,168,67,.65);margin-bottom:6px;}
-.bw-num{font-family:'Cinzel',serif;font-size:clamp(4rem,12vw,9rem);font-weight:900;line-height:1;background:linear-gradient(135deg,#b8891e,#f0c866,#ffe8a0,#f0c866,#b8891e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 50px rgba(212,168,67,.7));}
-.bw-sub{font-size:.75rem;color:rgba(240,236,228,.35);margin-top:8px;letter-spacing:.15em;}
-.bw-close{font-family:'Cinzel',serif;font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.28);color:#d4a843;padding:11px 32px;cursor:none;margin-top:28px;display:inline-block;transition:all .3s;}
-.bw-close:hover{background:rgba(212,168,67,.22);}
-
-@media(max-width:640px){
-  .ctrl-row{flex-direction:column;align-items:center;}
-  .pt-grid{grid-template-columns:repeat(3,1fr);}
-  .spin-btn{padding:14px 36px;}
-}
-</style>
+<link rel="stylesheet" href="slot.css">
 </head>
-<body>
-<div class="cur" id="cur"></div>
-<div class="cur-r" id="curR"></div>
+<body class="theme-fruits">
+<div class="cur" id="cur"></div><div class="cur-r" id="curR"></div>
 
-<!-- FREE SPINS OVERLAY -->
+<!-- FREE SPINS -->
 <div class="overlay" id="fsOv">
   <div class="ov-box">
     <h2>🎉 FREE SPINS!</h2>
     <p>Scatter символи отключиха безплатни завъртания!</p>
-    <div class="ov-num" id="fsNum">10</div>
-    <div class="ov-lbl">безплатни завъртания</div>
+    <div class="ov-big" id="fsNum">10</div>
+    <div class="ov-sub">безплатни завъртания</div>
     <button class="ov-btn" onclick="startFS()">Играй!</button>
   </div>
 </div>
 
-<!-- BIG WIN OVERLAY -->
+<!-- BIG WIN -->
 <div class="bw-ov" id="bwOv">
   <div class="bw-box">
     <div class="bw-lbl" id="bwLbl">BIG WIN</div>
     <div class="bw-num" id="bwNum">0</div>
-    <div class="bw-sub">кредита</div>
-    <button class="bw-close" onclick="document.getElementById('bwOv').classList.remove('show')">Продължи</button>
+    <div class="bw-sub-txt">кредита</div>
+    <button class="bw-close" onclick="closeBW()">Продължи</button>
   </div>
 </div>
 
-<!-- TOP BAR -->
 <div class="topbar">
   <a href="index.html" class="tb-back">← Лоби</a>
   <a href="index.html" class="tb-logo">NOVA <em>777</em></a>
-  <span class="tb-balance" id="balEl">1 000 кр.</span>
+  <span class="tb-bal" id="balEl">1 000 кр.</span>
 </div>
 
-<!-- GAME -->
 <div class="game-wrap">
-<div class="game-container">
+<div class="game-box">
   <div class="title-bar">
     <h1>🍒 Super Fruits Deluxe</h1>
     <p>5 барабана · 20 линии · Wild · Free Spins</p>
@@ -145,32 +49,15 @@ body:has(button:hover) .cur-r{width:50px;height:50px;}
     <div class="jp"><div class="jp-l">MINOR</div><div class="jp-v">250</div></div>
     <div class="jp"><div class="jp-l">MINI</div><div class="jp-v">50</div></div>
   </div>
-  <div class="reels-wrap">
-    <canvas id="canvas"></canvas>
-  </div>
+  <div class="reels-wrap"><canvas id="cv"></canvas></div>
   <div class="win-bar"><span id="winTxt">Завъртете барабаните — Добра Luck! 🍀</span></div>
   <div class="lines-row" id="linesRow"></div>
   <div class="ctrl-row">
-    <div class="cg">
-      <div class="cl">Залог/линия</div>
-      <div class="cv" id="betEl">1</div>
-      <div class="cbtns">
-        <button class="cbtn" onclick="chBet(-1)">−</button>
-        <button class="cbtn" onclick="chBet(1)">+</button>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cl">Линии</div>
-      <div class="cv" id="linesEl">20</div>
-      <div class="cbtns">
-        <button class="cbtn" onclick="chLines(-5)">−</button>
-        <button class="cbtn" onclick="chLines(5)">+</button>
-      </div>
-    </div>
-    <div class="cg">
-      <div class="cl">Общо</div>
-      <div class="cv" id="totalEl">20</div>
-    </div>
+    <div class="cg"><div class="cl">Залог/линия</div><div class="cv" id="betEl">1</div>
+      <div class="cbtns"><button class="cbtn" onclick="chBet(-1)">−</button><button class="cbtn" onclick="chBet(1)">+</button></div></div>
+    <div class="cg"><div class="cl">Линии</div><div class="cv" id="linesEl">20</div>
+      <div class="cbtns"><button class="cbtn" onclick="chLines(-5)">−</button><button class="cbtn" onclick="chLines(5)">+</button></div></div>
+    <div class="cg"><div class="cl">Общо залог</div><div class="cv" id="totalEl">20</div></div>
     <div class="spin-wrap">
       <button class="spin-btn" id="spinBtn" onclick="doSpin()">▶ SPIN</button>
       <div class="aux-row">
@@ -178,105 +65,46 @@ body:has(button:hover) .cur-r{width:50px;height:50px;}
         <button class="aux" onclick="maxBet()">MAX BET</button>
       </div>
     </div>
-    <div class="cg">
-      <div class="cl">Кредити</div>
-      <div class="cv" id="credEl">1 000</div>
-    </div>
-    <div class="cg">
-      <div class="cl">Спечелено</div>
-      <div class="cv" id="wonEl">0</div>
-    </div>
+    <div class="cg"><div class="cl">Кредити</div><div class="cv" id="credEl">1 000</div></div>
+    <div class="cg"><div class="cl">Спечелено</div><div class="cv" id="wonEl">0</div></div>
   </div>
 </div>
-
-<!-- PAYTABLE -->
 <div class="paytable">
-  <div class="pt-head"><h3>📋 Изплащания (3 / 4 / 5 еднакви)</h3></div>
+  <div class="pt-head"><h3>📋 Изплащания — 3 / 4 / 5 еднакви</h3></div>
   <div class="pt-grid" id="ptGrid"></div>
 </div>
 </div>
 
+<script src="engine.js"></script>
 <script>
-/* ── CURSOR ── */
+// CURSOR
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-(function tick(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(tick);})();
+(function t(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(t);})();
 
-/* ── WEB AUDIO ENGINE ── */
-let audioCtx=null;
-function getAudio(){
-  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playTone(freq,type,duration,vol=0.18,delay=0){
-  try{
-    const ac=getAudio();
-    const o=ac.createOscillator();
-    const g=ac.createGain();
-    o.connect(g);g.connect(ac.destination);
-    o.type=type;o.frequency.setValueAtTime(freq,ac.currentTime+delay);
-    g.gain.setValueAtTime(0,ac.currentTime+delay);
-    g.gain.linearRampToValueAtTime(vol,ac.currentTime+delay+0.01);
-    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+delay+duration);
-    o.start(ac.currentTime+delay);
-    o.stop(ac.currentTime+delay+duration+0.05);
-  }catch(e){}
-}
-
-function soundSpin(){
-  // Clicking/ticking sound — rapid pulses
-  for(let i=0;i<18;i++){
-    playTone(80+Math.random()*40,'square',0.04,0.12,i*0.055);
-  }
-}
-function soundReelStop(col){
-  // Each reel stops with a satisfying thud
-  playTone(180-col*20,'sine',0.12,0.25,0);
-  playTone(90,'sine',0.08,0.15,0.06);
-}
-function soundWin(amount){
-  if(amount<=0)return;
-  // ascending chime
-  const notes=[523,659,784,1047];
-  notes.forEach((f,i)=>playTone(f,'sine',0.18,0.2,i*0.1));
-}
-function soundBigWin(){
-  const notes=[523,659,784,1047,1319,1568];
-  notes.forEach((f,i)=>{
-    playTone(f,'sine',0.3,0.25,i*0.1);
-    playTone(f*1.5,'triangle',0.15,0.12,i*0.1+0.05);
-  });
-}
-function soundClick(){playTone(800,'sine',0.06,0.1);}
-function soundFreeSpins(){
-  [400,500,600,800,1000].forEach((f,i)=>playTone(f,'sine',0.25,0.22,i*0.12));
-}
-
-/* ── SYMBOLS ── */
-const SYMS=[
-  {id:'cherry', e:'🍒',n:'Череша',  pays:[0,0,5,15,50],  w:18},
-  {id:'lemon',  e:'🍋',n:'Лимон',   pays:[0,0,5,15,40],  w:16},
-  {id:'orange', e:'🍊',n:'Портокал',pays:[0,0,8,20,60],  w:14},
-  {id:'grape',  e:'🍇',n:'Грозде',  pays:[0,0,8,25,80],  w:12},
-  {id:'melon',  e:'🍉',n:'Диня',    pays:[0,0,10,30,100],w:10},
-  {id:'bell',   e:'🔔',n:'Камбана', pays:[0,0,15,50,150],w:8},
-  {id:'star',   e:'⭐',n:'Звезда',  pays:[0,0,20,75,200],w:6},
-  {id:'seven',  e:'7', n:'SEVEN',   pays:[0,0,30,100,500],w:4},
+const SYMS = [
+  {id:'cherry', e:'🍒',n:'Череша',  pays:[0,0,5,15,50],   w:18},
+  {id:'lemon',  e:'🍋',n:'Лимон',   pays:[0,0,5,15,40],   w:16},
+  {id:'orange', e:'🍊',n:'Портокал',pays:[0,0,8,20,60],   w:14},
+  {id:'grape',  e:'🍇',n:'Грозде',  pays:[0,0,8,25,80],   w:12},
+  {id:'melon',  e:'🍉',n:'Диня',    pays:[0,0,10,30,100], w:10},
+  {id:'bell',   e:'🔔',n:'Камбана', pays:[0,0,15,50,150], w:8},
+  {id:'star',   e:'⭐',n:'Звезда',  pays:[0,0,20,75,200], w:6},
+  {id:'seven',  e:'7', n:'SEVEN',   pays:[0,0,30,100,500],w:4,
+    draw:(ctx,x,y,w,h)=>{
+      ctx.font=`bold ${Math.round(h*.52)}px Cinzel,serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillText('7',x+w/2+1.5,y+h/2+1.5);
+      ctx.fillStyle='#e74c3c';ctx.fillText('7',x+w/2,y+h/2);
+    }
+  },
   {id:'diamond',e:'💎',n:'Диамант', pays:[0,0,50,200,1000],w:2},
-  {id:'wild',   e:'🃏',n:'WILD',    pays:[0,0,0,0,0],    w:3},
-  {id:'scatter',e:'💫',n:'SCATTER', pays:[0,0,2,10,50],  w:3},
+  {id:'wild',   e:'🃏',n:'WILD',    pays:[0,0,0,0,0],    w:3, wild:true},
+  {id:'scatter',e:'💫',n:'SCATTER', pays:[0,0,2,10,50],  w:3, scatter:true},
 ];
-const WILD_SYM=SYMS.find(s=>s.id==='wild');
-const SCAT_SYM=SYMS.find(s=>s.id==='scatter');
-const TOTAL_W=SYMS.reduce((a,s)=>a+s.w,0);
-function rndSym(){let r=Math.random()*TOTAL_W;for(const s of SYMS){r-=s.w;if(r<=0)return s;}return SYMS[0];}
 
-const ROWS=3,COLS=5;
-
-/* 20 paylines on 5×3 grid */
-const LINES=[
+const LINES = [
   [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],
   [0,1,2,1,0],[2,1,0,1,2],
   [0,0,1,2,2],[2,2,1,0,0],
@@ -289,391 +117,90 @@ const LINES=[
   [1,0,2,0,1],
 ];
 
-/* ── STATE ── */
-let creds=1000,bet=1,numLines=20,totalWon=0;
-let spinning=false,autoOn=false;
-let freeSpins=0,inFS=false;
-const BET_OPTS=[1,2,5,10,20,50];let betIdx=0;
+const engine = new ReelEngine(document.getElementById('cv'), {
+  rows:3, cols:5,
+  symbols: SYMS,
+  paylines: LINES,
+  theme:{
+    bg0:'#1c0910',bg1:'#0e050b',
+    gridLine:'rgba(212,168,67,.09)',
+    winLine:'rgba(212,168,67,.65)',
+    winCell:'rgba(212,168,67,.18)',
+    winBorder:'rgba(212,168,67,.75)',
+    vignette:'rgba(14,5,11,.82)',
+    centerLine:'rgba(212,168,67,.16)',
+  }
+});
 
-/* ── REEL ENGINE ── */
-/*
-  Each reel has a "strip" of symbols (long array).
-  During spin, we scroll through it at speed.
-  When stopping, we snap to show the target 3 symbols.
-*/
-const STRIP_LEN=40;
-// Generate strips — each reel has a long list of random symbols
-let strips=Array.from({length:COLS},()=>Array.from({length:STRIP_LEN},()=>rndSym()));
+let creds=1000, bet=1, numLines=20, totalWon=0;
+let spinning=false, autoOn=false, freeSpins=0, inFS=false;
+const BETS=[1,2,5,10,20,50]; let bIdx=0;
 
-// Current visible state: which strip index is at the TOP of each reel
-let reelTop=[0,0,0,0,0]; // index into strip[] for the topmost visible symbol
-// Result grid: what's shown when stopped
-let grid=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>rndSym()));
+engine.onAllStopped = () => {
+  spinning = false;
+  document.getElementById('spinBtn').disabled = false;
 
-// Spin animation state per reel
-let reels=Array.from({length:COLS},(_,i)=>({
-  spinning:false,
-  // offset in pixels from top of current symbol (0 = aligned, positive = scrolled down)
-  offset:0,
-  speed:0,
-  targetTop:0,   // strip index to land on
-  stopping:false,
-  done:true,
-}));
+  const {totalWin, scatCount} = engine.evaluate(bet, numLines);
+  let won = totalWin;
 
-let winCells=new Set(),winLines=[];
-let flashT=0;
+  if (scatCount >= 3 && !inFS) {
+    const fc = scatCount >= 5 ? 20 : scatCount >= 4 ? 15 : 10;
+    freeSpins = fc;
+    document.getElementById('fsNum').textContent = fc;
+    setTimeout(() => { SND.freespin(); document.getElementById('fsOv').classList.add('show'); }, 300);
+  }
 
-/* ── CANVAS ── */
-const cv=document.getElementById('canvas');
-const ctx=cv.getContext('2d');
-let CW,CH,CELL_W,CELL_H;
+  creds += won; totalWon += won; updateUI();
 
-function resize(){
-  CW=cv.offsetWidth;
-  CH=Math.round(CW*(3/5));
-  cv.width=CW;cv.height=CH;
-  CELL_W=CW/COLS;CELL_H=CH/ROWS;
-}
-resize();
-window.addEventListener('resize',resize);
-
-/* ── DRAW ── */
-function drawSymbol(sym,cx,cy,w,h,highlight,alpha=1){
-  ctx.save();
-  ctx.globalAlpha=alpha;
-  if(highlight){
-    const flash=flashT%24<12;
-    if(flash){
-      ctx.fillStyle='rgba(212,168,67,.18)';
-      ctx.fillRect(cx+2,cy+2,w-4,h-4);
-      ctx.strokeStyle='rgba(212,168,67,.7)';
-      ctx.lineWidth=2.5;
-      ctx.strokeRect(cx+3,cy+3,w-6,h-6);
-    }
+  if (won > 0) {
+    const mult = won / (bet * numLines);
+    let lbl = 'WIN';
+    if (mult >= 50) lbl = '🎆 MEGA WIN';
+    else if (mult >= 20) lbl = '🏆 SUPER WIN';
+    else if (mult >= 10) lbl = '✨ BIG WIN';
+    setWin(`${lbl}: +${won} кредита!`);
+    SND.win();
+    if (mult >= 10) setTimeout(() => showBW(lbl, won), 250);
   } else {
-    ctx.fillStyle='rgba(255,255,255,.02)';
-    ctx.fillRect(cx+1,cy+1,w-2,h-2);
+    setWin('Без печалба — опитайте пак! 🍀');
   }
 
-  // Draw symbol
-  if(sym.id==='seven'){
-    // Bold red 7
-    ctx.font=`bold ${Math.round(h*.55)}px 'Cinzel',serif`;
-    ctx.fillStyle='#e74c3c';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.fillText('7',cx+w/2,cy+h/2);
-    // shadow
-    ctx.fillStyle='rgba(0,0,0,.4)';
-    ctx.font=`bold ${Math.round(h*.55)}px 'Cinzel',serif`;
-    ctx.fillText('7',cx+w/2+1,cy+h/2+1);
-    ctx.fillStyle='#e74c3c';
-    ctx.fillText('7',cx+w/2,cy+h/2);
-  } else {
-    const fs=Math.round(h*.48);
-    ctx.font=`${fs}px serif`;
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    // slight shadow for depth
-    ctx.fillStyle='rgba(0,0,0,.3)';
-    ctx.fillText(sym.e,cx+w/2+1,cy+h/2+1);
-    ctx.fillStyle='rgba(255,255,255,1)';
-    ctx.fillText(sym.e,cx+w/2,cy+h/2);
+  if (inFS) {
+    freeSpins--;
+    if (freeSpins > 0) { setWin(`FREE SPINS — остават: ${freeSpins}`); setTimeout(doSpin, 900); }
+    else { inFS = false; setWin('Free Spins приключиха!'); }
+  } else if (autoOn) {
+    setTimeout(doSpin, 1000);
   }
-  ctx.restore();
-}
+};
 
-function drawFrame(){
-  if(!CW||!CELL_H){requestAnimationFrame(drawFrame);return;}
-
-  // Background
-  const bg=ctx.createLinearGradient(0,0,0,CH);
-  bg.addColorStop(0,'#1c0910');bg.addColorStop(1,'#0e050b');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,CW,CH);
-
-  // Per-reel rendering
-  for(let c=0;c<COLS;c++){
-    const rx=c*CELL_W;
-    const reel=reels[c];
-
-    ctx.save();
-    // Clip to this reel column
-    ctx.beginPath();ctx.rect(rx+1,0,CELL_W-2,CH);ctx.clip();
-
-    if(reel.spinning||reel.speed>0){
-      // ── SPINNING: scroll symbols ──
-      // offset tells us how many px we've scrolled past the current symbol
-      const off=reel.offset % CELL_H;
-      // Which strip index is at the very top (partially visible)
-      const topIdx=((reel.targetTop - Math.floor(reel.offset/CELL_H)) % STRIP_LEN + STRIP_LEN) % STRIP_LEN;
-
-      for(let row=-1;row<ROWS+1;row++){
-        const sy=row*CELL_H - off;
-        if(sy>CH+CELL_H||sy<-CELL_H*1.5)continue;
-        const sIdx=((topIdx+row)%STRIP_LEN+STRIP_LEN)%STRIP_LEN;
-        const sym=strips[c][sIdx];
-        drawSymbol(sym,rx,sy,CELL_W,CELL_H,false);
-      }
-    } else {
-      // ── STOPPED: show grid ──
-      for(let r=0;r<ROWS;r++){
-        const sym=grid[c][r];
-        const isWin=winCells.has(`${c},${r}`);
-        drawSymbol(sym,rx,r*CELL_H,CELL_W,CELL_H,isWin);
-      }
-      if(winCells.size)flashT++;
-    }
-
-    ctx.restore();
-
-    // Reel separator
-    ctx.strokeStyle='rgba(212,168,67,.1)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(rx,0);ctx.lineTo(rx,CH);ctx.stroke();
-  }
-
-  // Row separators
-  ctx.strokeStyle='rgba(212,168,67,.07)';ctx.lineWidth=1;
-  for(let r=1;r<ROWS;r++){
-    ctx.beginPath();ctx.moveTo(0,r*CELL_H);ctx.lineTo(CW,r*CELL_H);ctx.stroke();
-  }
-
-  // Win line drawing
-  const anySpinning=reels.some(r=>r.spinning||r.speed>0);
-  if(!anySpinning&&winLines.length&&flashT%24<12){
-    winLines.forEach(li=>{
-      const line=LINES[li];
-      ctx.beginPath();
-      line.forEach((row,col)=>{
-        const px=col*CELL_W+CELL_W/2;
-        const py=row*CELL_H+CELL_H/2;
-        col===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-      });
-      ctx.strokeStyle='rgba(212,168,67,.55)';
-      ctx.lineWidth=2.5;ctx.setLineDash([8,5]);ctx.stroke();ctx.setLineDash([]);
-    });
-  }
-
-  // Top/bottom vignette
-  const vTop=ctx.createLinearGradient(0,0,0,CELL_H*.7);
-  vTop.addColorStop(0,'rgba(14,5,11,.8)');vTop.addColorStop(1,'rgba(14,5,11,0)');
-  ctx.fillStyle=vTop;ctx.fillRect(0,0,CW,CELL_H*.7);
-  const vBot=ctx.createLinearGradient(0,CH-CELL_H*.7,0,CH);
-  vBot.addColorStop(0,'rgba(14,5,11,0)');vBot.addColorStop(1,'rgba(14,5,11,.8)');
-  ctx.fillStyle=vBot;ctx.fillRect(0,CH-CELL_H*.7,CW,CELL_H*.7);
-
-  // Center payline marker
-  ctx.strokeStyle='rgba(212,168,67,.18)';ctx.lineWidth=1;ctx.setLineDash([6,7]);
-  ctx.beginPath();ctx.moveTo(0,CH/2);ctx.lineTo(CW,CH/2);ctx.stroke();ctx.setLineDash([]);
-
-  requestAnimationFrame(drawFrame);
-}
-drawFrame();
-
-/* ── SPIN PHYSICS ── */
-let lastT=0;
-function physicsLoop(t){
-  const dt=Math.min(t-lastT,50);lastT=t;
-  const anyMoving=reels.some(r=>r.spinning||r.speed>0);
-  if(anyMoving){
-    reels.forEach((r,c)=>{
-      if(!r.spinning&&r.speed<=0)return;
-      // Accelerate or decelerate
-      if(r.spinning&&!r.stopping){
-        r.speed=Math.min(r.speed+dt*0.8,14+c*0.4);
-      }
-      if(r.stopping){
-        // Decelerate towards target
-        const remain=r.targetOffset-r.offset;
-        if(remain<=0||r.speed<0.3){
-          r.speed=0;r.spinning=false;r.stopping=false;
-          r.offset=0;
-          soundReelStop(c);
-          // Set grid from result
-          for(let row=0;row<ROWS;row++){
-            grid[c][row]=strips[c][(r.targetTop+row)%STRIP_LEN];
-          }
-          // Check if all done
-          if(reels.every(r2=>!r2.spinning&&r2.speed<=0)){
-            onAllStopped();
-          }
-        } else {
-          r.speed=Math.max(r.speed-dt*0.15,0.3);
-        }
-      }
-      if(r.speed>0){
-        r.offset+=r.speed*(dt/16);
-      }
-    });
-  }
-  requestAnimationFrame(physicsLoop);
-}
-requestAnimationFrame(physicsLoop);
-
-/* ── DO SPIN ── */
-function doSpin(){
-  if(spinning)return;
-  getAudio(); // unlock audio on first interaction
-  const total=bet*numLines;
-  if(creds<total&&!inFS){setWin('Недостатъчно кредити!');return;}
-  if(!inFS)creds-=total;
-  spinning=true;
-  soundClick();
-  winCells.clear();winLines=[];flashT=0;
-  document.getElementById('spinBtn').disabled=true;
+function doSpin() {
+  if (spinning) return;
+  _ac && _ac(); // unlock audio
+  const total = bet * numLines;
+  if (creds < total && !inFS) { setWin('Недостатъчно кредити!'); return; }
+  if (!inFS) creds -= total;
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
   setWin('Въртене...');
   updateUI();
+  SND.spinStart();
 
-  // Generate result grid BEFORE spinning
-  const result=Array.from({length:COLS},()=>Array.from({length:ROWS},()=>rndSym()));
-
-  // Place result at the end of each strip so reels land on it
-  for(let c=0;c<COLS;c++){
-    // Place result symbols at position STRIP_LEN-ROWS..STRIP_LEN-1
-    const baseIdx=STRIP_LEN-ROWS;
-    for(let r=0;r<ROWS;r++){
-      strips[c][(baseIdx+r)%STRIP_LEN]=result[c][r];
-    }
-    // Fill everything else with random
-    for(let i=0;i<STRIP_LEN-ROWS;i++){
-      strips[c][i]=rndSym();
-    }
-  }
-
-  // Play spinning tick sound
-  soundSpin();
-
-  // Start each reel
-  reels.forEach((r,c)=>{
-    r.spinning=true;
-    r.stopping=false;
-    r.speed=0;
-    r.offset=0;
-    r.targetTop=STRIP_LEN-ROWS; // land on result at bottom of strip
-    r.targetOffset=STRIP_LEN*CELL_H; // how far to scroll before snapping
-  });
-
-  // Stop reels one by one with delay
-  const BASE_TIME=700;
-  reels.forEach((r,c)=>{
-    setTimeout(()=>{
-      r.stopping=true;
-      // targetOffset = current offset + some extra to make it feel smooth
-      r.targetOffset=r.offset+(CELL_H*4);
-    },BASE_TIME+c*280);
-  });
-
-  // After last reel stops (physics handles the rest via onAllStopped)
+  const result = Array.from({length:5}, () => Array.from({length:3}, () => engine._rnd()));
+  // Delay per reel: 0ms, 280ms, 560ms, 840ms, 1120ms before deceleration starts
+  engine.spin(result, [600, 900, 1200, 1500, 1800]);
 }
 
-function onAllStopped(){
-  spinning=false;
-  document.getElementById('spinBtn').disabled=false;
-  evaluate();
-  if(inFS){
-    freeSpins--;
-    setWin(freeSpins>0?`FREE SPINS: ${freeSpins} остават`:`✓ Free Spins приключиха!`);
-    if(freeSpins>0)setTimeout(doSpin,900);
-    else inFS=false;
-  }
-  if(autoOn&&!inFS)setTimeout(doSpin,1000);
-}
-
-/* ── EVALUATE WIN ── */
-function evaluate(){
-  let won=0;
-  winCells.clear();winLines=[];
-
-  // Count scatters anywhere
-  let scatCount=0;
-  for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')scatCount++;
-
-  // Check paylines
-  LINES.slice(0,numLines).forEach((line,li)=>{
-    const syms=line.map((row,col)=>grid[col][row]);
-    // Find first non-wild
-    let matchSym=null,cnt=0;
-    for(let i=0;i<syms.length;i++){
-      const s=syms[i];
-      if(s.id==='wild'){cnt++;continue;}
-      if(s.id==='scatter'){break;}
-      if(!matchSym){matchSym=s;cnt++;continue;}
-      if(s.id===matchSym.id)cnt++;else break;
-    }
-    if(cnt>=3&&matchSym){
-      const payout=(matchSym.pays[cnt-1]||0);
-      if(payout>0){
-        const lineWon=payout*bet;
-        won+=lineWon;
-        winLines.push(li);
-        line.slice(0,cnt).forEach((row,col)=>winCells.add(`${col},${row}`));
-      }
-    }
-  });
-
-  // Scatter pays
-  if(scatCount>=3){
-    const sp=SCAT_SYM.pays[Math.min(scatCount,5)-1]||0;
-    won+=sp*bet*numLines;
-    for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++)if(grid[c][r].id==='scatter')winCells.add(`${c},${r}`);
-    if(!inFS){
-      const fsCount=scatCount>=5?20:scatCount>=4?15:10;
-      document.getElementById('fsNum').textContent=fsCount;
-      freeSpins=fsCount;
-      setTimeout(()=>{
-        soundFreeSpins();
-        document.getElementById('fsOv').classList.add('show');
-      },400);
-    }
-  }
-
-  creds+=won;totalWon+=won;
-  updateUI();
-
-  if(won>0){
-    soundWin(won);
-    const mult=won/(bet*numLines);
-    let label='WIN';
-    if(mult>=50){label='🎆 MEGA WIN';soundBigWin();}
-    else if(mult>=20)label='🏆 SUPER WIN';
-    else if(mult>=10)label='✨ BIG WIN';
-    setWin(`${label}: +${won} кредита!`);
-    if(mult>=10)setTimeout(()=>showBW(label,won),200);
-  } else {
-    setWin('Без печалба — пробвайте пак! 🍀');
-  }
-}
-
-function startFS(){
-  document.getElementById('fsOv').classList.remove('show');
-  inFS=true;
-  setTimeout(doSpin,400);
-}
-
-function showBW(lbl,num){
-  document.getElementById('bwLbl').textContent=lbl;
-  document.getElementById('bwNum').textContent=num;
-  document.getElementById('bwOv').classList.add('show');
-  soundBigWin();
-}
-
-/* ── CONTROLS ── */
-function chBet(d){
-  betIdx=Math.max(0,Math.min(BET_OPTS.length-1,betIdx+d));
-  bet=BET_OPTS[betIdx];soundClick();updateUI();
-}
-function chLines(d){numLines=Math.max(1,Math.min(20,numLines+d));soundClick();updateUI();}
-function maxBet(){betIdx=BET_OPTS.length-1;bet=BET_OPTS[betIdx];numLines=20;soundClick();updateUI();}
-function toggleAuto(){
-  autoOn=!autoOn;
-  document.getElementById('autoBtn').classList.toggle('on',autoOn);
-  document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO';
-  soundClick();
-  if(autoOn&&!spinning)doSpin();
-}
-function setWin(t){document.getElementById('winTxt').textContent=t;}
-function updateUI(){
-  document.getElementById('betEl').textContent=BET_OPTS[betIdx];
+function startFS() { document.getElementById('fsOv').classList.remove('show'); inFS=true; setTimeout(doSpin,400); }
+function showBW(l,n) { document.getElementById('bwLbl').textContent=l; document.getElementById('bwNum').textContent=n; document.getElementById('bwOv').classList.add('show'); SND.bigwin(); }
+function closeBW() { document.getElementById('bwOv').classList.remove('show'); }
+function chBet(d) { bIdx=Math.max(0,Math.min(BETS.length-1,bIdx+d)); bet=BETS[bIdx]; SND.click(); updateUI(); }
+function chLines(d) { numLines=Math.max(1,Math.min(20,numLines+d)); SND.click(); updateUI(); }
+function maxBet() { bIdx=BETS.length-1; bet=BETS[bIdx]; numLines=20; SND.click(); updateUI(); }
+function toggleAuto() { autoOn=!autoOn; document.getElementById('autoBtn').classList.toggle('on',autoOn); document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO'; SND.click(); if(autoOn&&!spinning)doSpin(); }
+function setWin(t) { document.getElementById('winTxt').textContent=t; }
+function updateUI() {
+  document.getElementById('betEl').textContent=BETS[bIdx];
   document.getElementById('linesEl').textContent=numLines;
   document.getElementById('totalEl').textContent=bet*numLines;
   document.getElementById('credEl').textContent=creds.toLocaleString('bg-BG');
@@ -682,27 +209,19 @@ function updateUI(){
   document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',i<numLines));
 }
 
-/* ── BUILD LINES BUTTONS ── */
+// Lines buttons
 const lr=document.getElementById('linesRow');
-for(let i=0;i<20;i++){
-  const b=document.createElement('button');
-  b.className='lb'+(i<numLines?' on':'');
-  b.textContent=i+1;
-  b.onclick=()=>{numLines=i+1;soundClick();updateUI();};
-  lr.appendChild(b);
-}
+for(let i=0;i<20;i++){const b=document.createElement('button');b.className='lb'+(i<numLines?' on':'');b.textContent=i+1;b.onclick=()=>{numLines=i+1;SND.click();updateUI();};lr.appendChild(b);}
 
-/* ── PAYTABLE ── */
-const ptg=document.getElementById('ptGrid');
+// Paytable
+const pg=document.getElementById('ptGrid');
 SYMS.forEach(s=>{
   const d=document.createElement('div');d.className='pt-cell';
-  const pays=s.id==='wild'?'Заменя всичко':s.id==='scatter'?'3+ = Free Spins':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
-  const eDisplay=s.id==='seven'?'<span style="font-family:Cinzel,serif;font-size:1.3rem;color:#e74c3c;font-weight:900">7</span>':
-    `<span class="pt-e">${s.e}</span>`;
-  d.innerHTML=`${eDisplay}<div><div class="pt-n">${s.n}</div><div class="pt-p">${pays}</div></div>`;
-  ptg.appendChild(d);
+  let p=s.wild?'Заменя всичко':s.scatter?'3+=Free Spins':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
+  const eHtml=s.id==='seven'?'<span style="font-family:Cinzel,serif;font-size:1.3rem;color:#e74c3c;font-weight:900">7</span>':`<span class="pt-e">${s.e}</span>`;
+  d.innerHTML=`${eHtml}<div><div class="pt-n">${s.n}</div><div class="pt-p">${p}</div></div>`;
+  pg.appendChild(d);
 });
-
 updateUI();
 </script>
 </body>
