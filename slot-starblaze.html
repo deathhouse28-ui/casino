@@ -4,29 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Star Blaze — NOVA 777</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="slot.css">
 </head>
 <body class="theme-space">
-<div class="cur" id="cur"></div><div class="cur-r" id="curR"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
 
-<!-- BONUS GAME -->
+<!-- BONUS -->
 <div class="overlay" id="bonOv">
   <div class="ov-box">
     <h2>✨ BONUS ROUND</h2>
-    <p>Изберете звезди за скрити награди! <strong id="picksLeft" style="color:#6ec6f5">3</strong> избора.</p>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0;" id="starGrid"></div>
-    <div>Събрано: <div class="ov-big" id="bonTotal">0</div> кр.</div>
-    <button class="ov-btn" id="collectBtn" style="display:none;margin-top:14px;" onclick="collectBonus()">Вземи наградата →</button>
+    <p>Изберете звезди и открийте скритите награди!<br><strong id="picksLeft" style="color:#6ec6f5">3</strong> избора остават.</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0" id="starGrid"></div>
+    <div style="margin-top:10px">
+      Събрано: <span style="font-family:Cinzel,serif;font-size:2rem;font-weight:900;color:#6ec6f5;display:block" id="bonTotal">0</span> кредита
+    </div>
+    <button class="ov-btn" id="collectBtn" style="display:none;background:linear-gradient(135deg,#1a4a8a,#2060b0,#6ec6f5);color:#001828" onclick="collectBonus()">Вземи наградата!</button>
   </div>
 </div>
 
 <!-- BIG WIN -->
 <div class="bw-ov" id="bwOv">
-  <div class="bw-box">
+  <div class="confetti" id="conf"></div>
+  <div class="bw-inner">
     <div class="bw-lbl" id="bwLbl">BIG WIN</div>
     <div class="bw-num" id="bwNum">0</div>
-    <div class="bw-sub-txt">кредита</div>
+    <div class="bw-sub2">кредита</div>
     <button class="bw-close" onclick="closeBW()">Продължи</button>
   </div>
 </div>
@@ -38,47 +41,84 @@
 </div>
 
 <div class="game-wrap">
-<div class="game-box">
-  <div class="title-bar">
-    <h1>⭐ Star Blaze</h1>
-    <p>5 барабана · 10 линии · Scatter · Bonus Round</p>
-  </div>
-  <div class="jp-bar">
-    <div class="jp"><div class="jp-l">STAR JP</div><div class="jp-v">7 777</div></div>
-    <div class="jp"><div class="jp-l">GALAXY</div><div class="jp-v">2 500</div></div>
-    <div class="jp"><div class="jp-l">COMET</div><div class="jp-v">500</div></div>
-    <div class="jp"><div class="jp-l">NEBULA</div><div class="jp-v">100</div></div>
-  </div>
-  <div class="reels-wrap"><canvas id="cv"></canvas></div>
-  <div class="win-bar"><span id="winTxt">⭐ Завъртете барабаните!</span></div>
-  <!-- Bonus meter -->
-  <div style="padding:7px 18px;display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);">
-    <span style="font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(110,198,245,.45);flex-shrink:0">Bonus Meter</span>
-    <div style="flex:1;height:7px;background:rgba(255,255,255,.05);border:1px solid rgba(110,198,245,.1);overflow:hidden;">
-      <div id="bmFill" style="height:100%;background:linear-gradient(90deg,#1a4a8a,#6ec6f5);width:0%;transition:width .5s ease;"></div>
+<div class="game-machine">
+
+  <div class="machine-top">
+    <div>
+      <div class="machine-name" style="color:#6ec6f5;text-shadow:0 0 24px rgba(110,198,245,.5)">⭐ Star Blaze</div>
+      <div class="machine-name-sub" style="color:rgba(110,198,245,.45)">5 барабана · 10 линии · Scatter · Bonus Round</div>
     </div>
-    <span id="bmPct" style="font-family:'Cinzel',serif;font-size:.68rem;color:#6ec6f5;min-width:32px;text-align:right;">0%</span>
   </div>
-  <div class="lines-row" id="linesRow"></div>
-  <div class="ctrl-row">
-    <div class="cg"><div class="cl">Залог/линия</div><div class="cv" id="betEl">1</div>
-      <div class="cbtns"><button class="cbtn" onclick="chBet(-1)">−</button><button class="cbtn" onclick="chBet(1)">+</button></div></div>
-    <div class="cg"><div class="cl">Линии</div><div class="cv" id="linesEl">10</div>
-      <div class="cbtns"><button class="cbtn" onclick="chLines(-1)">−</button><button class="cbtn" onclick="chLines(1)">+</button></div></div>
-    <div class="cg"><div class="cl">Общо залог</div><div class="cv" id="totalEl">10</div></div>
-    <div class="spin-wrap">
-      <button class="spin-btn" id="spinBtn" onclick="doSpin()" style="background:linear-gradient(135deg,#1a3a7a,#2060b0,#4090d0,#2060b0,#1a3a7a);">▶ SPIN</button>
+
+  <div class="jp-meters" style="border-bottom:1px solid rgba(110,198,245,.08)">
+    <div class="jp-meter grand" style="background:rgba(110,198,245,.06)"><span class="jp-lbl">STAR JP</span><span class="jp-val">7 777</span></div>
+    <div class="jp-meter"><span class="jp-lbl">GALAXY</span><span class="jp-val">2 500</span></div>
+    <div class="jp-meter"><span class="jp-lbl">COMET</span><span class="jp-val">500</span></div>
+    <div class="jp-meter"><span class="jp-lbl">NEBULA</span><span class="jp-val">100</span></div>
+  </div>
+
+  <div class="reels-area">
+    <canvas id="cv"></canvas>
+  </div>
+
+  <div class="win-display" style="border-color:rgba(110,198,245,.08)">
+    <span id="winTxt" style="color:#6ec6f5">⭐ Завъртете барабаните!</span>
+  </div>
+
+  <!-- Bonus meter -->
+  <div style="padding:7px 16px;display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.04)">
+    <span style="font-size:.48rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(110,198,245,.4);flex-shrink:0;font-family:Outfit,sans-serif">Bonus Meter</span>
+    <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border:1px solid rgba(110,198,245,.12);overflow:hidden;border-radius:1px">
+      <div id="bmFill" style="height:100%;background:linear-gradient(90deg,#1a3a7a,#2060b0,#6ec6f5,#b8e4ff);width:0%;transition:width .5s ease;border-radius:1px"></div>
+    </div>
+    <span id="bmPct" style="font-family:'Cinzel',serif;font-size:.7rem;color:#6ec6f5;min-width:34px;text-align:right">0%</span>
+  </div>
+
+  <div class="lines-wrap" style="border-color:rgba(110,198,245,.08)">
+    <span class="lines-label">Линии</span>
+    <div class="lines-btns" id="linesRow"></div>
+  </div>
+
+  <div class="ctrl-panel">
+    <div class="cg">
+      <div class="cl">Залог / линия</div>
+      <div class="cv" id="betEl">1</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chBet(-1)">−</button>
+        <button class="cbtn" onclick="chBet(1)">+</button>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cl">Линии</div>
+      <div class="cv" id="linesEl">10</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chLines(-1)">−</button>
+        <button class="cbtn" onclick="chLines(1)">+</button>
+      </div>
+    </div>
+    <div class="spin-zone">
+      <button class="spin-btn" id="spinBtn" onclick="doSpin()">▶ SPIN</button>
       <div class="aux-row">
         <button class="aux" id="autoBtn" onclick="toggleAuto()">AUTO</button>
         <button class="aux" onclick="maxBet()">MAX</button>
       </div>
     </div>
-    <div class="cg"><div class="cl">Кредити</div><div class="cv" id="credEl">1 000</div></div>
-    <div class="cg"><div class="cl">Спечелено</div><div class="cv" id="wonEl">0</div></div>
+    <div class="cg">
+      <div class="cl">Кредити</div>
+      <div class="cv" id="credEl">1 000</div>
+    </div>
+    <div class="cg">
+      <div class="cl">Спечелено</div>
+      <div class="cv" id="wonEl">0</div>
+    </div>
   </div>
+
 </div>
+
 <div class="paytable">
-  <div class="pt-head"><h3>📋 Изплащания — 3 / 4 / 5 еднакви</h3></div>
+  <div class="pt-head">
+    <h3>📋 Изплащания (3 / 4 / 5 еднакви от ляво)</h3>
+  </div>
   <div class="pt-grid" id="ptGrid"></div>
 </div>
 </div>
@@ -90,18 +130,62 @@ let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
 (function t(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(t);})();
 
+function drawWildStar(ctx,x,y,w,h) {
+  ctx.save();
+  const cx=x+w/2,cy=y+h/2,r=Math.min(w,h)*.38;
+  const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,r*2.2);
+  glow.addColorStop(0,'rgba(110,198,245,.4)');glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(x,y,w,h);
+  ctx.beginPath();
+  for(let i=0;i<10;i++){
+    const a=i*Math.PI/5-Math.PI/2;
+    const rad=i%2===0?r:r*.42;
+    const px=cx+Math.cos(a)*rad,py=cy+Math.sin(a)*rad;
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+  const sf=ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+  sf.addColorStop(0,'#e8f8ff');sf.addColorStop(.5,'#6ec6f5');sf.addColorStop(1,'#1a6fa8');
+  ctx.fillStyle=sf;ctx.fill();
+  ctx.strokeStyle='rgba(200,240,255,.6)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx-r*.1,cy-r*.12,r*.16,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,.7)';ctx.fill();
+  ctx.restore();
+}
+
+function drawBlackHole(ctx,x,y,w,h) {
+  ctx.save();
+  const cx=x+w/2,cy=y+h/2,r=Math.min(w,h)*.35;
+  for(let i=4;i>=0;i--){
+    const rr=r*(1-i*.15);
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,rr);
+    g.addColorStop(0,'rgba(60,0,80,.9)');
+    g.addColorStop(.5,'rgba(20,0,40,.7)');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,rr,0,Math.PI*2);ctx.fill();
+  }
+  // Ring
+  ctx.strokeStyle='rgba(180,100,255,.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.ellipse(cx,cy,r,r*.3,0,0,Math.PI*2);ctx.stroke();
+  // Core
+  ctx.beginPath();ctx.arc(cx,cy,r*.18,0,Math.PI*2);
+  ctx.fillStyle='rgba(0,0,0,.95)';ctx.fill();
+  ctx.strokeStyle='rgba(150,80,220,.4)';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+}
+
 const SYMS=[
-  {id:'moon',   e:'🌙',n:'Луна',      pays:[0,0,4,12,40],  w:16},
-  {id:'planet', e:'🪐',n:'Планета',   pays:[0,0,5,15,60],  w:14},
-  {id:'comet',  e:'☄️',n:'Комета',   pays:[0,0,8,25,80],  w:12},
-  {id:'rocket', e:'🚀',n:'Ракета',    pays:[0,0,10,35,120],w:10},
-  {id:'alien',  e:'👽',n:'Извънземен',pays:[0,0,15,50,200],w:8},
-  {id:'crystal',e:'💠',n:'Кристал',  pays:[0,0,20,80,300],w:6},
-  {id:'nova',   e:'🌟',n:'NOVA',      pays:[0,0,30,120,500],w:5},
-  {id:'bhole',  e:'🕳️',n:'Черна дупка',pays:[0,0,50,200,1000],w:3},
-  {id:'wild',   e:'⭐',n:'WILD',      pays:[0,0,0,0,0],    w:5, wild:true},
-  {id:'scatter',e:'💫',n:'SCATTER',  pays:[0,0,3,15,100], w:4, scatter:true},
-  {id:'bonus',  e:'✨',n:'BONUS',     pays:[0,0,0,0,0],    w:3, bonus:true},
+  {id:'moon',   e:'🌙', n:'Луна',       pays:[0,0,4,12,40],   w:15},
+  {id:'planet', e:'🪐', n:'Планета',    pays:[0,0,5,15,60],   w:13},
+  {id:'comet',  e:'☄️',n:'Комета',     pays:[0,0,8,25,80],   w:11},
+  {id:'rocket', e:'🚀', n:'Ракета',     pays:[0,0,10,35,120], w:9},
+  {id:'alien',  e:'👽', n:'Извънземен', pays:[0,0,15,50,200], w:7},
+  {id:'crystal',e:'💠', n:'Кристал',   pays:[0,0,20,80,300], w:5},
+  {id:'nova',   e:'🌟', n:'NOVA',       pays:[0,0,30,120,500],w:4},
+  {id:'bhole',  e:'🕳️',n:'Черна дупка',pays:[0,0,50,200,1000],w:2, draw:drawBlackHole},
+  {id:'wild',   e:'⭐', n:'WILD',       pays:[0,0,0,0,0],     w:5, wild:true, draw:drawWildStar},
+  {id:'scatter',e:'💫', n:'SCATTER',   pays:[0,0,3,15,100],  w:3, scatter:true},
+  {id:'bonus',  e:'✨', n:'BONUS',      pays:[0,0,0,0,0],     w:3, bonus:true},
 ];
 
 const LINES=[
@@ -112,66 +196,95 @@ const LINES=[
   [0,1,0,1,0],
 ];
 
-// Star particle background
-const STARS=Array.from({length:80},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.3+.3,tw:Math.random()*250+100,ph:Math.random()*6.28}));
+// Star background particles
+const STARS = Array.from({length:100},()=>({
+  x:Math.random(), y:Math.random(),
+  r:Math.random()*1.2+.2,
+  tw:Math.random()*300+100,
+  ph:Math.random()*6.28,
+}));
 
-const engine=new ReelEngine(document.getElementById('cv'),{
-  rows:3,cols:5,symbols:SYMS,paylines:LINES,
-  theme:{bg0:'#040818',bg1:'#020510',gridLine:'rgba(110,198,245,.07)',winLine:'rgba(110,198,245,.6)',winCell:'rgba(110,198,245,.15)',winBorder:'rgba(110,198,245,.7)',vignette:'rgba(3,5,16,.82)',centerLine:'rgba(110,198,245,.14)'}
+const engine = new SlotEngine(document.getElementById('cv'),{
+  rows:3, cols:5, symbols:SYMS, paylines:LINES,
+  theme:{
+    bg0:'#060a1c', bg1:'#040610',
+    winLine:'rgba(110,198,245,.8)',
+    winCell:'rgba(110,198,245,.14)',
+    winBorder:'rgba(110,198,245,.9)',
+    vignette:'rgba(4,6,16,.9)',
+    frameGlow:'rgba(110,198,245,.25)',
+  }
 });
-engine.drawBackground=(ctx,CW,CH)=>{
+
+engine.drawBg = (ctx,CW,CH) => {
   const now=Date.now();
-  STARS.forEach(s=>{const a=.1+.3*Math.abs(Math.sin(now/s.tw+s.ph));ctx.beginPath();ctx.arc(s.x*CW,s.y*CH,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,220,255,${a})`;ctx.fill();});
+  STARS.forEach(s=>{
+    const a=.08+.28*Math.abs(Math.sin(now/s.tw+s.ph));
+    ctx.beginPath();ctx.arc(s.x*CW,s.y*CH,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(180,220,255,${a})`;ctx.fill();
+  });
+  // nebula glow
+  const g=ctx.createRadialGradient(CW*.7,CH*.3,0,CW*.7,CH*.3,CW*.5);
+  g.addColorStop(0,'rgba(80,40,120,.08)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
 };
 
-let creds=1000,bet=1,numLines=10,totalWon=0;
-let spinning=false,autoOn=false,bonusMeter=0;
-const BETS=[1,2,5,10,20,50];let bIdx=0;
-let bonVals=[],bonPicks=3,bonTotal=0;
+let creds=1000, bet=1, numLines=10, totalWon=0;
+let spinning=false, autoOn=false, bonusMeter=0;
+const BETS=[1,2,5,10,20,50]; let bIdx=0;
+let bonVals=[], bonPicks=0, bonTotal=0;
 
-engine.onAllStopped=()=>{
-  spinning=false;
-  document.getElementById('spinBtn').disabled=false;
-  const {totalWin,scatCount}=engine.evaluate(bet,numLines);
-  let won=totalWin;
+engine.onDone = () => {
+  spinning = false;
+  document.getElementById('spinBtn').disabled = false;
+  const {totalWin, scatCount} = engine.evaluate(bet, numLines);
 
   // Count bonus symbols
-  let bonCount=0;
-  for(let c=0;c<5;c++)for(let r=0;r<3;r++)if(engine.grid[c][r].id==='bonus')bonCount++;
-  bonusMeter=Math.min(100,bonusMeter+bonCount*15+Math.random()*3);
+  let bonCnt=0;
+  for(let c=0;c<5;c++) for(let r=0;r<3;r++) if(engine.grid[c][r].id==='bonus') bonCnt++;
+  bonusMeter = Math.min(100, bonusMeter + bonCnt * 16 + Math.random()*3);
   updateBM();
-  if(bonusMeter>=100){bonusMeter=0;updateBM();setTimeout(triggerBonus,400);}
+  if (bonusMeter >= 100) { bonusMeter=0; updateBM(); setTimeout(triggerBonus, 400); }
 
-  creds+=won;totalWon+=won;updateUI();
-  if(won>0){
-    const mult=won/(bet*numLines);
+  creds += totalWin; totalWon += totalWin;
+  updateUI();
+
+  if (totalWin > 0) {
+    const mult = totalWin / (bet * numLines);
     let lbl='WIN';
-    if(mult>=50)lbl='🌌 COSMIC WIN';
-    else if(mult>=20)lbl='🚀 SUPER WIN';
-    else if(mult>=10)lbl='⭐ BIG WIN';
-    setWin(`${lbl}: +${won} кредита!`);
-    SND.win();
-    if(mult>=10)setTimeout(()=>showBW(lbl,won),250);
-  } else {setWin('Без печалба — опитайте пак! ⭐');}
-  if(autoOn)setTimeout(doSpin,1100);
+    if(mult>=80)      { lbl='🌌 COSMIC WIN'; AUDIO.megaWin(); }
+    else if(mult>=30) { lbl='🚀 SUPER WIN'; AUDIO.bigWin(); }
+    else if(mult>=10) { lbl='⭐ BIG WIN'; AUDIO.bigWin(); }
+    else                AUDIO.coinJingle();
+    setWin(lbl+': +'+totalWin+' кредита!', mult>=10);
+    if(mult>=10) setTimeout(()=>showBW(lbl,totalWin), 250);
+  } else {
+    setWin('Без печалба — опитайте пак! ⭐', false);
+  }
+  if(autoOn) setTimeout(doSpin,1100);
 };
 
 function doSpin(){
   if(spinning)return;
+  AUDIO.unlock();
   const total=bet*numLines;
-  if(creds<total){setWin('Недостатъчно кредити!');return;}
+  if(creds<total){setWin('Недостатъчно кредити!',false);return;}
   creds-=total;spinning=true;
   document.getElementById('spinBtn').disabled=true;
-  setWin('Въртене...');updateUI();SND.spinStart();
+  setWin('Въртене...',false);updateUI();AUDIO.spinPress();
   const result=Array.from({length:5},()=>Array.from({length:3},()=>engine._rnd()));
-  engine.spin(result,[600,880,1160,1440,1720]);
+  engine.spin(result,[900,1150,1400,1650,1900]);
 }
 
-function updateBM(){const p=Math.round(bonusMeter);document.getElementById('bmFill').style.width=p+'%';document.getElementById('bmPct').textContent=p+'%';}
+function updateBM(){
+  const p=Math.round(bonusMeter);
+  document.getElementById('bmFill').style.width=p+'%';
+  document.getElementById('bmPct').textContent=p+'%';
+}
 
 function triggerBonus(){
-  SND.bonus();bonPicks=3;bonTotal=0;
-  const prizes=[bet*25,bet*50,bet*75,bet*100,bet*150,bet*200,bet*300,bet*500,bet*15,bet*35];
+  AUDIO.bonus();bonPicks=3;bonTotal=0;
+  const prizes=[bet*20,bet*40,bet*60,bet*100,bet*150,bet*200,bet*300,bet*500,bet*15,bet*25];
   bonVals=[...prizes].sort(()=>Math.random()-.5);
   document.getElementById('bonTotal').textContent=0;
   document.getElementById('picksLeft').textContent=3;
@@ -179,19 +292,21 @@ function triggerBonus(){
   const sg=document.getElementById('starGrid');sg.innerHTML='';
   bonVals.forEach((val)=>{
     const b=document.createElement('button');
-    b.style.cssText='font-size:1.8rem;padding:12px;background:rgba(255,255,255,.05);border:1px solid rgba(110,198,245,.14);cursor:none;transition:all .3s;';
+    b.style.cssText='font-size:1.8rem;padding:12px;background:rgba(255,255,255,.05);border:1px solid rgba(110,198,245,.15);cursor:none;transition:all .3s;width:100%;';
     b.textContent='⭐';
     b.onclick=()=>{
       if(b.dataset.done||bonPicks<=0)return;
       b.dataset.done=1;b.disabled=true;
-      b.textContent=val+'кр.';b.style.background='rgba(110,198,245,.08)';b.style.borderColor='rgba(110,198,245,.3)';
+      b.textContent=val>99?val+'кр.':val+' кр.';
+      b.style.background='rgba(110,198,245,.1)';b.style.borderColor='rgba(110,198,245,.35)';
+      b.style.fontSize='.75rem';b.style.fontFamily='Cinzel,serif';b.style.color='#6ec6f5';
       bonTotal+=val;bonPicks--;
       document.getElementById('bonTotal').textContent=bonTotal;
       document.getElementById('picksLeft').textContent=bonPicks;
-      _tone(500+bonPicks*80,'sine',.15,.2);
+      AUDIO.coinJingle();
       if(bonPicks<=0){
-        document.getElementById('collectBtn').style.display='block';
-        document.querySelectorAll('#starGrid button:not([data-done])').forEach(b2=>{b2.disabled=true;b2.textContent='✦';b2.style.opacity='.3';});
+        document.getElementById('collectBtn').style.display='inline-block';
+        sg.querySelectorAll('button:not([data-done])').forEach(b2=>{b2.disabled=true;b2.textContent='✦';b2.style.opacity='.25';});
       }
     };
     sg.appendChild(b);
@@ -199,21 +314,48 @@ function triggerBonus(){
   document.getElementById('bonOv').classList.add('show');
 }
 
-function collectBonus(){creds+=bonTotal;totalWon+=bonTotal;document.getElementById('bonOv').classList.remove('show');setWin(`✨ BONUS: +${bonTotal} кредита!`);if(bonTotal>=bet*numLines*10)showBW('✨ BONUS WIN',bonTotal);updateUI();}
-function showBW(l,n){document.getElementById('bwLbl').textContent=l;document.getElementById('bwNum').textContent=n;document.getElementById('bwOv').classList.add('show');SND.bigwin();}
+function collectBonus(){
+  creds+=bonTotal;totalWon+=bonTotal;
+  document.getElementById('bonOv').classList.remove('show');
+  setWin('✨ BONUS: +'+bonTotal+' кредита!',bonTotal>=bet*numLines*10);
+  if(bonTotal>=bet*numLines*10)showBW('✨ BONUS WIN',bonTotal);
+  updateUI();
+}
+
+function showBW(l,n){document.getElementById('bwLbl').textContent=l;document.getElementById('bwNum').textContent=n;document.getElementById('bwOv').classList.add('show');spawnConfetti();}
 function closeBW(){document.getElementById('bwOv').classList.remove('show');}
-function chBet(d){bIdx=Math.max(0,Math.min(BETS.length-1,bIdx+d));bet=BETS[bIdx];SND.click();updateUI();}
-function chLines(d){numLines=Math.max(1,Math.min(10,numLines+d));SND.click();updateUI();}
-function maxBet(){bIdx=BETS.length-1;bet=BETS[bIdx];numLines=10;SND.click();updateUI();}
-function toggleAuto(){autoOn=!autoOn;document.getElementById('autoBtn').classList.toggle('on',autoOn);document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO';SND.click();if(autoOn&&!spinning)doSpin();}
-function setWin(t){document.getElementById('winTxt').textContent=t;}
-function updateUI(){document.getElementById('betEl').textContent=BETS[bIdx];document.getElementById('linesEl').textContent=numLines;document.getElementById('totalEl').textContent=bet*numLines;document.getElementById('credEl').textContent=creds.toLocaleString('bg-BG');document.getElementById('wonEl').textContent=totalWon.toLocaleString('bg-BG');document.getElementById('balEl').textContent=creds.toLocaleString('bg-BG')+' кр.';document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',i<numLines));}
+function spawnConfetti(){
+  const c=document.getElementById('conf');c.innerHTML='';
+  ['#6ec6f5','#b8e4ff','#3498db','#9b59b6','#2ecc71','#fff'].forEach(col=>{
+    for(let i=0;i<12;i++){const p=document.createElement('div');p.className='confetti-p';p.style.cssText=`left:${Math.random()*100}%;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${col};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s;`;c.appendChild(p);}
+  });
+}
+
+function chBet(d){bIdx=Math.max(0,Math.min(BETS.length-1,bIdx+d));bet=BETS[bIdx];AUDIO.click();updateUI();}
+function chLines(d){numLines=Math.max(1,Math.min(10,numLines+d));AUDIO.click();updateUI();}
+function maxBet(){bIdx=BETS.length-1;bet=BETS[bIdx];numLines=10;AUDIO.click();updateUI();}
+function toggleAuto(){autoOn=!autoOn;document.getElementById('autoBtn').classList.toggle('on',autoOn);document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO';AUDIO.click();if(autoOn&&!spinning)doSpin();}
+function setWin(t,big){const el=document.getElementById('winTxt');el.textContent=t;el.classList.toggle('big',!!big);}
+function updateUI(){
+  document.getElementById('betEl').textContent=BETS[bIdx];
+  document.getElementById('linesEl').textContent=numLines;
+  document.getElementById('credEl').textContent=creds.toLocaleString('bg-BG');
+  document.getElementById('wonEl').textContent=totalWon.toLocaleString('bg-BG');
+  document.getElementById('balEl').textContent=creds.toLocaleString('bg-BG')+' кр.';
+  document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',i<numLines));
+}
 
 const lr=document.getElementById('linesRow');
-for(let i=0;i<10;i++){const b=document.createElement('button');b.className='lb'+(i<numLines?' on':'');b.textContent=i+1;b.onclick=()=>{numLines=i+1;SND.click();updateUI();};lr.appendChild(b);}
+for(let i=0;i<10;i++){const b=document.createElement('button');b.className='lb'+(i<numLines?' on':'');b.textContent=i+1;b.onclick=()=>{numLines=i+1;AUDIO.click();updateUI();};lr.appendChild(b);}
 
 const pg=document.getElementById('ptGrid');
-SYMS.forEach(s=>{const d=document.createElement('div');d.className='pt-cell';let p=s.wild?'Заменя всичко':s.bonus?'Bonus Meter +15%':s.scatter?'3+=Scatter Pay':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;d.innerHTML=`<span class="pt-e">${s.e}</span><div><div class="pt-n">${s.n}</div><div class="pt-p">${p}</div></div>`;pg.appendChild(d);});
+SYMS.forEach(s=>{
+  const d=document.createElement('div');d.className='pt-cell';
+  let p=s.wild?'Заменя всичко':s.bonus?'Bonus Meter +16%':s.scatter?'3+ = Scatter Pay':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
+  const eHtml=s.id==='wild'?'<span style="font-size:1.3rem;color:#6ec6f5">⭐</span>':`<span class="pt-e">${s.e}</span>`;
+  d.innerHTML=`${eHtml}<div><div class="pt-n">${s.n}</div><div class="pt-p">${p}</div></div>`;
+  pg.appendChild(d);
+});
 updateUI();
 </script>
 </body>

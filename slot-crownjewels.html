@@ -4,34 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crown Jewels — NOVA 777</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="slot.css">
 </head>
 <body class="theme-crown">
-<div class="cur" id="cur"></div><div class="cur-r" id="curR"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
 
-<!-- GAMBLE FEATURE -->
+<!-- GAMBLE -->
 <div class="overlay" id="gambleOv">
   <div class="ov-box">
-    <h2>🃏 GAMBLE</h2>
-    <p>Удвои печалбата или я загуби! Избери цвят на следващата карта.</p>
-    <div class="ov-big" id="gambleAmt">0</div>
-    <div class="ov-sub">кредита за gambble</div>
-    <div id="cardDisplay" style="font-size:5rem;margin:18px 0;">🂠</div>
-    <div style="display:flex;gap:14px;justify-content:center;margin-top:8px;">
-      <button class="ov-btn" style="background:linear-gradient(135deg,#c0392b,#e74c3c)" onclick="gamble('red')">♥ ЧЕРВЕНО</button>
-      <button class="ov-btn" style="background:linear-gradient(135deg,#1a1a1a,#333)" onclick="gamble('black')">♠ ЧЕРНО</button>
+    <h2 style="color:#d4a843">🃏 GAMBLE</h2>
+    <p>Удвои печалбата! Познай цвета на следващата карта.</p>
+    <div style="font-size:6rem;margin:16px 0;line-height:1;" id="cardFace">🂠</div>
+    <div style="font-family:'Cinzel',serif;font-size:1.5rem;color:#f0c866;margin-bottom:20px">
+      <span id="gambleAmt">0</span> кредита
     </div>
-    <button class="ov-btn" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);margin-top:10px;width:100%;" onclick="collectGamble()">Вземи печалбата</button>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="ov-btn" style="background:linear-gradient(135deg,#8b0000,#c0392b,#e74c3c);color:#fff;margin-top:0" onclick="doGamble('red')">♥ ЧЕРВЕНО</button>
+      <button class="ov-btn" style="background:linear-gradient(135deg,#111,#222,#333);color:#fff;margin-top:0" onclick="doGamble('black')">♠ ЧЕРНО</button>
+    </div>
+    <button onclick="closeGamble()" style="display:block;margin:18px auto 0;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;background:none;border:1px solid rgba(212,168,67,.2);color:rgba(212,168,67,.5);padding:8px 24px;cursor:none;transition:all .3s">Вземи печалбата</button>
   </div>
 </div>
 
 <!-- BIG WIN -->
 <div class="bw-ov" id="bwOv">
-  <div class="bw-box">
+  <div class="confetti" id="conf"></div>
+  <div class="bw-inner">
     <div class="bw-lbl" id="bwLbl">BIG WIN</div>
     <div class="bw-num" id="bwNum">0</div>
-    <div class="bw-sub-txt">кредита</div>
+    <div class="bw-sub2">кредита</div>
     <button class="bw-close" onclick="closeBW()">Продължи</button>
   </div>
 </div>
@@ -43,157 +45,178 @@
 </div>
 
 <div class="game-wrap">
-<div class="game-box">
-  <div class="title-bar" style="background:rgba(212,168,67,.05);">
-    <h1 style="color:#d4a843;">👑 Crown Jewels</h1>
-    <p style="color:rgba(212,168,67,.5);">5 барабана · 10 линии · Gamble Feature · Crown Bonus</p>
-  </div>
-  <!-- Crown Jackpot display -->
-  <div class="jp-bar" style="background:linear-gradient(90deg,rgba(212,168,67,.08),rgba(212,168,67,.04),rgba(212,168,67,.08));">
-    <div class="jp"><div class="jp-l">CROWN JP</div><div class="jp-v" style="color:#f0c866;font-size:1.1rem;">10 000</div></div>
-    <div class="jp"><div class="jp-l">ROYAL</div><div class="jp-v">3 000</div></div>
-    <div class="jp"><div class="jp-l">NOBLE</div><div class="jp-v">750</div></div>
-    <div class="jp"><div class="jp-l">KNIGHT</div><div class="jp-v">150</div></div>
-  </div>
-  <div class="reels-wrap"><canvas id="cv"></canvas></div>
-  <div class="win-bar" style="background:rgba(0,0,0,.5);border-color:rgba(212,168,67,.1);">
-    <span id="winTxt" style="color:#d4a843;">👑 Завъртете барабаните!</span>
+<div class="game-machine">
+
+  <div class="machine-top">
+    <div>
+      <div class="machine-name">👑 Crown Jewels</div>
+      <div class="machine-name-sub">5 барабана · 10 линии · BAR · Lucky 7 · Gamble Feature</div>
+    </div>
   </div>
 
-  <!-- Gamble button row -->
-  <div id="gambleRow" style="display:none;padding:8px 18px;text-align:center;background:rgba(212,168,67,.04);border-bottom:1px solid rgba(212,168,67,.08);">
-    <button class="aux" onclick="openGamble()" style="border-color:rgba(212,168,67,.3);color:#d4a843;">🃏 GAMBLE (×2)</button>
-    <span style="font-size:.7rem;color:rgba(212,168,67,.4);margin-left:12px;">или натисни Spin за следваща игра</span>
+  <div class="jp-meters">
+    <div class="jp-meter grand"><span class="jp-lbl">CROWN JP</span><span class="jp-val">10 000</span></div>
+    <div class="jp-meter"><span class="jp-lbl">ROYAL</span><span class="jp-val">3 000</span></div>
+    <div class="jp-meter"><span class="jp-lbl">NOBLE</span><span class="jp-val">750</span></div>
+    <div class="jp-meter"><span class="jp-lbl">KNIGHT</span><span class="jp-val">150</span></div>
   </div>
 
-  <div class="lines-row" id="linesRow"></div>
-  <div class="ctrl-row">
-    <div class="cg"><div class="cl">Залог/линия</div><div class="cv" id="betEl">1</div>
-      <div class="cbtns"><button class="cbtn" onclick="chBet(-1)">−</button><button class="cbtn" onclick="chBet(1)">+</button></div></div>
-    <div class="cg"><div class="cl">Линии</div><div class="cv" id="linesEl">10</div>
-      <div class="cbtns"><button class="cbtn" onclick="chLines(-1)">−</button><button class="cbtn" onclick="chLines(1)">+</button></div></div>
-    <div class="cg"><div class="cl">Общо залог</div><div class="cv" id="totalEl">10</div></div>
-    <div class="spin-wrap">
-      <button class="spin-btn" id="spinBtn" onclick="doSpin()" style="background:linear-gradient(135deg,#8a6010,#c8900a,#e8b830,#c8900a,#8a6010);">▶ SPIN</button>
+  <div class="reels-area">
+    <canvas id="cv"></canvas>
+  </div>
+
+  <div class="win-display">
+    <span id="winTxt">👑 Завъртете барабаните!</span>
+  </div>
+
+  <!-- Gamble row -->
+  <div id="gambleRow" style="display:none;padding:7px 18px;text-align:center;background:rgba(212,168,67,.04);border-bottom:1px solid rgba(212,168,67,.08);">
+    <button class="aux on" onclick="openGamble()" style="margin-right:10px">🃏 GAMBLE ×2</button>
+    <span style="font-size:.65rem;color:rgba(212,168,67,.4)">или натисни SPIN за следваща игра</span>
+  </div>
+
+  <div class="lines-wrap">
+    <span class="lines-label">Линии</span>
+    <div class="lines-btns" id="linesRow"></div>
+  </div>
+
+  <div class="ctrl-panel">
+    <div class="cg">
+      <div class="cl">Залог / линия</div>
+      <div class="cv" id="betEl">1</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chBet(-1)">−</button>
+        <button class="cbtn" onclick="chBet(1)">+</button>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cl">Линии</div>
+      <div class="cv" id="linesEl">10</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chLines(-1)">−</button>
+        <button class="cbtn" onclick="chLines(1)">+</button>
+      </div>
+    </div>
+    <div class="spin-zone">
+      <button class="spin-btn" id="spinBtn" onclick="doSpin()">▶ SPIN</button>
       <div class="aux-row">
         <button class="aux" id="autoBtn" onclick="toggleAuto()">AUTO</button>
         <button class="aux" onclick="maxBet()">MAX BET</button>
       </div>
     </div>
-    <div class="cg"><div class="cl">Кредити</div><div class="cv" id="credEl">1 000</div></div>
-    <div class="cg"><div class="cl">Спечелено</div><div class="cv" id="wonEl">0</div></div>
+    <div class="cg">
+      <div class="cl">Кредити</div>
+      <div class="cv" id="credEl">1 000</div>
+    </div>
+    <div class="cg">
+      <div class="cl">Спечелено</div>
+      <div class="cv" id="wonEl">0</div>
+    </div>
   </div>
+
 </div>
+
 <div class="paytable">
-  <div class="pt-head"><h3>👑 Изплащания — 3 / 4 / 5 еднакви</h3></div>
+  <div class="pt-head">
+    <h3>👑 Изплащания (3 / 4 / 5 еднакви от ляво)</h3>
+  </div>
   <div class="pt-grid" id="ptGrid"></div>
 </div>
 </div>
 
 <script src="engine.js"></script>
 <script>
-// CURSOR
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
 (function t(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(t);})();
 
-// ── SYMBOLS — Crown / royal theme (like Shining Crown) ──
-function drawCrownSym(ctx,x,y,w,h,color,label) {
+// ── Draw helpers ──
+function drawBar(ctx,x,y,w,h,col1,col2,label) {
   ctx.save();
-  // Glow behind symbol
-  const grd=ctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,w*.45);
-  grd.addColorStop(0,color+'22');grd.addColorStop(1,'transparent');
-  ctx.fillStyle=grd;ctx.fillRect(x,y,w,h);
-  // Text
-  ctx.font=`${Math.round(h*.44)}px serif`;
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillText(label,x+w/2+1,y+h/2+1);
-  ctx.fillStyle=color;ctx.fillText(label,x+w/2,y+h/2);
-  ctx.restore();
-}
-
-function drawBar(ctx,x,y,w,h,color,text){
-  ctx.save();
-  const bw=w*.72,bh=h*.32,bx=x+(w-bw)/2,by=y+(h-bh)/2;
-  const grad=ctx.createLinearGradient(bx,by,bx,by+bh);
-  grad.addColorStop(0,color);grad.addColorStop(1,color+'88');
-  ctx.fillStyle=grad;ctx.fillRect(bx,by,bw,bh);
-  ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1.5;ctx.strokeRect(bx,by,bw,bh);
+  const bw=w*.72,bh=h*.3,bx=x+(w-bw)/2,by=y+(h-bh)/2;
+  const g=ctx.createLinearGradient(bx,by,bx,by+bh);
+  g.addColorStop(0,col1);g.addColorStop(1,col2);
+  ctx.fillStyle=g;ctx.fillRect(bx,by,bw,bh);
+  ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=1.5;ctx.strokeRect(bx,by,bw,bh);
+  // shine
+  ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(bx+2,by+2,bw-4,bh*.4);
   ctx.font=`bold ${Math.round(bh*.65)}px Cinzel,serif`;
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillStyle='#fff';ctx.fillText(text,x+w/2,y+h/2);
+  ctx.fillStyle='#fff';ctx.fillText(label,x+w/2,y+h/2);
   ctx.restore();
 }
 
-const SYMS = [
-  // Low-value: fruits (like EGT style - fruits remain in crown-themed slots)
-  {id:'cherry', e:'🍒',n:'Череша',  pays:[0,0,4,10,30],  w:18},
-  {id:'lemon',  e:'🍋',n:'Лимон',   pays:[0,0,4,10,25],  w:16},
-  {id:'orange', e:'🍊',n:'Портокал',pays:[0,0,5,12,40],  w:14},
-  {id:'grape',  e:'🍇',n:'Грозде',  pays:[0,0,5,14,50],  w:12},
-  // Mid: BAR symbols
-  {id:'bar1',e:'BAR',n:'BAR',       pays:[0,0,8,20,80],  w:10,
-    draw:(ctx,x,y,w,h)=>drawBar(ctx,x,y,w,h,'#3498db','BAR')},
-  {id:'bar2',e:'2×BAR',n:'2×BAR',  pays:[0,0,12,35,120],w:8,
-    draw:(ctx,x,y,w,h)=>drawBar(ctx,x,y,w,h,'#27ae60','2×BAR')},
-  {id:'bar3',e:'3×BAR',n:'3×BAR',  pays:[0,0,15,50,180],w:6,
-    draw:(ctx,x,y,w,h)=>drawBar(ctx,x,y,w,h,'#8e44ad','3×BAR')},
-  // High: 7, Diamond, Crown
-  {id:'seven',e:'7',n:'LUCKY 7',   pays:[0,0,25,80,400], w:5,
-    draw:(ctx,x,y,w,h)=>drawCrownSym(ctx,x,y,w,h,'#e74c3c','7')},
-  {id:'diamond',e:'💎',n:'Диамант',pays:[0,0,40,150,750],w:3},
-  {id:'crown',e:'👑',n:'CROWN',    pays:[0,0,60,250,1500],w:2},
-  // Special
-  {id:'wild',   e:'⭐',n:'WILD',    pays:[0,0,0,0,0],    w:4, wild:true,
-    draw:(ctx,x,y,w,h)=>{
-      // Shining star — like the Shining Crown star
-      const cx2=x+w/2,cy2=y+h/2,r=Math.min(w,h)*.38;
-      ctx.save();
-      // Glow
-      const grd=ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,r*1.5);
-      grd.addColorStop(0,'rgba(240,210,60,.35)');grd.addColorStop(1,'transparent');
-      ctx.fillStyle=grd;ctx.fillRect(x,y,w,h);
-      // Star shape
-      ctx.beginPath();
-      for(let i=0;i<10;i++){
-        const ang=i*Math.PI/5-Math.PI/2;
-        const rad=i%2===0?r:r*.4;
-        const px=cx2+Math.cos(ang)*rad,py=cy2+Math.sin(ang)*rad;
-        i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-      }
-      ctx.closePath();
-      const sg=ctx.createLinearGradient(cx2-r,cy2-r,cx2+r,cy2+r);
-      sg.addColorStop(0,'#fff8a0');sg.addColorStop(.5,'#f0c030');sg.addColorStop(1,'#d4a843');
-      ctx.fillStyle=sg;ctx.fill();
-      ctx.strokeStyle='rgba(255,240,150,.6)';ctx.lineWidth=1.5;ctx.stroke();
-      // Inner shine
-      ctx.beginPath();ctx.arc(cx2-r*.15,cy2-r*.15,r*.18,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,255,255,.5)';ctx.fill();
-      ctx.restore();
-    }
-  },
-  {id:'scatter',e:'🌟',n:'SCATTER', pays:[0,0,3,12,60],  w:3, scatter:true,
-    draw:(ctx,x,y,w,h)=>{
-      const cx2=x+w/2,cy2=y+h/2,r=Math.min(w,h)*.35;
-      ctx.save();
-      const grd=ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,r*2);
-      grd.addColorStop(0,'rgba(110,198,245,.3)');grd.addColorStop(1,'transparent');
-      ctx.fillStyle=grd;ctx.fillRect(x,y,w,h);
-      ctx.font=`${Math.round(h*.46)}px serif`;
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillText('🌟',cx2+1,cy2+1);
-      ctx.fillStyle='#fff';ctx.fillText('🌟',cx2,cy2);
-      // SCATTER label
-      ctx.font=`bold ${Math.round(h*.13)}px Cinzel,serif`;
-      ctx.fillStyle='rgba(212,168,67,.9)';
-      ctx.fillText('SCATTER',cx2,cy2+r*.85);
-      ctx.restore();
-    }
-  },
+function drawSeven(ctx,x,y,w,h) {
+  ctx.save();
+  const g=ctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,w*.5);
+  g.addColorStop(0,'rgba(220,50,50,.25)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
+  ctx.font=`bold ${Math.round(h*.55)}px Cinzel,serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillText('7',x+w/2+2,y+h/2+2);
+  const gf=ctx.createLinearGradient(x+w/2,y+h*.1,x+w/2,y+h*.9);
+  gf.addColorStop(0,'#ff7070');gf.addColorStop(.5,'#e74c3c');gf.addColorStop(1,'#900');
+  ctx.fillStyle=gf;ctx.fillText('7',x+w/2,y+h/2);
+  ctx.restore();
+}
+
+function drawCrown(ctx,x,y,w,h) {
+  ctx.save();
+  // Glow
+  const g=ctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,w*.55);
+  g.addColorStop(0,'rgba(212,168,67,.3)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
+  ctx.font=`${Math.round(h*.5)}px serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(212,168,67,.6)';ctx.shadowBlur=8;
+  ctx.fillText('👑',x+w/2,y+h/2);
+  ctx.restore();
+}
+
+function drawWildStar(ctx,x,y,w,h) {
+  // Shining Crown style star
+  ctx.save();
+  const cx=x+w/2,cy=y+h/2,r=Math.min(w,h)*.4;
+  const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,r*2);
+  glow.addColorStop(0,'rgba(255,230,60,.35)');glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(x,y,w,h);
+  // 5-pointed star
+  ctx.beginPath();
+  for(let i=0;i<10;i++){
+    const a=i*Math.PI/5-Math.PI/2;
+    const rad=i%2===0?r:r*.4;
+    const px=cx+Math.cos(a)*rad,py=cy+Math.sin(a)*rad;
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+  const sf=ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+  sf.addColorStop(0,'#fffad0');sf.addColorStop(.5,'#f0c030');sf.addColorStop(1,'#c08010');
+  ctx.fillStyle=sf;ctx.fill();
+  ctx.strokeStyle='rgba(255,240,100,.7)';ctx.lineWidth=1.5;ctx.stroke();
+  // Center gem
+  ctx.beginPath();ctx.arc(cx,cy,r*.22,0,Math.PI*2);
+  const cg=ctx.createRadialGradient(cx-r*.08,cy-r*.08,0,cx,cy,r*.22);
+  cg.addColorStop(0,'#fff');cg.addColorStop(1,'#e8c030');
+  ctx.fillStyle=cg;ctx.fill();
+  ctx.restore();
+}
+
+const SYMS=[
+  {id:'cherry',  e:'🍒', n:'Череша',    pays:[0,0,3,8,25],   w:14},
+  {id:'lemon',   e:'🍋', n:'Лимон',     pays:[0,0,3,8,20],   w:12},
+  {id:'orange',  e:'🍊', n:'Портокал',  pays:[0,0,4,12,35],  w:10},
+  {id:'bar1',    e:'▬',  n:'BAR',       pays:[0,0,8,20,80],  w:10, draw:(c,x,y,w,h)=>drawBar(c,x,y,w,h,'#1a5faa','#0e3a6e','BAR')},
+  {id:'bar2',    e:'▬▬', n:'2×BAR',     pays:[0,0,12,35,120],w:8,  draw:(c,x,y,w,h)=>drawBar(c,x,y,w,h,'#0e8a4a','#065a30','2×BAR')},
+  {id:'bar3',    e:'▬▬▬',n:'3×BAR',    pays:[0,0,15,50,180],w:6,  draw:(c,x,y,w,h)=>drawBar(c,x,y,w,h,'#7a1a8a','#4a0a5a','3×BAR')},
+  {id:'seven',   e:'7',  n:'LUCKY 7',   pays:[0,0,25,80,400],w:5,  draw:drawSeven},
+  {id:'diamond', e:'💎', n:'Диамант',   pays:[0,0,40,150,750],w:3},
+  {id:'crown',   e:'👑', n:'CROWN',     pays:[0,0,60,250,1500],w:2, draw:drawCrown},
+  {id:'wild',    e:'★',  n:'WILD',      pays:[0,0,0,0,0],    w:4,  wild:true, draw:drawWildStar},
+  {id:'scatter', e:'💫', n:'SCATTER',   pays:[0,0,3,12,60],  w:3,  scatter:true},
 ];
 
-const LINES = [
+const LINES=[
   [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],
   [0,1,2,1,0],[2,1,0,1,2],
   [0,0,1,0,0],[2,2,1,2,2],
@@ -201,166 +224,148 @@ const LINES = [
   [0,1,0,1,0],
 ];
 
-const engine = new ReelEngine(document.getElementById('cv'), {
-  rows:3, cols:5,
-  symbols: SYMS,
-  paylines: LINES,
+const engine = new SlotEngine(document.getElementById('cv'), {
+  rows:3, cols:5, symbols:SYMS, paylines:LINES,
   theme:{
-    bg0:'#120c00', bg1:'#0a0600',
-    gridLine:'rgba(212,168,67,.12)',
-    winLine:'rgba(240,180,30,.7)',
-    winCell:'rgba(212,168,67,.2)',
-    winBorder:'rgba(240,200,50,.8)',
-    vignette:'rgba(10,6,0,.85)',
-    centerLine:'rgba(212,168,67,.2)',
+    bg0:'#1e1600', bg1:'#0c0a00',
+    winLine:'rgba(255,215,60,.8)',
+    winCell:'rgba(255,215,60,.15)',
+    winBorder:'rgba(255,215,60,.9)',
+    vignette:'rgba(12,10,0,.9)',
+    frameGlow:'rgba(212,168,67,.35)',
   }
 });
 
-// Crown background — draw ornamental pattern
-engine.drawBackground = function(ctx, CW, CH) {
-  // Subtle golden grid ornament
-  ctx.save();
-  ctx.strokeStyle='rgba(212,168,67,.04)';ctx.lineWidth=1;
-  const step=55;
-  for(let x=0;x<CW;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,CH);ctx.stroke();}
-  for(let y=0;y<CH;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(CW,y);ctx.stroke();}
-  // Corner ornaments
-  [[0,0],[CW,0],[0,CH],[CW,CH]].forEach(([cx,cy])=>{
-    ctx.beginPath();ctx.arc(cx,cy,30,0,Math.PI*2);
-    ctx.strokeStyle='rgba(212,168,67,.05)';ctx.stroke();
-  });
-  ctx.restore();
+engine.drawBg = (ctx,CW,CH) => {
+  const g=ctx.createRadialGradient(CW*.5,CH*.5,0,CW*.5,CH*.5,CW*.6);
+  g.addColorStop(0,'rgba(120,90,0,.1)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
 };
 
 let creds=1000, bet=1, numLines=10, totalWon=0;
-let spinning=false, autoOn=false;
-let lastWin=0;
+let spinning=false, autoOn=false, lastWin=0;
 const BETS=[1,2,5,10,20,50]; let bIdx=0;
 
-// Gamble state
-let gambleAmt=0, gambleActive=false;
-
-const RED_CARDS  = ['♥','♦'];
-const BLACK_CARDS= ['♠','♣'];
-const ALL_CARDS  = ['♥','♦','♣','♠'];
-
-engine.onAllStopped = () => {
+engine.onDone = () => {
   spinning = false;
   document.getElementById('spinBtn').disabled = false;
-
-  const {totalWin, scatCount} = engine.evaluate(bet, numLines);
-  let won = totalWin;
-
-  creds += won; totalWon += won; lastWin = won;
+  const { totalWin, scatCount } = engine.evaluate(bet, numLines);
+  creds += totalWin; totalWon += totalWin; lastWin = totalWin;
   updateUI();
-
-  if (won > 0) {
-    const mult = won / (bet * numLines);
+  if (totalWin > 0) {
+    const mult = totalWin / (bet * numLines);
     let lbl = 'WIN';
-    if (mult >= 100) lbl = '👑 ROYAL WIN';
-    else if (mult >= 50) lbl = '💎 MEGA WIN';
-    else if (mult >= 20) lbl = '🏆 SUPER WIN';
-    else if (mult >= 10) lbl = '⭐ BIG WIN';
-    setWin(`${lbl}: +${won} кредита!`);
-    SND.win();
-    if (mult >= 10) setTimeout(() => showBW(lbl, won), 250);
-    // Show gamble option
+    if (mult >= 100)     { lbl='👑 ROYAL WIN'; AUDIO.megaWin(); }
+    else if (mult >= 50) { lbl='💎 MEGA WIN'; AUDIO.megaWin(); }
+    else if (mult >= 20) { lbl='🏆 SUPER WIN'; AUDIO.bigWin(); }
+    else if (mult >= 10) { lbl='⭐ BIG WIN'; AUDIO.bigWin(); }
+    else                   AUDIO.coinJingle();
+    setWin(lbl + ': +' + totalWin + ' кредита!', mult >= 10);
+    if (mult >= 10) setTimeout(() => showBW(lbl, totalWin), 250);
     document.getElementById('gambleRow').style.display = 'block';
   } else {
-    setWin('Без печалба — опитайте пак! 👑');
+    setWin('Без печалба — опитайте пак! 👑', false);
     document.getElementById('gambleRow').style.display = 'none';
   }
-
-  if (autoOn) setTimeout(doSpin, 1100);
+  if (autoOn) setTimeout(doSpin, 1200);
 };
 
 function doSpin() {
   if (spinning) return;
+  AUDIO.unlock();
   document.getElementById('gambleRow').style.display = 'none';
   const total = bet * numLines;
-  if (creds < total) { setWin('Недостатъчно кредити!'); return; }
-  creds -= total;
-  spinning = true;
+  if (creds < total) { setWin('Недостатъчно кредити!', false); return; }
+  creds -= total; spinning = true;
   document.getElementById('spinBtn').disabled = true;
-  setWin('Въртене...');
-  updateUI();
-  SND.spinStart();
-
+  setWin('Въртене...', false); updateUI();
+  AUDIO.spinPress();
   const result = Array.from({length:5}, () => Array.from({length:3}, () => engine._rnd()));
-  engine.spin(result, [600, 880, 1160, 1440, 1720]);
+  engine.spin(result, [900, 1150, 1400, 1650, 1900]);
 }
 
-// GAMBLE FEATURE
+// Gamble
+let gambleAmt = 0;
+const REDS = ['♥','♦'], BLACKS = ['♠','♣'], ALL = ['♥','♦','♠','♣'];
 function openGamble() {
   if (lastWin <= 0) return;
   gambleAmt = lastWin;
   document.getElementById('gambleAmt').textContent = gambleAmt;
-  document.getElementById('cardDisplay').textContent = '🂠';
+  document.getElementById('cardFace').textContent = '🂠';
   document.getElementById('gambleOv').classList.add('show');
-  SND.click();
+  AUDIO.click();
 }
-
-function gamble(choice) {
-  const card = ALL_CARDS[Math.floor(Math.random() * ALL_CARDS.length)];
-  const isRed = RED_CARDS.includes(card);
-  document.getElementById('cardDisplay').textContent = card;
-
+function doGamble(choice) {
+  const card = ALL[Math.floor(Math.random() * 4)];
+  const isRed = REDS.includes(card);
+  const won   = (choice === 'red' && isRed) || (choice === 'black' && !isRed);
+  document.getElementById('cardFace').textContent = card;
   setTimeout(() => {
-    if ((choice === 'red' && isRed) || (choice === 'black' && !isRed)) {
+    if (won) {
       gambleAmt *= 2;
-      creds += gambleAmt - (gambleAmt/2); // already added once
       document.getElementById('gambleAmt').textContent = gambleAmt;
-      _tone(880,'sine',.15,.22); _tone(1100,'sine',.12,.18,.08);
-      document.getElementById('gambleAmt').style.color='#2ecc71';
-      setTimeout(()=>document.getElementById('gambleAmt').style.color='',600);
+      document.getElementById('gambleAmt').style.color = '#2ecc71';
+      setTimeout(() => document.getElementById('gambleAmt').style.color = '', 700);
+      AUDIO.gambleWin();
+      lastWin = gambleAmt;
     } else {
-      // Lost
-      creds -= gambleAmt/2; // take back what we gave
-      _tone(120,'sine',.3,.2); _tone(80,'sine',.2,.15,.1);
-      setWin('Gamble загубен! По-добър късмет следващия път.');
+      creds -= lastWin; // take back what was added
+      totalWon = Math.max(0, totalWon - lastWin);
       document.getElementById('gambleOv').classList.remove('show');
-      document.getElementById('gambleRow').style.display='none';
+      document.getElementById('gambleRow').style.display = 'none';
+      setWin('Gamble загубен! По-добър късмет!', false);
+      AUDIO.gambleLose();
       lastWin = 0; gambleAmt = 0;
-      updateUI(); return;
+      updateUI();
     }
-    updateUI();
-    lastWin = gambleAmt;
-  }, 600);
+  }, 500);
 }
-
-function collectGamble() {
+function closeGamble() {
   document.getElementById('gambleOv').classList.remove('show');
-  document.getElementById('gambleRow').style.display='none';
-  SND.click();
+  document.getElementById('gambleRow').style.display = 'none';
+  AUDIO.click();
 }
 
-function showBW(l,n) { document.getElementById('bwLbl').textContent=l; document.getElementById('bwNum').textContent=n; document.getElementById('bwOv').classList.add('show'); SND.bigwin(); }
-function closeBW() { document.getElementById('bwOv').classList.remove('show'); }
-function chBet(d) { bIdx=Math.max(0,Math.min(BETS.length-1,bIdx+d)); bet=BETS[bIdx]; SND.click(); updateUI(); }
-function chLines(d) { numLines=Math.max(1,Math.min(10,numLines+d)); SND.click(); updateUI(); }
-function maxBet() { bIdx=BETS.length-1; bet=BETS[bIdx]; numLines=10; SND.click(); updateUI(); }
-function toggleAuto() { autoOn=!autoOn; document.getElementById('autoBtn').classList.toggle('on',autoOn); document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO'; SND.click(); if(autoOn&&!spinning)doSpin(); }
-function setWin(t) { document.getElementById('winTxt').textContent=t; }
+function showBW(l,n) { document.getElementById('bwLbl').textContent=l; document.getElementById('bwNum').textContent=n; document.getElementById('bwOv').classList.add('show'); spawnConfetti(); }
+function closeBW()    { document.getElementById('bwOv').classList.remove('show'); }
+function spawnConfetti() {
+  const c=document.getElementById('conf'); c.innerHTML='';
+  ['#d4a843','#e74c3c','#27ae60','#3498db','#f0c866','#fff','#9b59b6'].forEach((col,ci) => {
+    for(let i=0;i<12;i++){
+      const p=document.createElement('div'); p.className='confetti-p';
+      p.style.cssText=`left:${Math.random()*100}%;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${col};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.6}s;`;
+      c.appendChild(p);
+    }
+  });
+}
+
+function chBet(d)    { bIdx=Math.max(0,Math.min(BETS.length-1,bIdx+d)); bet=BETS[bIdx]; AUDIO.click(); updateUI(); }
+function chLines(d)  { numLines=Math.max(1,Math.min(10,numLines+d)); AUDIO.click(); updateUI(); }
+function maxBet()    { bIdx=BETS.length-1; bet=BETS[bIdx]; numLines=10; AUDIO.click(); updateUI(); }
+function toggleAuto(){ autoOn=!autoOn; document.getElementById('autoBtn').classList.toggle('on',autoOn); document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO'; AUDIO.click(); if(autoOn&&!spinning)doSpin(); }
+function setWin(t,big){ const el=document.getElementById('winTxt'); el.textContent=t; el.classList.toggle('big',!!big); }
 function updateUI() {
   document.getElementById('betEl').textContent=BETS[bIdx];
   document.getElementById('linesEl').textContent=numLines;
-  document.getElementById('totalEl').textContent=bet*numLines;
   document.getElementById('credEl').textContent=creds.toLocaleString('bg-BG');
   document.getElementById('wonEl').textContent=totalWon.toLocaleString('bg-BG');
   document.getElementById('balEl').textContent=creds.toLocaleString('bg-BG')+' кр.';
   document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',i<numLines));
 }
 
-// Lines buttons
 const lr=document.getElementById('linesRow');
-for(let i=0;i<10;i++){const b=document.createElement('button');b.className='lb'+(i<numLines?' on':'');b.textContent=i+1;b.onclick=()=>{numLines=i+1;SND.click();updateUI();};lr.appendChild(b);}
+for(let i=0;i<10;i++){const b=document.createElement('button');b.className='lb'+(i<numLines?' on':'');b.textContent=i+1;b.onclick=()=>{numLines=i+1;AUDIO.click();updateUI();};lr.appendChild(b);}
 
-// Paytable
 const pg=document.getElementById('ptGrid');
 SYMS.forEach(s=>{
   const d=document.createElement('div');d.className='pt-cell';
-  let p=s.wild?'Заменя всичко':s.scatter?'3+=Scatter Pay':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
-  d.innerHTML=`<span class="pt-e">${s.e}</span><div><div class="pt-n">${s.n}</div><div class="pt-p">${p}</div></div>`;
+  let p=s.wild?'Заменя всичко':s.scatter?'3+ = Scatter Pay':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
+  let eHtml;
+  if(s.id==='seven')eHtml='<span style="font-family:Cinzel,serif;font-size:1.3rem;color:#e74c3c;font-weight:900">7</span>';
+  else if(s.id==='wild')eHtml='<span style="font-size:1.3rem;color:#d4a843">★</span>';
+  else if(['bar1','bar2','bar3'].includes(s.id))eHtml=`<span style="font-size:.7rem;font-family:Cinzel,serif;color:#6ec6f5;font-weight:700">${s.n}</span>`;
+  else eHtml=`<span class="pt-e">${s.e}</span>`;
+  d.innerHTML=`${eHtml}<div><div class="pt-n">${s.n}</div><div class="pt-p">${p}</div></div>`;
   pg.appendChild(d);
 });
 updateUI();

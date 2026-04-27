@@ -1,255 +1,405 @@
 /* ═══════════════════════════════════════════════
-   NOVA 777 — Shared Slot Engine  (engine.js)
+   NOVA 777 — Slot Engine v4  (engine.js)
    ═══════════════════════════════════════════════ */
 
-/* ── WEB AUDIO ───────────────────────────────── */
-let _AC = null;
-function _ac() {
-  if (!_AC) _AC = new (window.AudioContext || window.webkitAudioContext)();
-  if (_AC.state === 'suspended') _AC.resume();
-  return _AC;
-}
-function _tone(freq, type, dur, vol = 0.15, delay = 0) {
-  try {
-    const ac = _ac();
-    const o = ac.createOscillator(), g = ac.createGain();
-    o.connect(g); g.connect(ac.destination);
-    o.type = type;
-    o.frequency.setValueAtTime(freq, ac.currentTime + delay);
-    g.gain.setValueAtTime(0, ac.currentTime + delay);
-    g.gain.linearRampToValueAtTime(vol, ac.currentTime + delay + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + delay + dur);
-    o.start(ac.currentTime + delay);
-    o.stop(ac.currentTime + delay + dur + 0.05);
-  } catch (e) {}
-}
+/* ─────────────────────────────────────────────
+   AUDIO ENGINE — Real casino-style sounds
+   Using Web Audio API oscillators + noise
+   ───────────────────────────────────────────── */
+const AUDIO = (() => {
+  let ctx = null;
 
-window.SND = {
-  click:   () => _tone(900, 'sine', 0.05, 0.1),
-  tick:    (i) => _tone(120 + Math.random()*40, 'square', 0.03, 0.08, i * 0.045),
-  stop:    (col) => { _tone(220 - col*18, 'sine', 0.1, 0.22); _tone(110, 'sine', 0.07, 0.14, 0.06); },
-  win:     () => [523,659,784,1047].forEach((f,i) => _tone(f,'sine',0.2,0.18,i*0.1)),
-  bigwin:  () => [400,523,659,784,1047,1319].forEach((f,i) => { _tone(f,'sine',0.35,0.22,i*0.09); _tone(f*1.5,'triangle',0.15,0.1,i*0.09+0.04); }),
-  freespin:() => [350,450,600,800,1000].forEach((f,i) => _tone(f,'sine',0.28,0.2,i*0.11)),
-  bonus:   () => [300,400,550,750,1000].forEach((f,i) => _tone(f,'sine',0.3,0.22,i*0.1)),
-  spinStart:() => { for(let i=0;i<20;i++) _tone(80+Math.random()*40,'square',0.035,0.1,i*0.048); }
-};
+  function ac() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
 
-/* ── REEL ENGINE ─────────────────────────────── */
-/*
-  Simple, reliable approach:
-  - Each reel has an array of symbols (strip).
-  - During spin, we animate a "scroll position" (pixels).
-  - We know in advance where we want to land.
-  - We run for a minimum number of full loops, then ease into the target.
-  - No physics that can diverge — pure time-based easing.
-*/
+  function osc(freq, type, start, dur, vol, detune = 0) {
+    try {
+      const a = ac();
+      const o = a.createOscillator();
+      const g = a.createGain();
+      o.connect(g); g.connect(a.destination);
+      o.type = type;
+      o.frequency.value = freq;
+      if (detune) o.detune.value = detune;
+      g.gain.setValueAtTime(0, a.currentTime + start);
+      g.gain.linearRampToValueAtTime(vol, a.currentTime + start + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + start + dur);
+      o.start(a.currentTime + start);
+      o.stop(a.currentTime + start + dur + 0.01);
+    } catch (e) {}
+  }
 
-class ReelEngine {
-  constructor(canvas, config) {
-    this.cv  = canvas;
-    this.ctx = canvas.getContext('2d');
-    this.cfg = config; // { rows, cols, cellH (optional), symbols, paylines, theme }
+  // White noise burst (for reel tick)
+  function noise(start, dur, vol) {
+    try {
+      const a = ac();
+      const buf = a.createBuffer(1, Math.ceil(a.sampleRate * dur), a.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1);
+      const src = a.createBufferSource();
+      src.buffer = buf;
+      const g = a.createGain();
+      const filt = a.createBiquadFilter();
+      filt.type = 'bandpass';
+      filt.frequency.value = 800;
+      filt.Q.value = 0.5;
+      src.connect(filt); filt.connect(g); g.connect(a.destination);
+      g.gain.setValueAtTime(vol, a.currentTime + start);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + start + dur);
+      src.start(a.currentTime + start);
+      src.stop(a.currentTime + start + dur + 0.01);
+    } catch(e) {}
+  }
 
-    this.ROWS  = config.rows || 3;
-    this.COLS  = config.cols || 5;
-    this.syms  = config.symbols;   // array of symbol objects
-    this.lines = config.paylines;  // array of payline arrays
-    this.theme = config.theme || {};
+  return {
+    unlock() { try { ac(); } catch(e) {} },
 
-    // Strip length per reel (how many symbols in the belt)
-    this.STRIP = 32;
+    // Mechanical reel spin tick — played rapidly during spin
+    tick(col) {
+      const t = col * 0.02;
+      noise(t, 0.025, 0.18);
+      osc(180 + col * 15, 'sawtooth', t, 0.03, 0.06);
+    },
 
-    // Build strips
+    // Heavy thud when a reel stops
+    reelStop(col) {
+      const t = 0;
+      osc(90,  'sine',    t,      0.12, 0.35);
+      osc(140, 'sine',    t,      0.08, 0.2);
+      osc(60,  'sine',    t+0.04, 0.10, 0.25);
+      noise(t, 0.06, 0.3);
+    },
+
+    // Coin jingle — small win
+    coinJingle() {
+      [1047, 1319, 1568, 2093].forEach((f, i) => {
+        osc(f, 'sine', i * 0.07, 0.15, 0.18);
+        osc(f * 1.5, 'triangle', i * 0.07 + 0.03, 0.1, 0.08);
+      });
+    },
+
+    // Big win fanfare — ascending triumphant
+    bigWin() {
+      const melody = [523, 659, 784, 1047, 784, 1047, 1319, 1568];
+      melody.forEach((f, i) => {
+        osc(f,     'sine',     i * 0.09, 0.2,  0.25);
+        osc(f * 2, 'triangle', i * 0.09, 0.12, 0.12);
+        osc(f / 2, 'sine',     i * 0.09, 0.08, 0.18);
+      });
+    },
+
+    // Mega win — full orchestra hit
+    megaWin() {
+      [262, 330, 392, 523, 659, 784, 1047, 1319].forEach((f, i) => {
+        osc(f,     'sine',     i * 0.06, 0.3,  0.4);
+        osc(f * 2, 'square',   i * 0.06, 0.08, 0.15);
+        osc(f * 3, 'triangle', i * 0.06, 0.06, 0.12);
+      });
+      noise(0, 0.3, 0.15);
+    },
+
+    // Free spins trigger — magical ascending arp
+    freeSpins() {
+      [392, 494, 587, 740, 880, 1109, 1319, 1760].forEach((f, i) => {
+        osc(f,     'sine',     i * 0.1,  0.25, 0.22);
+        osc(f * 2, 'triangle', i * 0.1 + 0.05, 0.12, 0.1);
+      });
+    },
+
+    // Bonus trigger — exciting fanfare
+    bonus() {
+      [330, 415, 523, 622, 784, 988, 1175].forEach((f, i) => {
+        osc(f,     'sine',     i * 0.08, 0.22, 0.24);
+        osc(f * 1.5,'triangle',i * 0.08, 0.1,  0.1);
+      });
+      noise(0.3, 0.15, 0.12);
+    },
+
+    // UI click
+    click() {
+      osc(800, 'sine', 0, 0.04, 0.12);
+      osc(1000,'sine', 0.01, 0.03, 0.07);
+    },
+
+    // Spin button press — whirring start
+    spinPress() {
+      // Rising sweep
+      try {
+        const a = ac();
+        const o = a.createOscillator();
+        const g = a.createGain();
+        o.connect(g); g.connect(a.destination);
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(80, a.currentTime);
+        o.frequency.exponentialRampToValueAtTime(200, a.currentTime + 0.3);
+        g.gain.setValueAtTime(0.12, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + 0.35);
+        o.start(a.currentTime);
+        o.stop(a.currentTime + 0.4);
+      } catch(e) {}
+      noise(0, 0.1, 0.1);
+    },
+
+    // Gamble win
+    gambleWin() {
+      [523, 659, 784, 1047, 1319].forEach((f,i) => osc(f,'sine',i*0.08,0.18,0.2));
+    },
+    gambleLose() {
+      [300, 250, 200].forEach((f,i) => osc(f,'sawtooth',i*0.1,0.15,0.18));
+    }
+  };
+})();
+
+window.AUDIO = AUDIO;
+
+/* ─────────────────────────────────────────────
+   REEL ENGINE — bulletproof time-based spin
+   ───────────────────────────────────────────── */
+class SlotEngine {
+  constructor(canvas, cfg) {
+    this.cv   = canvas;
+    this.ctx  = canvas.getContext('2d');
+    this.ROWS = cfg.rows || 3;
+    this.COLS = cfg.cols || 5;
+    this.syms = cfg.symbols;
+    this.lines= cfg.paylines;
+    this.theme= cfg.theme || {};
+    this.onDone = null; // callback when all reels stopped
+
+    // STRIP: big circular belt of symbols per reel
+    this.STRIP = 40;
     this.strips = Array.from({length: this.COLS}, () =>
       Array.from({length: this.STRIP}, () => this._rnd())
     );
 
-    // Visible result grid [col][row]
+    // Static display grid (shown when not spinning)
     this.grid = Array.from({length: this.COLS}, () =>
       Array.from({length: this.ROWS}, () => this._rnd())
     );
 
-    // Reel animation state
-    this.rState = Array.from({length: this.COLS}, () => ({
+    // Per-reel state — simple and clean
+    // offset: how many pixels we've scrolled (0 = top of strip[0] at top)
+    this.reels = Array.from({length: this.COLS}, () => ({
+      offset:    0,    // current scroll px
+      target:    0,    // target scroll px to land on
       spinning:  false,
       startTime: 0,
-      duration:  0,       // total spin duration ms
-      startPx:   0,       // scroll px at spin start (always 0)
-      totalPx:   0,       // total pixels to scroll
-      currentPx: 0,       // current scroll position
-      done:      true,
+      duration:  0,
+      stopped:   true,
     }));
 
     this.winCells = new Set();
     this.winLines = [];
     this.flashT   = 0;
-    this.anySpinning = false;
+    this.spinning = false;
+
+    // Tick sound interval handles
+    this._tickIntervals = [];
 
     this._resize();
     window.addEventListener('resize', () => this._resize());
-    requestAnimationFrame(ts => this._loop(ts));
+    this._rafLoop();
   }
 
   _resize() {
-    this.CW = this.cv.offsetWidth;
-    this.CH = Math.round(this.CW * (this.ROWS / this.COLS));
+    this.CW  = this.cv.offsetWidth  || 800;
+    this.CH  = Math.round(this.CW * this.ROWS / this.COLS);
     this.cv.width  = this.CW;
     this.cv.height = this.CH;
-    this.CW2 = this.CW / this.COLS;   // cell width
-    this.CH2 = this.CH / this.ROWS;   // cell height
+    this.cw  = this.CW / this.COLS;  // cell width
+    this.ch  = this.CH / this.ROWS;  // cell height
   }
 
   _rnd() {
-    const total = this.syms.reduce((a, s) => a + s.w, 0);
-    let r = Math.random() * total;
+    const tot = this.syms.reduce((a, s) => a + s.w, 0);
+    let r = Math.random() * tot;
     for (const s of this.syms) { r -= s.w; if (r <= 0) return s; }
     return this.syms[0];
   }
 
-  /* Start spinning all reels. result[col][row] = target symbol. */
-  spin(result, stopDelays) {
+  /*
+    spin(result, delays)
+      result[col][row] = symbol to show when stopped
+      delays[col] = ms from now when this reel should FINISH (not start decelerating)
+  */
+  spin(result, delays) {
+    if (this.spinning) return;
+    this.spinning  = true;
     this.winCells.clear();
-    this.winLines = [];
-    this.flashT   = 0;
-    this.anySpinning = true;
+    this.winLines  = [];
+    this.flashT    = 0;
+    const now      = performance.now();
 
-    const CELL = this.CH2;
-    const now  = performance.now();
+    // Stop all tick intervals
+    this._tickIntervals.forEach(clearInterval);
+    this._tickIntervals = [];
 
     for (let c = 0; c < this.COLS; c++) {
-      // Place result at specific position in strip
-      const landIdx = this.STRIP - this.ROWS; // index of first result symbol
-      for (let r = 0; r < this.ROWS; r++) {
-        this.strips[c][(landIdx + r) % this.STRIP] = result[c][r];
-      }
-      // Fill rest randomly
+      const r = this.reels[c];
+
+      // Build new strip with result at the END
+      // Strip layout: [random × (STRIP-ROWS)] [result[0]] [result[1]] [result[2]]
       for (let i = 0; i < this.STRIP - this.ROWS; i++) {
         this.strips[c][i] = this._rnd();
       }
+      for (let row = 0; row < this.ROWS; row++) {
+        this.strips[c][this.STRIP - this.ROWS + row] = result[c][row];
+      }
 
-      // How many full loops + offset to land on landIdx
-      const LOOPS   = 3;
-      const landPx  = landIdx * CELL;
-      const totalPx = LOOPS * this.STRIP * CELL + landPx;
+      // Target = exactly at (STRIP - ROWS) * ch so result is perfectly visible
+      // We add N full loops to ensure enough travel
+      const LOOPS    = 4;
+      const landIdx  = this.STRIP - this.ROWS;
+      const target   = LOOPS * this.STRIP * this.ch + landIdx * this.ch;
 
-      const delay    = stopDelays[c];   // ms before this reel starts decelerating
-      const spinDur  = delay + 800;     // total duration for this reel
+      r.offset   = 0;
+      r.target   = target;
+      r.spinning = true;
+      r.stopped  = false;
+      r.startTime= now;
+      r.duration = delays[c]; // this reel finishes at now + delays[c]
 
-      this.rState[c] = {
-        spinning:  true,
-        startTime: now,
-        duration:  spinDur,
-        totalPx:   totalPx,
-        currentPx: 0,
-        done:      false,
-      };
+      // Tick sound loop for this reel
+      const iv = setInterval(() => {
+        if (r.stopped) { clearInterval(iv); return; }
+        AUDIO.tick(c);
+      }, 55 + c * 8);
+      this._tickIntervals.push(iv);
     }
   }
 
-  /* Easing functions */
-  _easeIn(t)    { return t * t * t; }
-  _easeOut(t)   { return 1 - Math.pow(1 - t, 3); }
-  _easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+  _easeOutBounce(t) {
+    // Slight bounce/overshoot at end — feels like a real reel snapping
+    const n1 = 7.5625, d1 = 2.75;
+    if (t < 1 / d1)       return n1 * t * t;
+    if (t < 2 / d1)       return n1 * (t -= 1.5 / d1) * t + 0.75;
+    if (t < 2.5 / d1)     return n1 * (t -= 2.25 / d1) * t + 0.9375;
+    return n1 * (t -= 2.625 / d1) * t + 0.984375;
+  }
 
-  _loop(ts) {
-    const now = performance.now();
-    let allDone = true;
+  _easeInOut(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  _rafLoop() {
+    const now      = performance.now();
+    let anyMoving  = false;
+    let justStopped= [];
 
     for (let c = 0; c < this.COLS; c++) {
-      const rs = this.rState[c];
-      if (rs.done) continue;
-      allDone = false;
+      const r = this.reels[c];
+      if (r.stopped) continue;
+      anyMoving = true;
 
-      const elapsed  = now - rs.startTime;
-      const progress = Math.min(elapsed / rs.duration, 1);
+      const elapsed  = now - r.startTime;
+      const progress = Math.min(elapsed / r.duration, 1);
 
-      // Ease: fast in middle, slow at end
+      // Motion curve:
+      // 0-10%:  ease in (accelerate)
+      // 10-80%: constant fast (linear)
+      // 80-100%: ease out (decelerate + tiny bounce)
       let eased;
-      if (progress < 0.15) {
-        eased = this._easeIn(progress / 0.15) * 0.15;
-      } else if (progress < 0.75) {
-        // linear middle section — constant fast speed
-        eased = 0.15 + (progress - 0.15) * (0.75 / 0.6);
+      if (progress < 0.10) {
+        const t = progress / 0.10;
+        eased = t * t * t * 0.10;                        // ease in
+      } else if (progress < 0.80) {
+        eased = 0.10 + (progress - 0.10) * (0.80 / 0.70); // linear fast
       } else {
-        // ease out to stop
-        const t = (progress - 0.75) / 0.25;
-        eased = 0.9 + this._easeOut(t) * 0.1;
+        const t = (progress - 0.80) / 0.20;
+        eased = 0.90 + this._easeOutBounce(t) * 0.10;    // ease out
       }
 
-      rs.currentPx = eased * rs.totalPx;
+      r.offset = eased * r.target;
 
       if (progress >= 1) {
-        rs.done     = true;
-        rs.spinning = false;
-        rs.currentPx = rs.totalPx;
-        // Snap grid
+        r.offset  = r.target; // snap exact
+        r.stopped = true;
+        r.spinning= false;
+        // Snap grid from strip
         const landIdx = this.STRIP - this.ROWS;
-        for (let r = 0; r < this.ROWS; r++) {
-          this.grid[c][r] = this.strips[c][(landIdx + r) % this.STRIP];
+        for (let row = 0; row < this.ROWS; row++) {
+          this.grid[c][row] = this.strips[c][landIdx + row];
         }
-        SND.stop(c);
-        // Check if all done
-        if (this.rState.every(s => s.done)) {
-          this.anySpinning = false;
-          if (this.onAllStopped) this.onAllStopped();
-        }
+        justStopped.push(c);
       }
+    }
+
+    // Fire stop sounds staggered
+    justStopped.forEach(c => AUDIO.reelStop(c));
+
+    // All done?
+    if (this.spinning && this.reels.every(r => r.stopped)) {
+      this.spinning = false;
+      if (this.onDone) this.onDone();
     }
 
     this._draw();
-    requestAnimationFrame(ts => this._loop(ts));
+    requestAnimationFrame(() => this._rafLoop());
   }
 
   _draw() {
-    const ctx  = this.ctx;
-    const CW   = this.CW, CH = this.CH;
-    const CW2  = this.CW2, CH2 = this.CH2;
-    const t    = this.theme;
+    const { ctx, CW, CH, cw, ch } = this;
+    const th = this.theme;
+    if (!cw || !ch) return;
 
-    if (!CW2 || !CH2) return;
-
-    // Background
+    // ── Background ──
     const bg = ctx.createLinearGradient(0, 0, 0, CH);
-    bg.addColorStop(0, t.bg0 || '#1a0810');
-    bg.addColorStop(1, t.bg1 || '#0e050b');
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, CW, CH);
+    bg.addColorStop(0, th.bg0 || '#1a0508');
+    bg.addColorStop(1, th.bg1 || '#0a0204');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, CW, CH);
 
-    // Extra bg effects (override in subclass)
-    if (this.drawBackground) this.drawBackground(ctx, CW, CH);
+    // Custom bg hook
+    if (this.drawBg) this.drawBg(ctx, CW, CH);
 
-    // Draw each reel
+    // ── Reels ──
     for (let c = 0; c < this.COLS; c++) {
-      const rx  = c * CW2;
-      const rs  = this.rState[c];
+      const r  = this.reels[c];
+      const rx = c * cw;
 
       ctx.save();
       ctx.beginPath();
-      ctx.rect(rx + 1, 0, CW2 - 2, CH);
+      ctx.rect(rx + 1, 1, cw - 2, CH - 2);
       ctx.clip();
 
-      // Column bg
-      ctx.fillStyle = 'rgba(0,0,0,0.08)';
-      ctx.fillRect(rx, 0, CW2, CH);
+      // Reel bg
+      const rbg = ctx.createLinearGradient(rx, 0, rx + cw, 0);
+      rbg.addColorStop(0,   'rgba(0,0,0,.25)');
+      rbg.addColorStop(0.5, 'rgba(255,255,255,.015)');
+      rbg.addColorStop(1,   'rgba(0,0,0,.25)');
+      ctx.fillStyle = rbg;
+      ctx.fillRect(rx, 0, cw, CH);
 
-      if (!rs.done) {
-        // SPINNING — draw scrolling strip
-        const scrollPx = rs.currentPx % (this.STRIP * CH2);
-        const topSym   = Math.floor(scrollPx / CH2);
-        const offsetY  = scrollPx % CH2;
+      if (!r.stopped) {
+        // Spinning — draw scrolling symbols
+        const scrollPx = r.offset % (this.STRIP * ch);
+        const topIdx   = Math.floor(scrollPx / ch);
+        const offsetY  = scrollPx % ch;
 
         for (let row = -1; row <= this.ROWS + 1; row++) {
-          const sy   = row * CH2 - offsetY;
-          if (sy > CH + CH2 || sy < -CH2) continue;
-          const si   = ((topSym + row) % this.STRIP + this.STRIP) % this.STRIP;
-          this._drawCell(ctx, this.strips[c][si], rx, sy, CW2, CH2, false);
+          const sy = row * ch - offsetY;
+          if (sy > CH + ch || sy < -ch * 1.5) continue;
+          const si = ((topIdx + row) % this.STRIP + this.STRIP) % this.STRIP;
+          this._cell(ctx, this.strips[c][si], rx, sy, cw, ch, false, c);
         }
+
+        // Motion blur overlay
+        const blur = ctx.createLinearGradient(0, 0, 0, CH);
+        blur.addColorStop(0,   'rgba(0,0,0,.15)');
+        blur.addColorStop(0.5, 'rgba(0,0,0,0)');
+        blur.addColorStop(1,   'rgba(0,0,0,.15)');
+        ctx.fillStyle = blur;
+        ctx.fillRect(rx, 0, cw, CH);
       } else {
-        // STOPPED — draw static grid with win highlights
-        for (let r = 0; r < this.ROWS; r++) {
-          const isWin = this.winCells.has(`${c},${r}`);
-          const flash = isWin && (this.flashT % 28 < 14);
-          this._drawCell(ctx, this.grid[c][r], rx, r * CH2, CW2, CH2, flash);
+        // Stopped
+        for (let row = 0; row < this.ROWS; row++) {
+          const sym    = this.grid[c][row];
+          const isWin  = this.winCells.has(`${c},${row}`);
+          const flash  = isWin && (this.flashT % 30 < 15);
+          this._cell(ctx, sym, rx, row * ch, cw, ch, flash, c);
         }
       }
 
@@ -257,114 +407,164 @@ class ReelEngine {
     }
 
     // Flash counter
-    if (!this.anySpinning && this.winCells.size > 0) this.flashT++;
+    if (!this.spinning && this.winCells.size > 0) this.flashT++;
 
-    // Grid lines
-    ctx.strokeStyle = t.gridLine || 'rgba(212,168,67,.08)';
-    ctx.lineWidth = 1;
-    for (let c = 1; c < this.COLS; c++) {
-      ctx.beginPath(); ctx.moveTo(c*CW2, 0); ctx.lineTo(c*CW2, CH); ctx.stroke();
+    // ── Reel separators (fancy gold lines) ──
+    for (let c = 0; c <= this.COLS; c++) {
+      const x = c * cw;
+      const grd = ctx.createLinearGradient(0, 0, 0, CH);
+      grd.addColorStop(0,   'rgba(212,168,67,.05)');
+      grd.addColorStop(0.3, 'rgba(212,168,67,.18)');
+      grd.addColorStop(0.7, 'rgba(212,168,67,.18)');
+      grd.addColorStop(1,   'rgba(212,168,67,.05)');
+      ctx.strokeStyle = grd;
+      ctx.lineWidth   = 1;
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke();
     }
-    for (let r = 1; r < this.ROWS; r++) {
-      ctx.beginPath(); ctx.moveTo(0, r*CH2); ctx.lineTo(CW, r*CH2); ctx.stroke();
+    for (let r = 0; r <= this.ROWS; r++) {
+      const y = r * ch;
+      const grd = ctx.createLinearGradient(0, 0, CW, 0);
+      grd.addColorStop(0,   'rgba(212,168,67,.05)');
+      grd.addColorStop(0.15,'rgba(212,168,67,.18)');
+      grd.addColorStop(0.85,'rgba(212,168,67,.18)');
+      grd.addColorStop(1,   'rgba(212,168,67,.05)');
+      ctx.strokeStyle = grd;
+      ctx.lineWidth   = 1;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke();
     }
 
-    // Win paylines
-    if (!this.anySpinning && this.winLines.length && this.flashT % 28 < 14) {
+    // ── Win paylines ──
+    if (!this.spinning && this.winLines.length && this.flashT % 30 < 15) {
       this.winLines.forEach(li => {
         const line = this.lines[li];
+        ctx.save();
         ctx.beginPath();
         line.forEach((row, col) => {
-          const px = col * CW2 + CW2 / 2;
-          const py = row * CH2 + CH2 / 2;
+          const px = col * cw + cw / 2;
+          const py = row * ch + ch / 2;
           col === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
         });
-        ctx.strokeStyle = t.winLine || 'rgba(212,168,67,.6)';
-        ctx.lineWidth = 2.5;
-        ctx.setLineDash([8, 5]);
+        ctx.strokeStyle = th.winLine || 'rgba(255,220,60,.75)';
+        ctx.lineWidth   = 3;
+        ctx.shadowColor = th.winLine || 'rgba(255,220,60,.8)';
+        ctx.shadowBlur  = 12;
+        ctx.setLineDash([10, 6]);
         ctx.stroke();
         ctx.setLineDash([]);
+        ctx.restore();
       });
     }
 
-    // Top/bottom vignette
-    const vT = ctx.createLinearGradient(0, 0, 0, CH2 * 0.6);
-    vT.addColorStop(0, t.vignette || 'rgba(14,5,11,.8)');
-    vT.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = vT; ctx.fillRect(0, 0, CW, CH2 * 0.6);
-    const vB = ctx.createLinearGradient(0, CH - CH2 * 0.6, 0, CH);
-    vB.addColorStop(0, 'rgba(0,0,0,0)');
-    vB.addColorStop(1, t.vignette || 'rgba(14,5,11,.8)');
-    ctx.fillStyle = vB; ctx.fillRect(0, CH - CH2 * 0.6, CW, CH2 * 0.6);
+    // ── Center payline highlight strip ──
+    const midY = CH / 2;
+    const ph   = ctx.createLinearGradient(0, midY - 2, 0, midY + 2);
+    ph.addColorStop(0,   'rgba(255,215,60,.0)');
+    ph.addColorStop(0.5, 'rgba(255,215,60,.08)');
+    ph.addColorStop(1,   'rgba(255,215,60,.0)');
+    ctx.fillStyle = ph;
+    ctx.fillRect(0, midY - 1, CW, 3);
 
-    // Center payline guide
-    ctx.strokeStyle = t.centerLine || 'rgba(212,168,67,.15)';
-    ctx.lineWidth = 1; ctx.setLineDash([6, 7]);
-    ctx.beginPath(); ctx.moveTo(0, CH / 2); ctx.lineTo(CW, CH / 2); ctx.stroke();
-    ctx.setLineDash([]);
+    // ── Top & bottom vignette ──
+    const vOH = ch * 0.65;
+    const vT  = ctx.createLinearGradient(0, 0, 0, vOH);
+    vT.addColorStop(0, th.vignette || 'rgba(10,3,5,.88)');
+    vT.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = vT; ctx.fillRect(0, 0, CW, vOH);
+
+    const vB = ctx.createLinearGradient(0, CH - vOH, 0, CH);
+    vB.addColorStop(0, 'rgba(0,0,0,0)');
+    vB.addColorStop(1, th.vignette || 'rgba(10,3,5,.88)');
+    ctx.fillStyle = vB; ctx.fillRect(0, CH - vOH, CW, vOH);
+
+    // ── Outer frame glow ──
+    ctx.save();
+    ctx.strokeStyle = th.frameGlow || 'rgba(212,168,67,.25)';
+    ctx.lineWidth   = 2;
+    ctx.shadowColor = th.frameGlow || 'rgba(212,168,67,.3)';
+    ctx.shadowBlur  = 8;
+    ctx.strokeRect(1, 1, CW - 2, CH - 2);
+    ctx.restore();
   }
 
-  _drawCell(ctx, sym, x, y, w, h, highlight) {
+  _cell(ctx, sym, x, y, w, h, highlight, col) {
+    if (!sym) return;
+
+    // Win highlight
     if (highlight) {
-      ctx.fillStyle = this.theme.winCell || 'rgba(212,168,67,.18)';
+      // Pulsing gold bg
+      ctx.save();
+      ctx.fillStyle   = this.theme.winCell || 'rgba(255,215,60,.15)';
       ctx.fillRect(x + 2, y + 2, w - 4, h - 4);
-      ctx.strokeStyle = this.theme.winBorder || 'rgba(212,168,67,.7)';
-      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = this.theme.winBorder || 'rgba(255,215,60,.9)';
+      ctx.lineWidth   = 2.5;
+      ctx.shadowColor = 'rgba(255,215,60,.6)';
+      ctx.shadowBlur  = 10;
       ctx.strokeRect(x + 3, y + 3, w - 6, h - 6);
+      ctx.restore();
     }
-    // Symbol — override with custom draw if needed
+
+    // Draw symbol
     if (sym.draw) {
       sym.draw(ctx, x, y, w, h);
     } else {
-      const fs = Math.round(h * 0.46);
-      ctx.font = `${fs}px serif`;
-      ctx.textAlign = 'center';
+      ctx.save();
+      const fs = Math.round(h * 0.48);
+      ctx.font         = `${fs}px serif`;
+      ctx.textAlign    = 'center';
       ctx.textBaseline = 'middle';
-      // Subtle shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
-      ctx.fillText(sym.e, x + w / 2 + 1, y + h / 2 + 1);
-      ctx.fillStyle = '#fff';
+      // Drop shadow
+      ctx.shadowColor = 'rgba(0,0,0,.5)';
+      ctx.shadowBlur  = 4;
+      ctx.shadowOffsetX = 1.5;
+      ctx.shadowOffsetY = 1.5;
       ctx.fillText(sym.e, x + w / 2, y + h / 2);
+      ctx.restore();
     }
   }
 
-  /* Evaluate win for current grid */
+  // ── Evaluate paylines ──
   evaluate(bet, numLines) {
     let totalWin = 0;
     this.winCells.clear();
     this.winLines = [];
 
-    LINES_USED = this.lines.slice(0, numLines);
-
-    LINES_USED.forEach((line, li) => {
+    const used = this.lines.slice(0, numLines);
+    used.forEach((line, li) => {
       const syms = line.map((row, col) => this.grid[col][row]);
       let matchSym = null, cnt = 0;
+
       for (let i = 0; i < syms.length; i++) {
         const s = syms[i];
-        if (s.wild) { cnt++; continue; }
-        if (s.scatter || s.bonus) break;
-        if (!matchSym) { matchSym = s; cnt++; continue; }
-        if (s.id === matchSym.id) cnt++;
+        if (s.wild)                { cnt++; continue; }
+        if (s.scatter || s.bonus)  { break; }
+        if (!matchSym)             { matchSym = s; cnt++; continue; }
+        if (s.id === matchSym.id)  { cnt++; }
         else break;
       }
+
       if (cnt >= 3 && matchSym) {
-        const payout = matchSym.pays[cnt - 1] || 0;
-        if (payout > 0) {
-          totalWin += payout * bet;
+        const pay = matchSym.pays[cnt - 1] || 0;
+        if (pay > 0) {
+          totalWin += pay * bet;
           this.winLines.push(li);
           line.slice(0, cnt).forEach((row, col) => this.winCells.add(`${col},${row}`));
         }
       }
     });
 
-    // Scatter count
+    // Count scatters
     let scatCount = 0;
-    for (let c = 0; c < this.COLS; c++)
-      for (let r = 0; r < this.ROWS; r++)
-        if (this.grid[c][r].scatter) { scatCount++; this.winCells.add(`${c},${r}`); }
+    for (let c = 0; c < this.COLS; c++) {
+      for (let r = 0; r < this.ROWS; r++) {
+        if (this.grid[c][r].scatter) {
+          scatCount++;
+          this.winCells.add(`${c},${r}`);
+        }
+      }
+    }
 
     return { totalWin, scatCount };
   }
 }
 
-window.ReelEngine = ReelEngine;
+window.SlotEngine = SlotEngine;

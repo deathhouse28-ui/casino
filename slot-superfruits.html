@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Fruits Deluxe — NOVA 777</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="slot.css">
 </head>
 <body class="theme-fruits">
-<div class="cur" id="cur"></div><div class="cur-r" id="curR"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
 
 <!-- FREE SPINS -->
 <div class="overlay" id="fsOv">
   <div class="ov-box">
     <h2>🎉 FREE SPINS!</h2>
-    <p>Scatter символи отключиха безплатни завъртания!</p>
+    <p>3 Scatter символа! Спечелихте безплатни завъртания.</p>
     <div class="ov-big" id="fsNum">10</div>
     <div class="ov-sub">безплатни завъртания</div>
     <button class="ov-btn" onclick="startFS()">Играй!</button>
@@ -23,10 +23,11 @@
 
 <!-- BIG WIN -->
 <div class="bw-ov" id="bwOv">
-  <div class="bw-box">
+  <div class="confetti" id="conf"></div>
+  <div class="bw-inner">
     <div class="bw-lbl" id="bwLbl">BIG WIN</div>
     <div class="bw-num" id="bwNum">0</div>
-    <div class="bw-sub-txt">кредита</div>
+    <div class="bw-sub2">кредита</div>
     <button class="bw-close" onclick="closeBW()">Продължи</button>
   </div>
 </div>
@@ -38,73 +39,143 @@
 </div>
 
 <div class="game-wrap">
-<div class="game-box">
-  <div class="title-bar">
-    <h1>🍒 Super Fruits Deluxe</h1>
-    <p>5 барабана · 20 линии · Wild · Free Spins</p>
+<div class="game-machine">
+
+  <div class="machine-top">
+    <div>
+      <div class="machine-name">🍒 Super Fruits Deluxe</div>
+      <div class="machine-name-sub">5 барабана · 20 линии · Wild · Free Spins</div>
+    </div>
   </div>
-  <div class="jp-bar">
-    <div class="jp"><div class="jp-l">GRAND</div><div class="jp-v">5 000</div></div>
-    <div class="jp"><div class="jp-l">MAJOR</div><div class="jp-v">1 000</div></div>
-    <div class="jp"><div class="jp-l">MINOR</div><div class="jp-v">250</div></div>
-    <div class="jp"><div class="jp-l">MINI</div><div class="jp-v">50</div></div>
+
+  <div class="jp-meters">
+    <div class="jp-meter grand"><span class="jp-lbl">GRAND</span><span class="jp-val">5 000</span></div>
+    <div class="jp-meter"><span class="jp-lbl">MAJOR</span><span class="jp-val">1 000</span></div>
+    <div class="jp-meter"><span class="jp-lbl">MINOR</span><span class="jp-val">250</span></div>
+    <div class="jp-meter"><span class="jp-lbl">MINI</span><span class="jp-val">50</span></div>
   </div>
-  <div class="reels-wrap"><canvas id="cv"></canvas></div>
-  <div class="win-bar"><span id="winTxt">Завъртете барабаните — Добра Luck! 🍀</span></div>
-  <div class="lines-row" id="linesRow"></div>
-  <div class="ctrl-row">
-    <div class="cg"><div class="cl">Залог/линия</div><div class="cv" id="betEl">1</div>
-      <div class="cbtns"><button class="cbtn" onclick="chBet(-1)">−</button><button class="cbtn" onclick="chBet(1)">+</button></div></div>
-    <div class="cg"><div class="cl">Линии</div><div class="cv" id="linesEl">20</div>
-      <div class="cbtns"><button class="cbtn" onclick="chLines(-5)">−</button><button class="cbtn" onclick="chLines(5)">+</button></div></div>
-    <div class="cg"><div class="cl">Общо залог</div><div class="cv" id="totalEl">20</div></div>
-    <div class="spin-wrap">
+
+  <div class="reels-area">
+    <canvas id="cv"></canvas>
+  </div>
+
+  <div class="win-display">
+    <span id="winTxt">Завъртете барабаните — Добра Luck! 🍀</span>
+  </div>
+
+  <div class="lines-wrap">
+    <span class="lines-label">Линии</span>
+    <div class="lines-btns" id="linesRow"></div>
+  </div>
+
+  <div class="ctrl-panel">
+    <div class="cg">
+      <div class="cl">Залог / линия</div>
+      <div class="cv" id="betEl">1</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chBet(-1)">−</button>
+        <button class="cbtn" onclick="chBet(1)">+</button>
+      </div>
+    </div>
+    <div class="cg">
+      <div class="cl">Линии</div>
+      <div class="cv" id="linesEl">20</div>
+      <div class="cbtns">
+        <button class="cbtn" onclick="chLines(-5)">−</button>
+        <button class="cbtn" onclick="chLines(5)">+</button>
+      </div>
+    </div>
+    <div class="spin-zone">
       <button class="spin-btn" id="spinBtn" onclick="doSpin()">▶ SPIN</button>
       <div class="aux-row">
         <button class="aux" id="autoBtn" onclick="toggleAuto()">AUTO</button>
         <button class="aux" onclick="maxBet()">MAX BET</button>
       </div>
     </div>
-    <div class="cg"><div class="cl">Кредити</div><div class="cv" id="credEl">1 000</div></div>
-    <div class="cg"><div class="cl">Спечелено</div><div class="cv" id="wonEl">0</div></div>
+    <div class="cg">
+      <div class="cl">Кредити</div>
+      <div class="cv" id="credEl">1 000</div>
+    </div>
+    <div class="cg">
+      <div class="cl">Спечелено</div>
+      <div class="cv" id="wonEl">0</div>
+    </div>
   </div>
+
 </div>
+
 <div class="paytable">
-  <div class="pt-head"><h3>📋 Изплащания — 3 / 4 / 5 еднакви</h3></div>
+  <div class="pt-head">
+    <h3>📋 Изплащания (за 3 / 4 / 5 еднакви от ляво)</h3>
+  </div>
   <div class="pt-grid" id="ptGrid"></div>
 </div>
 </div>
 
 <script src="engine.js"></script>
 <script>
-// CURSOR
+// Cursor
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
 (function t(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(t);})();
 
-const SYMS = [
-  {id:'cherry', e:'🍒',n:'Череша',  pays:[0,0,5,15,50],   w:18},
-  {id:'lemon',  e:'🍋',n:'Лимон',   pays:[0,0,5,15,40],   w:16},
-  {id:'orange', e:'🍊',n:'Портокал',pays:[0,0,8,20,60],   w:14},
-  {id:'grape',  e:'🍇',n:'Грозде',  pays:[0,0,8,25,80],   w:12},
-  {id:'melon',  e:'🍉',n:'Диня',    pays:[0,0,10,30,100], w:10},
-  {id:'bell',   e:'🔔',n:'Камбана', pays:[0,0,15,50,150], w:8},
-  {id:'star',   e:'⭐',n:'Звезда',  pays:[0,0,20,75,200], w:6},
-  {id:'seven',  e:'7', n:'SEVEN',   pays:[0,0,30,100,500],w:4,
-    draw:(ctx,x,y,w,h)=>{
-      ctx.font=`bold ${Math.round(h*.52)}px Cinzel,serif`;
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillText('7',x+w/2+1.5,y+h/2+1.5);
-      ctx.fillStyle='#e74c3c';ctx.fillText('7',x+w/2,y+h/2);
-    }
-  },
-  {id:'diamond',e:'💎',n:'Диамант', pays:[0,0,50,200,1000],w:2},
-  {id:'wild',   e:'🃏',n:'WILD',    pays:[0,0,0,0,0],    w:3, wild:true},
-  {id:'scatter',e:'💫',n:'SCATTER', pays:[0,0,2,10,50],  w:3, scatter:true},
+// ── Symbols ──
+function drawSeven(ctx,x,y,w,h) {
+  ctx.save();
+  // Glow bg
+  const g=ctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,w*.5);
+  g.addColorStop(0,'rgba(220,50,50,.2)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
+  ctx.font=`bold ${Math.round(h*.56)}px Cinzel,serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillText('7',x+w/2+2,y+h/2+2);
+  const gf=ctx.createLinearGradient(x+w/2-w*.3,y+h*.2,x+w/2+w*.3,y+h*.8);
+  gf.addColorStop(0,'#ff6b6b');gf.addColorStop(.5,'#e74c3c');gf.addColorStop(1,'#c0392b');
+  ctx.fillStyle=gf;ctx.fillText('7',x+w/2,y+h/2);
+  ctx.restore();
+}
+
+function drawWild(ctx,x,y,w,h) {
+  ctx.save();
+  const cx=x+w/2,cy=y+h/2,r=Math.min(w,h)*.38;
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r*2);
+  g.addColorStop(0,'rgba(212,168,67,.3)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
+  // 8-pointed star
+  ctx.beginPath();
+  for(let i=0;i<16;i++){
+    const a=i*Math.PI/8-Math.PI/2;
+    const rad=i%2===0?r:r*.45;
+    const px=cx+Math.cos(a)*rad,py=cy+Math.sin(a)*rad;
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+  const gf=ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+  gf.addColorStop(0,'#fff8c0');gf.addColorStop(.4,'#f0c040');gf.addColorStop(1,'#c89020');
+  ctx.fillStyle=gf;ctx.fill();
+  ctx.strokeStyle='rgba(255,240,160,.6)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.font=`bold ${Math.round(r*.55)}px Cinzel,serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(100,60,0,.8)';ctx.fillText('W',cx,cy);
+  ctx.restore();
+}
+
+const SYMS=[
+  {id:'cherry', e:'🍒', n:'Череша',  pays:[0,0,5,15,50],   w:16},
+  {id:'lemon',  e:'🍋', n:'Лимон',   pays:[0,0,5,12,40],   w:14},
+  {id:'orange', e:'🍊', n:'Портокал',pays:[0,0,8,20,60],   w:12},
+  {id:'grape',  e:'🍇', n:'Грозде',  pays:[0,0,8,25,80],   w:10},
+  {id:'melon',  e:'🍉', n:'Диня',    pays:[0,0,10,30,100], w:9},
+  {id:'bell',   e:'🔔', n:'Камбана', pays:[0,0,15,50,150], w:7},
+  {id:'star',   e:'⭐', n:'Звезда',  pays:[0,0,20,75,200], w:5},
+  {id:'seven',  e:'7',  n:'SEVEN',   pays:[0,0,30,100,500],w:4, draw:drawSeven},
+  {id:'diamond',e:'💎', n:'Диамант', pays:[0,0,50,200,1000],w:2},
+  {id:'wild',   e:'★',  n:'WILD',    pays:[0,0,0,0,0],     w:3, wild:true, draw:drawWild},
+  {id:'scatter',e:'💫', n:'SCATTER', pays:[0,0,2,10,50],   w:3, scatter:true},
 ];
 
-const LINES = [
+const LINES=[
   [1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],
   [0,1,2,1,0],[2,1,0,1,2],
   [0,0,1,2,2],[2,2,1,0,0],
@@ -117,111 +188,171 @@ const LINES = [
   [1,0,2,0,1],
 ];
 
-const engine = new ReelEngine(document.getElementById('cv'), {
-  rows:3, cols:5,
-  symbols: SYMS,
-  paylines: LINES,
+const engine = new SlotEngine(document.getElementById('cv'), {
+  rows:3, cols:5, symbols:SYMS, paylines:LINES,
   theme:{
-    bg0:'#1c0910',bg1:'#0e050b',
-    gridLine:'rgba(212,168,67,.09)',
-    winLine:'rgba(212,168,67,.65)',
-    winCell:'rgba(212,168,67,.18)',
-    winBorder:'rgba(212,168,67,.75)',
-    vignette:'rgba(14,5,11,.82)',
-    centerLine:'rgba(212,168,67,.16)',
+    bg0:'#1e0a10', bg1:'#0e0408',
+    winLine:'rgba(255,220,60,.8)',
+    winCell:'rgba(255,215,60,.15)',
+    winBorder:'rgba(255,220,60,.9)',
+    vignette:'rgba(14,4,8,.88)',
+    frameGlow:'rgba(212,168,67,.3)',
   }
 });
+
+// Custom bg — subtle red tint gradient
+engine.drawBg = (ctx, CW, CH) => {
+  const g=ctx.createRadialGradient(CW*.5,CH*.5,0,CW*.5,CH*.5,CW*.7);
+  g.addColorStop(0,'rgba(120,20,20,.08)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
+};
 
 let creds=1000, bet=1, numLines=20, totalWon=0;
 let spinning=false, autoOn=false, freeSpins=0, inFS=false;
 const BETS=[1,2,5,10,20,50]; let bIdx=0;
 
-engine.onAllStopped = () => {
+engine.onDone = () => {
   spinning = false;
   document.getElementById('spinBtn').disabled = false;
 
-  const {totalWin, scatCount} = engine.evaluate(bet, numLines);
-  let won = totalWin;
+  const { totalWin, scatCount } = engine.evaluate(bet, numLines);
 
+  // Scatter trigger
   if (scatCount >= 3 && !inFS) {
     const fc = scatCount >= 5 ? 20 : scatCount >= 4 ? 15 : 10;
     freeSpins = fc;
     document.getElementById('fsNum').textContent = fc;
-    setTimeout(() => { SND.freespin(); document.getElementById('fsOv').classList.add('show'); }, 300);
+    setTimeout(() => { AUDIO.freeSpins(); document.getElementById('fsOv').classList.add('show'); }, 400);
   }
 
-  creds += won; totalWon += won; updateUI();
+  creds += totalWin; totalWon += totalWin;
+  updateUI();
 
-  if (won > 0) {
-    const mult = won / (bet * numLines);
+  if (totalWin > 0) {
+    const mult = totalWin / (bet * numLines);
     let lbl = 'WIN';
-    if (mult >= 50) lbl = '🎆 MEGA WIN';
-    else if (mult >= 20) lbl = '🏆 SUPER WIN';
-    else if (mult >= 10) lbl = '✨ BIG WIN';
-    setWin(`${lbl}: +${won} кредита!`);
-    SND.win();
-    if (mult >= 10) setTimeout(() => showBW(lbl, won), 250);
+    if (mult >= 80)      { lbl='🎆 MEGA WIN'; AUDIO.megaWin(); }
+    else if (mult >= 30) { lbl='🏆 SUPER WIN'; AUDIO.bigWin(); }
+    else if (mult >= 10) { lbl='✨ BIG WIN'; AUDIO.bigWin(); }
+    else                   AUDIO.coinJingle();
+    setWin(lbl + ': +' + totalWin + ' кредита!', mult >= 10);
+    if (mult >= 10) setTimeout(() => showBW(lbl, totalWin), 250);
   } else {
-    setWin('Без печалба — опитайте пак! 🍀');
+    setWin('Без печалба — опитайте пак! 🍀', false);
   }
 
   if (inFS) {
     freeSpins--;
-    if (freeSpins > 0) { setWin(`FREE SPINS — остават: ${freeSpins}`); setTimeout(doSpin, 900); }
-    else { inFS = false; setWin('Free Spins приключиха!'); }
+    if (freeSpins > 0) {
+      setWin('FREE SPINS — остават: ' + freeSpins, false);
+      setTimeout(doSpin, 900);
+    } else {
+      inFS = false;
+      setWin('Free Spins приключиха!', false);
+    }
   } else if (autoOn) {
-    setTimeout(doSpin, 1000);
+    setTimeout(doSpin, 1100);
   }
 };
 
 function doSpin() {
   if (spinning) return;
-  _ac && _ac(); // unlock audio
+  AUDIO.unlock();
   const total = bet * numLines;
-  if (creds < total && !inFS) { setWin('Недостатъчно кредити!'); return; }
+  if (creds < total && !inFS) { setWin('Недостатъчно кредити!', false); return; }
   if (!inFS) creds -= total;
   spinning = true;
   document.getElementById('spinBtn').disabled = true;
-  setWin('Въртене...');
+  setWin('Въртене...', false);
   updateUI();
-  SND.spinStart();
+  AUDIO.spinPress();
 
   const result = Array.from({length:5}, () => Array.from({length:3}, () => engine._rnd()));
-  // Delay per reel: 0ms, 280ms, 560ms, 840ms, 1120ms before deceleration starts
-  engine.spin(result, [600, 900, 1200, 1500, 1800]);
+  // delays[c] = ms when reel c finishes
+  engine.spin(result, [900, 1150, 1400, 1650, 1900]);
 }
 
-function startFS() { document.getElementById('fsOv').classList.remove('show'); inFS=true; setTimeout(doSpin,400); }
-function showBW(l,n) { document.getElementById('bwLbl').textContent=l; document.getElementById('bwNum').textContent=n; document.getElementById('bwOv').classList.add('show'); SND.bigwin(); }
+function startFS() {
+  document.getElementById('fsOv').classList.remove('show');
+  inFS = true;
+  setTimeout(doSpin, 400);
+}
+
+function showBW(lbl, num) {
+  document.getElementById('bwLbl').textContent = lbl;
+  document.getElementById('bwNum').textContent = num;
+  document.getElementById('bwOv').classList.add('show');
+  spawnConfetti();
+}
 function closeBW() { document.getElementById('bwOv').classList.remove('show'); }
-function chBet(d) { bIdx=Math.max(0,Math.min(BETS.length-1,bIdx+d)); bet=BETS[bIdx]; SND.click(); updateUI(); }
-function chLines(d) { numLines=Math.max(1,Math.min(20,numLines+d)); SND.click(); updateUI(); }
-function maxBet() { bIdx=BETS.length-1; bet=BETS[bIdx]; numLines=20; SND.click(); updateUI(); }
-function toggleAuto() { autoOn=!autoOn; document.getElementById('autoBtn').classList.toggle('on',autoOn); document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO'; SND.click(); if(autoOn&&!spinning)doSpin(); }
-function setWin(t) { document.getElementById('winTxt').textContent=t; }
+
+function spawnConfetti() {
+  const c = document.getElementById('conf');
+  c.innerHTML = '';
+  const colors = ['#d4a843','#e74c3c','#27ae60','#3498db','#f0c866','#fff'];
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-p';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      width:${6+Math.random()*8}px; height:${6+Math.random()*8}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      animation-duration:${1.5+Math.random()*2}s;
+      animation-delay:${Math.random()*0.5}s;
+    `;
+    c.appendChild(p);
+  }
+}
+
+function chBet(d) { bIdx=Math.max(0,Math.min(BETS.length-1,bIdx+d)); bet=BETS[bIdx]; AUDIO.click(); updateUI(); }
+function chLines(d) { numLines=Math.max(1,Math.min(20,numLines+d)); AUDIO.click(); updateUI(); }
+function maxBet() { bIdx=BETS.length-1; bet=BETS[bIdx]; numLines=20; AUDIO.click(); updateUI(); }
+function toggleAuto() {
+  autoOn=!autoOn;
+  document.getElementById('autoBtn').classList.toggle('on',autoOn);
+  document.getElementById('autoBtn').textContent=autoOn?'STOP':'AUTO';
+  AUDIO.click();
+  if (autoOn && !spinning) doSpin();
+}
+function setWin(t, big) {
+  const el = document.getElementById('winTxt');
+  el.textContent = t;
+  el.classList.toggle('big', !!big);
+}
 function updateUI() {
-  document.getElementById('betEl').textContent=BETS[bIdx];
-  document.getElementById('linesEl').textContent=numLines;
-  document.getElementById('totalEl').textContent=bet*numLines;
-  document.getElementById('credEl').textContent=creds.toLocaleString('bg-BG');
-  document.getElementById('wonEl').textContent=totalWon.toLocaleString('bg-BG');
-  document.getElementById('balEl').textContent=creds.toLocaleString('bg-BG')+' кр.';
-  document.querySelectorAll('.lb').forEach((b,i)=>b.classList.toggle('on',i<numLines));
+  document.getElementById('betEl').textContent   = BETS[bIdx];
+  document.getElementById('linesEl').textContent = numLines;
+  document.getElementById('credEl').textContent  = creds.toLocaleString('bg-BG');
+  document.getElementById('wonEl').textContent   = totalWon.toLocaleString('bg-BG');
+  document.getElementById('balEl').textContent   = creds.toLocaleString('bg-BG') + ' кр.';
+  document.querySelectorAll('.lb').forEach((b,i) => b.classList.toggle('on', i < numLines));
 }
 
 // Lines buttons
-const lr=document.getElementById('linesRow');
-for(let i=0;i<20;i++){const b=document.createElement('button');b.className='lb'+(i<numLines?' on':'');b.textContent=i+1;b.onclick=()=>{numLines=i+1;SND.click();updateUI();};lr.appendChild(b);}
+const lr = document.getElementById('linesRow');
+for (let i=0;i<20;i++) {
+  const b=document.createElement('button');
+  b.className='lb'+(i<numLines?' on':'');
+  b.textContent=i+1;
+  b.onclick=()=>{ numLines=i+1; AUDIO.click(); updateUI(); };
+  lr.appendChild(b);
+}
 
 // Paytable
-const pg=document.getElementById('ptGrid');
-SYMS.forEach(s=>{
-  const d=document.createElement('div');d.className='pt-cell';
-  let p=s.wild?'Заменя всичко':s.scatter?'3+=Free Spins':`×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
-  const eHtml=s.id==='seven'?'<span style="font-family:Cinzel,serif;font-size:1.3rem;color:#e74c3c;font-weight:900">7</span>':`<span class="pt-e">${s.e}</span>`;
-  d.innerHTML=`${eHtml}<div><div class="pt-n">${s.n}</div><div class="pt-p">${p}</div></div>`;
+const pg = document.getElementById('ptGrid');
+SYMS.forEach(s => {
+  const d=document.createElement('div'); d.className='pt-cell';
+  let p = s.wild ? 'Заменя всичко' : s.scatter ? '3+ = Free Spins' : `×${s.pays[2]} / ×${s.pays[3]} / ×${s.pays[4]}`;
+  const eHtml = s.id==='seven'
+    ? '<span style="font-family:Cinzel,serif;font-size:1.3rem;color:#e74c3c;font-weight:900">7</span>'
+    : s.id==='wild'
+    ? '<span style="font-size:1.3rem;color:#d4a843">★</span>'
+    : `<span class="pt-e">${s.e}</span>`;
+  d.innerHTML = `${eHtml}<div><div class="pt-n">${s.n}</div><div class="pt-p">${p}</div></div>`;
   pg.appendChild(d);
 });
+
 updateUI();
 </script>
 </body>
