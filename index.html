@@ -78,7 +78,7 @@ nav.solid{background:rgba(7,8,11,.96);backdrop-filter:blur(22px);border-bottom:1
 /* GAMES LOBBY */
 .lobby{background:var(--surface);}
 .lobby-head{text-align:center;margin-bottom:64px;}
-.games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;}
+.games-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
 .game-tile{position:relative;background:var(--card);border:1px solid rgba(255,255,255,.05);overflow:hidden;cursor:none;transition:border-color .4s;}
 .game-tile:hover{border-color:var(--border);}
 .game-preview{height:240px;position:relative;overflow:hidden;}
@@ -199,7 +199,7 @@ footer{background:#050607;padding:56px 56px 30px;border-top:1px solid rgba(212,1
     <!-- GAME 1 — Super Fruits -->
     <div class="game-tile">
       <div class="game-preview">
-        <canvas id="previewCanvas1"></canvas>
+        <canvas id="pv1"></canvas>
         <div class="game-hover">
           <a href="slot-superfruits.html" class="play-cta">▶ Играй безплатно</a>
         </div>
@@ -211,56 +211,53 @@ footer{background:#050607;padding:56px 56px 30px;border-top:1px solid rgba(212,1
         <div class="game-info-row">
           <span class="game-chip">5 барабана</span>
           <span class="game-chip">20 линии</span>
-          <span class="game-chip">Wild символи</span>
-          <span class="game-chip">Free Spins</span>
+          <span class="game-chip">Wild · Free Spins</span>
         </div>
       </div>
     </div>
 
-    <!-- GAME 2 — Star Blaze -->
+    <!-- GAME 2 — Crown Jewels -->
     <div class="game-tile">
       <div class="game-preview">
-        <canvas id="previewCanvas2"></canvas>
+        <canvas id="pv2"></canvas>
+        <div class="game-hover">
+          <a href="slot-crownjewels.html" class="play-cta">▶ Играй безплатно</a>
+        </div>
+      </div>
+      <div class="game-badge-wrap"><span class="gbadge gbadge-hot">НОВО</span></div>
+      <div class="game-meta">
+        <div class="game-label">Оригинална игра</div>
+        <div class="game-title">Crown Jewels</div>
+        <div class="game-info-row">
+          <span class="game-chip">5 барабана</span>
+          <span class="game-chip">10 линии</span>
+          <span class="game-chip">Gamble · Crown Wild</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME 3 — Star Blaze -->
+    <div class="game-tile">
+      <div class="game-preview">
+        <canvas id="pv3"></canvas>
         <div class="game-hover">
           <a href="slot-starblaze.html" class="play-cta">▶ Играй безплатно</a>
         </div>
       </div>
-      <div class="game-badge-wrap"><span class="gbadge gbadge-new">НОВО</span></div>
+      <div class="game-badge-wrap"><span class="gbadge gbadge-new">COSMIC</span></div>
       <div class="game-meta">
         <div class="game-label">Оригинална игра</div>
         <div class="game-title">Star Blaze</div>
         <div class="game-info-row">
           <span class="game-chip">5 барабана</span>
           <span class="game-chip">10 линии</span>
-          <span class="game-chip">Scatter</span>
-          <span class="game-chip">Bonus Round</span>
+          <span class="game-chip">Scatter · Bonus</span>
         </div>
       </div>
     </div>
 
   </div>
 </section>
-
-    <!-- GAME 3 — Crown Jewels -->
-    <div class="game-tile">
-      <div class="game-preview">
-        <canvas id="previewCanvas1"></canvas>
-        <div class="game-hover">
-          <a href="slot-crownjewels.html" class="play-cta">▶ Играй безплатно</a>
-        </div>
-      </div>
-      <div class="game-badge-wrap"><span class="gbadge gbadge-hot">ХИТ</span></div>
-      <div class="game-meta">
-        <div class="game-label">Оригинална игра</div>
-        <div class="game-title">Crown Jewels Delux</div>
-        <div class="game-info-row">
-          <span class="game-chip">5 барабана</span>
-          <span class="game-chip">20 линии</span>
-          <span class="game-chip">Wild символи</span>
-          <span class="game-chip">Free Spins</span>
-        </div>
-      </div>
-    </div>
 
 <!-- FEATURES -->
 <section class="features section" id="how">
@@ -298,6 +295,7 @@ footer{background:#050607;padding:56px 56px 30px;border-top:1px solid rgba(212,1
         <h4>Игри</h4>
         <ul>
           <li><a href="slot-superfruits.html">Super Fruits Deluxe</a></li>
+          <li><a href="slot-crownjewels.html">Crown Jewels</a></li>
           <li><a href="slot-starblaze.html">Star Blaze</a></li>
         </ul>
       </div>
@@ -371,55 +369,66 @@ document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
 })();
 
 // PREVIEW CANVASES
-function drawPreview(id,colors,symbols){
-  const cv=document.getElementById(id);if(!cv)return;
+function drawPreview(id, colors, symbols, isCrown){
+  const cv=document.getElementById(id); if(!cv)return;
   const ctx=cv.getContext('2d');
-  cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;
-  const W=cv.width,H=cv.height;
-  let t=0,reelPos=[0,0,0,0,0];
-  const COLS=5,SYM_H=H/3;
+  function resize(){ cv.width=cv.offsetWidth; cv.height=cv.offsetHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const COLS=5, ROWS=3;
+  let offsets=Array.from({length:COLS},(_,i)=>Math.random()*symbols.length);
+  const speeds=[0.025,0.022,0.028,0.020,0.024];
   function frame(){
+    const W=cv.width, H=cv.height;
+    const cW=W/COLS, cH=H/ROWS;
     // BG
     const bg=ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,colors[0]);bg.addColorStop(1,colors[1]);
-    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-    // Reels
-    const rW=W/COLS;
+    bg.addColorStop(0,colors[0]); bg.addColorStop(1,colors[1]);
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    // Draw reels
     for(let c=0;c<COLS;c++){
-      reelPos[c]=(reelPos[c]+.8+c*.1)%(symbols.length*SYM_H);
-      ctx.save();ctx.rect(c*rW+2,0,rW-4,H);ctx.clip();
-      for(let s=0;s<symbols.length+2;s++){
-        const sy=s*SYM_H-reelPos[c];
-        if(sy>-SYM_H&&sy<H+SYM_H){
-          // reel bg
-          ctx.fillStyle=`rgba(255,255,255,${s%2===0?.04:.02})`;
-          ctx.fillRect(c*rW+3,sy+2,rW-6,SYM_H-4);
-          // symbol
-          ctx.font=`${SYM_H*.45}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-          ctx.fillText(symbols[s%symbols.length],c*rW+rW/2,sy+SYM_H/2);
+      offsets[c]=(offsets[c]+speeds[c])%symbols.length;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(c*cW+1,0,cW-2,H); ctx.clip();
+      for(let row=-1;row<ROWS+1;row++){
+        const sy=row*cH-(offsets[c]%1)*cH;
+        const si=(Math.floor(offsets[c])+row+symbols.length*10)%symbols.length;
+        ctx.fillStyle='rgba(255,255,255,.025)';
+        ctx.fillRect(c*cW+2,sy+1,cW-4,cH-2);
+        if(isCrown && symbols[si]==='7'){
+          ctx.font=`bold ${Math.round(cH*.5)}px Cinzel,serif`;
+          ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.fillStyle='#e74c3c';
+          ctx.fillText('7',c*cW+cW/2,sy+cH/2);
+        } else {
+          ctx.font=`${Math.round(cH*.44)}px serif`;
+          ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.fillStyle='rgba(255,255,255,.9)';
+          ctx.fillText(symbols[si],c*cW+cW/2,sy+cH/2);
         }
       }
       ctx.restore();
-      // divider
-      ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(c*rW,0);ctx.lineTo(c*rW,H);ctx.stroke();
+      // Separator
+      if(c>0){ ctx.strokeStyle='rgba(212,168,67,.07)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(c*cW,0); ctx.lineTo(c*cW,H); ctx.stroke(); }
     }
-    // payline
-    const py=H/2;
-    ctx.strokeStyle='rgba(212,168,67,.4)';ctx.lineWidth=2;ctx.setLineDash([6,4]);
-    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(W,py);ctx.stroke();
+    // Row separators
+    for(let r=1;r<ROWS;r++){ ctx.strokeStyle='rgba(255,255,255,.04)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,r*cH); ctx.lineTo(W,r*cH); ctx.stroke(); }
+    // Center payline
+    ctx.strokeStyle=isCrown?'rgba(212,168,67,.35)':'rgba(212,168,67,.3)';
+    ctx.lineWidth=1.5; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
     ctx.setLineDash([]);
-    // vignette
+    // Top/bottom fade
     const vg=ctx.createLinearGradient(0,0,0,H);
-    vg.addColorStop(0,'rgba(7,8,11,.7)');vg.addColorStop(.35,'rgba(7,8,11,0)');
-    vg.addColorStop(.65,'rgba(7,8,11,0)');vg.addColorStop(1,'rgba(7,8,11,.7)');
-    ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
-    t++;requestAnimationFrame(frame);
+    vg.addColorStop(0,colors[0]+'cc'); vg.addColorStop(.25,'rgba(0,0,0,0)');
+    vg.addColorStop(.75,'rgba(0,0,0,0)'); vg.addColorStop(1,colors[1]+'cc');
+    ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+    requestAnimationFrame(frame);
   }
   frame();
 }
-drawPreview('previewCanvas1',['#1a0a10','#0d0510'],['🍒','🍋','🍊','🍇','🍉','⭐','💎','🔔']);
-drawPreview('previewCanvas2',['#050d1a','#030810'],['⭐','💫','🌟','✨','🌙','🌠','💠','🔷']);
+drawPreview('pv1',['#1a0810','#0d0510'],['🍒','🍋','🍊','🍇','🍉','⭐','💎','🔔']);
+drawPreview('pv2',['#120c00','#080500'],['👑','💎','7','🍒','🍊','⭐','🔔','🍋'],true);
+drawPreview('pv3',['#050818','#030510'],['⭐','💫','🌟','✨','🌙','🚀','💠','🪐']);
 </script>
 </body>
 </html>
